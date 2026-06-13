@@ -1,0 +1,6 @@
+@DotNetWebApi_HostAddress = http://localhost:5117
+
+GET {{DotNetWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

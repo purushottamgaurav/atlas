@@ -1,1 +1,17 @@
-<Solution />
+<Solution>
+  <Folder Name="/console/">
+    <Project Path="console/ConsoleDotNet/DotNetConsole.csproj" />
+  </Folder>
+  <Folder Name="/desktop/">
+    <Project Path="desktop/DotNetWpf/DotNetWpf.csproj" Id="60f8eb4d-5aee-46c9-8076-6e41ebfd21ce" />
+  </Folder>
+  <Folder Name="/mobile/">
+    <Project Path="mobile/DotNetMaui/DotNetMaui.csproj" Id="92ca640b-a9c5-4494-957e-039032f5c5b9">
+      <Deploy Solution="Debug|*" />
+    </Project>
+  </Folder>
+  <Folder Name="/web/">
+    <Project Path="web/DotNetMvc/DotNetMvc.csproj" Id="1a6f10e7-7115-4946-9ce2-58102612d843" />
+    <Project Path="web/DotNetWebApi/DotNetWebApi.csproj" Id="a4cca474-8ffe-4530-9c1e-ea6f908a93ae" />
+  </Folder>
+</Solution>
