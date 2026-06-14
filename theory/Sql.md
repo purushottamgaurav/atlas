@@ -249,3 +249,6 @@ SELECT Col1, Col2 FROM OldTable;
 -- Copy with condition
 INSERT INTO ArchiveEmployees SELECT * FROM Employees WHERE Status = 'Inactive';
 ```
+37. What is normalization? Explain 1NF, 2NF, 3NF, BCNF?
+38. Explain constriants in SQL — Primary Key, Foreign Key, Unique, Check, Default?
+39. Data is corrupted in prod. How to recover it.

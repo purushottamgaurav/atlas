@@ -115,3 +115,8 @@ stages:
                     appName: 'my-app-service'
                     package: '$(Pipeline.Workspace)/drop/**/*.zip'
 ```
+16. What are the differences between INfrastructure as Code (IaC) tools in Azure? ARM Templates vs Bicep vs Terraform vs Pulumi?
+17. What are containers and Docker? How to deploy a containerized app in Azure?
+18. What are configMaps and secrets in Kubernetes? How to manage them in Azure Kubernetes Service (AKS)?
+19. What is Azure Service Bus? How to implement pub/sub messaging with it?
+20. 
