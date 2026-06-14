@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/console/">
-    <Project Path="console/ConsoleDotNet/DotNetConsole.csproj" />
+    <Project Path="console/DotNetConsole/DotNetConsole.csproj" />
   </Folder>
   <Folder Name="/desktop/">
     <Project Path="desktop/DotNetWpf/DotNetWpf.csproj" Id="60f8eb4d-5aee-46c9-8076-6e41ebfd21ce" />
