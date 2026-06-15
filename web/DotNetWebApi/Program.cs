@@ -1,3 +1,5 @@
+using DotNetWebApi.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,10 +16,33 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+// MIDDLEWARE USAGE EXAMPLES ( Logging, Authentication, CorrelationId, Stopwatch, RateLimiting, GlobalExceptionHandler, etc. )
+
+// 1- Add the logging middleware to the pipeline
+app.Use(async (context, next) =>
+{
+    // Before the next middleware
+    Console.WriteLine($"Request: {context.Request.Path}");
+
+    await next(context); // call next
+
+    // After the next middleware (response phase)
+    Console.WriteLine($"Response: {context.Response.StatusCode}");
+});
+
+// 2- Class-based middleware
+app.UseMiddleware<LoggingMiddleware>();
+
+// 3- Extension method for middleware
+app.UseLogging();
+
 
 app.Run();

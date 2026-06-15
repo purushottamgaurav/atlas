@@ -9,4 +9,12 @@
 //Oops.ConstructorTest();
 
 // Coding example
-Coding.Q1_ReverseString();
+
+Console.WriteLine("Please enter the coding number to execute");
+int quesNo = int.Parse(Console.ReadLine());
+Type type = typeof(Coding);
+var methods = type.GetMethods();
+
+var method = methods.First(x => x.Name.Contains($"Q{quesNo}_"));
+
+method.Invoke(null, null);
