@@ -120,18 +120,33 @@ int unboxed = (int)boxed; // Unboxing
 
 **Q10. What is the difference between `==` and `.Equals()`?**
 
-- `==` compares **references** for classes (unless overloaded), and **values** for value types.
-- `.Equals()` can be overridden to compare **logical equality**.
+- `==` compares **values** for value types and **references** for reference types by default (unless the operator is overloaded).
+- `.Equals()` compares **logical equality** as defined by the type; it can be overridden to compare object contents instead of references.
+
+#### Example
 
 ```csharp
-string a = new string("hello");
-string b = new string("hello");
+class Person
+{
+    public string Name { get; set; }
 
-Console.WriteLine(a == b);        // True (string overloads ==)
-Console.WriteLine(a.Equals(b));   // True
-Console.WriteLine(object.ReferenceEquals(a, b)); // False
+    public override bool Equals(object obj)
+    {
+        return obj is Person p && Name == p.Name;
+    }
+
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
+    }
+}
+
+var p1 = new Person { Name = "John" };
+var p2 = new Person { Name = "John" };
+
+Console.WriteLine(p1 == p2);      // False (different references)
+Console.WriteLine(p1.Equals(p2)); // True  (same logical value)
 ```
-
 ---
 
 **Q11. What is `Convert.ToString()` vs `.ToString()`?**
