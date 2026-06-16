@@ -8,7 +8,6 @@ namespace DotNetConsole
 
         }
 
-
         public static void Q1_ReverseString()
         {
             var name = "hello";
@@ -109,17 +108,36 @@ namespace DotNetConsole
             Array.ForEach(reverse, x => Console.WriteLine(x));
         }
 
-        //public static void Q36_RemoveDuplicates()
-        //{
-        //    int[] nums = { 1, 6, 2, 8, 6, 8 };
-        //    for (int i = 0; i < nums.Length; i++)
-        //    {
-        //        for (int j = i + 1; j < nums.Length - 1; j++)
-        //        {
-        //            if (nums[i] == nums[j])
-        //                 nums.RemoveAt(j);
-        //        }
-        //    }
-        //}
+        public static void Q36_RemoveDuplicates()
+        {
+            int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
+            int[] newArray = new int[nums.Length];
+            newArray[0] = nums[0];
+            int uniquecount = 1;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                for (int j = i + 1; j <= nums.Length - 1; j++)
+                {
+                    if (uniquecount == nums.Length)
+                        break;
+
+                    if (nums[i] != nums[j])
+                    {
+                        newArray[uniquecount] = nums[j];
+                        uniquecount++;
+                    }
+                }
+            }
+
+            /* i j
+             * 0 1,2
+             * 1 2,3
+             * 2 3
+             */
+
+            Array.ForEach(newArray, x => Console.WriteLine(x));
+
+        }
     }
 }

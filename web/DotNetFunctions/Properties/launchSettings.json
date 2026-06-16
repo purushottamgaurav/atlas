@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DotNetFunctions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7046",
+      "launchBrowser": false
+    }
+  }
+}
