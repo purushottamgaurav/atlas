@@ -1,4 +1,5 @@
-﻿
+﻿using System.Text;
+
 namespace DotNetConsole
 {
     public static class Coding
@@ -110,34 +111,88 @@ namespace DotNetConsole
 
         public static void Q36_RemoveDuplicates()
         {
+            //int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
+            //int[] result = nums.Distinct().ToArray();
+
             int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
             int[] newArray = new int[nums.Length];
             newArray[0] = nums[0];
             int uniquecount = 1;
 
+            bool IsUnique(int number)
+            {
+                for (int i = 0; i < newArray.Length; i++)
+                {
+                    if (newArray[i] == number)
+                        return false;
+                }
+
+                return true;
+            }
+
             for (int i = 0; i < nums.Length; i++)
             {
                 for (int j = i + 1; j <= nums.Length - 1; j++)
                 {
-                    if (uniquecount == nums.Length)
-                        break;
-
                     if (nums[i] != nums[j])
                     {
+                        if (!IsUnique(nums[j]))
+                            continue;
+
                         newArray[uniquecount] = nums[j];
                         uniquecount++;
                     }
                 }
             }
 
-            /* i j
-             * 0 1,2
-             * 1 2,3
-             * 2 3
-             */
+            int[] result = new int[uniquecount];
+            for (int i = 0; i < uniquecount; i++)
+            {
+                result[i] = newArray[i];
+            }
 
-            Array.ForEach(newArray, x => Console.WriteLine(x));
+            Array.ForEach(result, x => Console.WriteLine(x));
 
+        }
+
+
+        public static void Q3_CountVowels_Consonants()
+        {
+            string word = "My Name is Purushottam Gaurav";
+            char[] wordArray = word.ToArray();
+
+            int vcount = 0, ccount = 0;
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                if (wordArray[i] == ' ')
+                    continue;
+                else if (wordArray[i] == 'a' || wordArray[i] == 'e' || wordArray[i] == 'i' || wordArray[i] == 'o' || wordArray[i] == 'u')
+                    vcount++;
+                else
+                    ccount++;
+
+            }
+
+            Console.WriteLine($"Consonants- {ccount}, Vowels- {vcount}");
+        }
+
+        public static void Q6_RemoveSpaces()
+        {
+            string word = " My name is Purushottam Gaurav";
+            var final = new StringBuilder();
+
+            char[] wordArray = word.ToArray();
+
+            foreach (char c in wordArray)
+            {
+                if (c == ' ')
+                    continue;
+                else
+                    final.Append(c);
+            }
+
+            Console.WriteLine(final);
         }
     }
 }
