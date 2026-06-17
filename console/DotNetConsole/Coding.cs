@@ -194,5 +194,78 @@ namespace DotNetConsole
 
             Console.WriteLine(final);
         }
+
+        public static void Q7_ReverseWords()
+        {
+            string word = "My name is Purushottam Gaurav.";
+            char[] wordArray = word.ToArray();
+            char[] reverseWord = new char[wordArray.Length];
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                reverseWord[i] = wordArray[wordArray.Length - i - 1];
+            }
+
+            var result = new String(reverseWord);
+            Console.WriteLine(result);
+        }
+
+        public static void Q8_FirstNonRepeating()
+        {
+            string word = "aaabbccdee";
+            char[] wordArray = word.ToArray();
+            char previous = wordArray[0];
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                if (i > 0)
+                    previous = wordArray[i - 1];
+
+                if (wordArray[i] != wordArray[i + 1] && wordArray[i] != previous)
+                {
+                    Console.WriteLine(wordArray[i]);
+                    break;
+                }
+
+            }
+        }
+
+        public static void Q9_FindDuplicateCharacters()
+        {
+            string word = "Purushottam Gaurav";
+            char[] wordArray = word.ToArray();
+
+            char[] duplicateArray = new char[wordArray.Length];
+            int count = 0;
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                if (isDuplicate(wordArray[i]))
+                    continue;
+
+                for (int j = i + 1; j < wordArray.Length; j++)
+                {
+                    if (wordArray[i] == wordArray[j])
+                    {
+                        duplicateArray[count] = wordArray[i];
+                        count++;
+                        break;
+                    }
+                }
+            }
+
+            bool isDuplicate(char c)
+            {
+                foreach (char cd in duplicateArray)
+                {
+                    if (cd == c)
+                        return true;
+                }
+                return false;
+            }
+
+            Array.ForEach(duplicateArray, x => Console.WriteLine(x));
+
+
+        }
     }
 }

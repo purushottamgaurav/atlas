@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DotNetWebApi.Attributes;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetWebApi.Controllers
 {
@@ -6,6 +7,7 @@ namespace DotNetWebApi.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
+        [AuditLog]
         [HttpGet]
         public IEnumerable<string> Get()
         {
