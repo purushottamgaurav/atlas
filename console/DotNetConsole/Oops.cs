@@ -5,7 +5,7 @@ namespace DotNetConsole
     {
         static Oops()
         {
-            
+
         }
 
         public static void ConstructorTest()
