@@ -267,5 +267,105 @@ namespace DotNetConsole
 
 
         }
+
+        public static void Q10_OnlyDigitString()
+        {
+            string word = "156787";
+            char[] wordArray = word.ToArray();
+            bool digit = true;
+
+            foreach (char c in wordArray)
+            {
+                if (char.IsLetter(c))
+                {
+                    digit = false;
+                    break;
+                }
+            }
+
+            Console.WriteLine($"It contains only digit: {digit}");
+        }
+
+        public static void Q76_RightTriangle()
+        {
+            Console.WriteLine("Print the number of rows");
+            int n = int.Parse(Console.ReadLine());
+
+            for (int i = 1; i < n + 1; i++)
+            {
+                for (int j = 1; j <= i; j++)
+                {
+                    Console.Write("*");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        /*
+         *    *
+         *   ***
+         *  *****
+         * 
+         * 
+         */
+
+        public static void Q77_PyramidStar()
+        {
+            Console.WriteLine("Print the number of rows");
+            int n = int.Parse(Console.ReadLine());
+
+            for (int i = n; i > 0; i--)
+            {
+                for (int j = 1; j < i; j++)
+                {
+                    Console.Write(" ");
+                }
+
+                for (int m = 0; m <= (n - i) * 2; m++)
+                {
+                    Console.Write("*");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public static void Q78_FloydsTraingle()
+        {
+
+            Console.WriteLine("Print the number of rows of Floyd's traingle");
+            int n = int.Parse(Console.ReadLine());
+
+            int count = 1;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    Console.Write(count + " ");
+                    count++;
+                }
+                Console.WriteLine();
+            }
+
+        }
+
+        public static void Q96_PrimeNumber()
+        {
+            for (int i = 3; i < 100; i++)
+            {
+                bool prime = true;
+
+                for (int j = 2; j < i; j++)
+                {
+                    if ((i % j) == 0)
+                    {
+                        prime = false;
+                        break;
+                    }
+
+                }
+                if (prime)
+                    Console.Write(i + " ");
+            }
+        }
     }
 }
