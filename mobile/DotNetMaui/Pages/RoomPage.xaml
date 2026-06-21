@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DotNetMaui.PageModels"
+             xmlns:models="clr-namespace:DotNetMaui.Models"
+             x:Class="DotNetMaui.Pages.RoomPage"
+             x:DataType="vm:RoomPageModel"
+             BackgroundColor="{StaticResource QuizBg}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource QuizSurface}"
+                StrokeThickness="0"
+                Padding="16,14">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Game Room"
+                       FontSize="14"
+                       TextColor="{StaticResource QuizTextSecondary}"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding RoomCode}"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource QuizAccent}"
+                       HorizontalTextAlignment="Center"
+                       CharacterSpacing="6" />
+                <Label Text="{Binding QuizTitle}"
+                       FontSize="16"
+                       TextColor="{StaticResource QuizTextPrimary}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Players list -->
+        <VerticalStackLayout Grid.Row="1" Padding="16" Spacing="12">
+
+            <Label Text="Players"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource QuizTextPrimary}" />
+
+            <CollectionView ItemsSource="{Binding Players}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PlayerDto">
+                        <Border BackgroundColor="{StaticResource QuizCard}"
+                                StrokeShape="RoundRectangle 10"
+                                Stroke="{StaticResource QuizBorder}"
+                                StrokeThickness="1"
+                                Padding="16,12"
+                                Margin="0,4">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Grid.Column="0"
+                                         WidthRequest="10"
+                                         HeightRequest="10"
+                                         Fill="{StaticResource QuizSuccess}"
+                                         VerticalOptions="Center"
+                                         Margin="0,0,10,0" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding Username}"
+                                       FontSize="16"
+                                       TextColor="{StaticResource QuizTextPrimary}"
+                                       VerticalOptions="Center" />
+                                <Label Grid.Column="2"
+                                       Text="Host"
+                                       FontSize="12"
+                                       TextColor="{StaticResource QuizWarning}"
+                                       IsVisible="{Binding IsHost}"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Status / countdown -->
+            <Label Text="{Binding StatusMessage}"
+                   FontSize="14"
+                   TextColor="{StaticResource QuizTextSecondary}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,8" />
+
+            <VerticalStackLayout IsVisible="{Binding IsCountingDown}" HorizontalOptions="Center">
+                <Label Text="Game starting in"
+                       FontSize="18"
+                       TextColor="{StaticResource QuizTextPrimary}"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding Countdown}"
+                       FontSize="72"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource QuizPrimary}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+        <!-- Footer buttons -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="12"
+              Padding="16,12"
+              BackgroundColor="{StaticResource QuizSurface}">
+            <Button Grid.Column="0"
+                    Text="Leave"
+                    Command="{Binding LeaveRoomCommand}"
+                    BackgroundColor="{StaticResource QuizCard}"
+                    TextColor="{StaticResource QuizDanger}"
+                    FontSize="16"
+                    CornerRadius="8"
+                    HeightRequest="48" />
+            <Button Grid.Column="1"
+                    Text="Start Game"
+                    Command="{Binding StartGameCommand}"
+                    IsVisible="{Binding IsHost}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="{StaticResource QuizSuccess}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    HeightRequest="48" />
+        </Grid>
+
+    </Grid>
+</ContentPage>
