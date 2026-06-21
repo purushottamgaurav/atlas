@@ -107,7 +107,7 @@ namespace DotNetConsole
         public int EmployeeId { get; set; }
 
         //Abstract Method
-        public abstract int PhoneNumber { get;}
+        public abstract int PhoneNumber { get; }
 
         //Virtual Method
         public virtual int GetSalary()
@@ -118,11 +118,11 @@ namespace DotNetConsole
         //Normal Method
         public string GetGender(char c)
         {
-            return c == 'M' ? "Male" : "Female";           
+            return c == 'M' ? "Male" : "Female";
         }
     }
 
-    public class Manager: Employee  
+    public class Manager : Employee
     {
         public override int PhoneNumber => 2131231;
 
@@ -138,14 +138,14 @@ namespace DotNetConsole
     }
 
 
-    public static class AbstractTest 
+    public static class AbstractTest
     {
         public static void Test()
         {
             //Employee e = new Employee();
             //var adsa= new E();
             Manager a = new Manager();
-            string gender= a.GetGender('F');
+            string gender = a.GetGender('F');
             Console.WriteLine(a.GetSalary());
         }
     }

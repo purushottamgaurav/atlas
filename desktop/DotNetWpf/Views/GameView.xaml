@@ -1,0 +1,193 @@
+<UserControl x:Class="DotNetWpf.Views.GameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:DotNetWpf.ViewModels"
+             Background="{StaticResource BackgroundBrush}">
+
+    <UserControl.Resources>
+        <!-- Answer button background by AnswerState -->
+        <Style x:Key="AnswerStateButton" TargetType="Button" BasedOn="{StaticResource AnswerButton}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding State}" Value="{x:Static vm:AnswerState.Selected}">
+                    <Setter Property="Background" Value="#FF2D2D80"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="{x:Static vm:AnswerState.Correct}">
+                    <Setter Property="Background" Value="#FF1A4A2E"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State}" Value="{x:Static vm:AnswerState.Wrong}">
+                    <Setter Property="Background" Value="#FF4A1A1A"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top bar: question progress + timer -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource SubtleText}">
+                    <Run Text="Q"/>
+                    <Run Text="{Binding QuestionNumber}"/>
+                    <Run Text=" / "/>
+                    <Run Text="{Binding TotalQuestions}"/>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Score: " Style="{StaticResource SubtleText}"/>
+                <TextBlock Text="{Binding MyScore}"
+                           Style="{StaticResource BodyText}"
+                           Foreground="{StaticResource AccentBrush}"
+                           FontWeight="Bold"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Timer bar + time display -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,0,4">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TimeLeft}" Value="5">
+                                <Setter Property="Foreground" Value="{StaticResource WarningBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Run Text="{Binding TimeLeft}"/>
+                <Run Text="s"/>
+            </TextBlock>
+            <ProgressBar Grid.Row="1"
+                         Style="{StaticResource TimerProgress}"
+                         Minimum="0"
+                         Maximum="{Binding TimeLimitSeconds}"
+                         Value="{Binding TimeLeft}"/>
+        </Grid>
+
+        <!-- Question text -->
+        <Border Grid.Row="2" Style="{StaticResource Card}" VerticalAlignment="Top" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="{Binding QuestionText}"
+                           Style="{StaticResource HeadingText}"
+                           FontSize="18"
+                           TextWrapping="Wrap"
+                           LineHeight="28"/>
+
+                <!-- Status / points earned -->
+                <TextBlock Text="{Binding StatusMessage}"
+                           Style="{StaticResource SubtleText}"
+                           Margin="0,12,0,0"
+                           Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+                <Border Visibility="{Binding ShowPointsEarned, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Margin="0,10,0,0">
+                    <TextBlock Foreground="{StaticResource SuccessBrush}"
+                               FontSize="20"
+                               FontWeight="Bold">
+                        <Run Text="+"/>
+                        <Run Text="{Binding PointsEarned}"/>
+                        <Run Text=" pts!"/>
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Answer buttons grid -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Answer buttons — up to 4 items mapped to grid positions -->
+            <ItemsControl ItemsSource="{Binding AnswerButtons}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="2" Columns="2"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:AnswerButtonViewModel}">
+                        <Button Style="{StaticResource AnswerStateButton}"
+                                Margin="5"
+                                IsEnabled="{Binding DataContext.InputEnabled,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                Command="{Binding DataContext.SelectAnswerCommand,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                CommandParameter="{Binding}"
+                                Content="{Binding Answer.Text}"
+                                Height="70"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+
+        <!-- Round results overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="4"
+                Background="#CC0D0D1A"
+                CornerRadius="12"
+                Visibility="{Binding ShowRoundResults, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="360">
+                <TextBlock Text="Round Results"
+                           Style="{StaticResource HeadingText}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16"/>
+                <ItemsControl ItemsSource="{Binding RoundScores}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Rank}"
+                                           Style="{StaticResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Username}"
+                                           Style="{StaticResource BodyText}"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <TextBlock Text="+{Binding RoundPoints}"
+                                               Foreground="{StaticResource SuccessBrush}"
+                                               Style="{StaticResource SubtleText}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="{Binding TotalScore}"
+                                               Style="{StaticResource BodyText}"
+                                               Foreground="{StaticResource AccentBrush}"
+                                               FontWeight="Bold"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="Next question coming up..."
+                           Style="{StaticResource SubtleText}"
+                           HorizontalAlignment="Center"
+                           Margin="0,16,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

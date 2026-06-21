@@ -1,0 +1,65 @@
+<div class="room-wrapper">
+  <!-- Countdown Overlay -->
+  <div class="countdown-overlay" *ngIf="countingDown">
+    <div class="countdown-content">
+      <p class="countdown-label">Game Starting In</p>
+      <div class="countdown-number">{{ countdown }}</div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="room-header">
+    <button class="btn btn-ghost btn-sm" (click)="leave()">&#8592; Leave</button>
+    <div class="room-header-center">
+      <span class="room-code-label text-muted">Room Code</span>
+      <span class="room-code-display text-accent">{{ roomCode }}</span>
+    </div>
+    <div class="header-placeholder"></div>
+  </header>
+
+  <!-- Body -->
+  <main class="room-body">
+    <div class="room-quiz-card card">
+      <p class="room-quiz-label text-muted">Playing</p>
+      <h1 class="room-quiz-title">{{ quizTitle || 'Loading...' }}</h1>
+    </div>
+
+    <!-- Players -->
+    <div class="players-section">
+      <h2 class="players-heading">
+        Players
+        <span class="player-count text-muted">({{ players.length }})</span>
+      </h2>
+      <div class="players-grid">
+        <div class="player-chip" *ngFor="let player of players">
+          <span class="player-dot"></span>
+          <span class="player-name">{{ player.username }}</span>
+          <span *ngIf="player.isHost" class="host-badge">HOST</span>
+          <span *ngIf="player.userId === currentUserId && !player.isHost" class="you-badge">YOU</span>
+          <span *ngIf="player.userId === currentUserId && player.isHost" class="you-badge">YOU</span>
+        </div>
+        <div *ngIf="players.length === 0" class="text-muted" style="padding: 12px; font-size: 14px;">
+          Waiting for players to join...
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <p *ngIf="status" class="error-msg text-center mt-16">{{ status }}</p>
+
+    <!-- Actions -->
+    <div class="room-actions mt-24">
+      <button
+        *ngIf="isHost"
+        class="btn btn-primary btn-lg start-btn"
+        [disabled]="busy || players.length < 1"
+        (click)="startGame()"
+      >
+        {{ busy ? 'Starting...' : 'Start Game' }}
+      </button>
+      <p *ngIf="!isHost" class="waiting-msg text-muted text-center">
+        Waiting for the host to start the game...
+      </p>
+    </div>
+  </main>
+</div>

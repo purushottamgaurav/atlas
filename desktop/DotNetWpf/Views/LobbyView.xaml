@@ -1,0 +1,162 @@
+<UserControl x:Class="DotNetWpf.Views.LobbyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:DotNetWpf.Models"
+             Background="{StaticResource BackgroundBrush}"
+             Loaded="UserControl_Loaded">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock Text="{Binding WelcomeText}" Style="{StaticResource TitleText}" VerticalAlignment="Center"/>
+            <Button Content="Logout"
+                    Command="{Binding LogoutCommand}"
+                    Style="{StaticResource DangerButton}"
+                    HorizontalAlignment="Right"
+                    Padding="16,8"/>
+        </Grid>
+
+        <!-- Main content — two columns -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="360"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Active rooms -->
+            <Border Grid.Column="0" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Active Rooms" Style="{StaticResource HeadingText}" Margin="0,0,0,16"/>
+
+                    <!-- Join by code -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding JoinCode, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="Enter room code..."/>
+                        <Button Grid.Column="2"
+                                Content="Join"
+                                Command="{Binding JoinRoomCommand}"
+                                Padding="20,8"/>
+                    </Grid>
+
+                    <!-- Status message -->
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Style="{StaticResource ErrorText}"
+                               Margin="0,0,0,12"
+                               Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+                    <!-- Room list -->
+                    <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ActiveRooms}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:RoomDto}">
+                                    <Border Style="{StaticResource Card}"
+                                            Margin="0,0,0,8"
+                                            Cursor="Hand">
+                                        <Grid>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding QuizTitle}"
+                                                           Style="{StaticResource BodyText}"
+                                                           FontWeight="SemiBold"/>
+                                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                    <TextBlock Text="Code: " Style="{StaticResource SubtleText}"/>
+                                                    <TextBlock Text="{Binding Code}"
+                                                               Style="{StaticResource SubtleText}"
+                                                               Foreground="{StaticResource AccentBrush}"
+                                                               FontWeight="Bold"/>
+                                                    <TextBlock Text=" · " Style="{StaticResource SubtleText}"/>
+                                                    <TextBlock Text="{Binding PlayerCount, StringFormat='{}{0} players'}"
+                                                               Style="{StaticResource SubtleText}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <Button Content="Join →"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Center"
+                                                    Padding="14,6"
+                                                    Command="{Binding DataContext.JoinActiveRoomCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!-- Right: Create room -->
+            <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <TextBlock Text="Host a Game" Style="{StaticResource HeadingText}" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Select a quiz:" Style="{StaticResource SubtleText}" Margin="0,0,0,8"/>
+
+                    <ScrollViewer MaxHeight="350" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Quizzes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:QuizSummaryDto}">
+                                    <Border Margin="0,0,0,6"
+                                            CornerRadius="8"
+                                            Padding="12,10"
+                                            Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                                                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                                                <Setter Property="BorderThickness" Value="2"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected,
+                                                                 RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                                                 Value="True">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                        <Setter Property="Background" Value="#FF22224A"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}"
+                                                       Style="{StaticResource BodyText}"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding QuestionCount, StringFormat='{}{0} questions'}"
+                                                       Style="{StaticResource SubtleText}"
+                                                       Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Quiz picker using ListBox for selection -->
+                    <ListBox ItemsSource="{Binding Quizzes}"
+                             SelectedItem="{Binding SelectedQuiz}"
+                             Visibility="Collapsed"/>
+
+                    <TextBlock Text="{Binding SelectedQuiz.Title, StringFormat='Selected: {0}'}"
+                               Style="{StaticResource SubtleText}"
+                               Foreground="{StaticResource AccentBrush}"
+                               Margin="0,8,0,0"
+                               Visibility="{Binding SelectedQuiz, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                    <Button Content="Create Room"
+                            Command="{Binding CreateRoomCommand}"
+                            Margin="0,16,0,0"
+                            Height="44"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

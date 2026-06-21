@@ -1,12 +1,13 @@
-﻿<Window x:Class="DotNetWpf.MainWindow"
+<Window x:Class="DotNetWpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DotNetWpf"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:vm="clr-namespace:DotNetWpf.ViewModels"
+        Title="QuizBlitz"
+        Height="720" Width="1100"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}">
 
-    </Grid>
+    <!-- ContentControl maps CurrentView (a ViewModel) to its View via DataTemplates in App.xaml -->
+    <ContentControl Content="{Binding CurrentView}"/>
 </Window>

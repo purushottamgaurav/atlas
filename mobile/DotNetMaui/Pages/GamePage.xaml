@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DotNetMaui.PageModels"
+             xmlns:models="clr-namespace:DotNetMaui.Models"
+             x:Class="DotNetMaui.Pages.GamePage"
+             x:DataType="vm:GamePageModel"
+             x:Name="GamePageRoot"
+             BackgroundColor="{StaticResource QuizBg}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Main content -->
+        <VerticalStackLayout Padding="16" Spacing="0">
+
+            <!-- Top bar: question number + score -->
+            <Grid ColumnDefinitions="*,*" Margin="0,0,0,12">
+                <Label Grid.Column="0"
+                       FontSize="14"
+                       TextColor="{StaticResource QuizTextSecondary}">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Q " />
+                            <Span Text="{Binding QuestionNumber}"
+                                  TextColor="{StaticResource QuizAccent}"
+                                  FontAttributes="Bold" />
+                            <Span Text=" / " />
+                            <Span Text="{Binding TotalQuestions}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label Grid.Column="1"
+                       FontSize="14"
+                       TextColor="{StaticResource QuizTextSecondary}"
+                       HorizontalTextAlignment="End">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Score: " />
+                            <Span Text="{Binding MyScore}"
+                                  TextColor="{StaticResource QuizSuccess}"
+                                  FontAttributes="Bold" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </Grid>
+
+            <!-- Timer bar -->
+            <VerticalStackLayout Spacing="4" Margin="0,0,0,16">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Time remaining"
+                           FontSize="12"
+                           TextColor="{StaticResource QuizTextSecondary}" />
+                    <Label Grid.Column="1"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource QuizAccent}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding TimeLeft}" />
+                                <Span Text="s" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </Grid>
+                <ProgressBar ProgressColor="{StaticResource QuizAccent}"
+                             HeightRequest="8"
+                             Progress="{Binding TimerProgress}" />
+            </VerticalStackLayout>
+
+            <!-- Question text card -->
+            <Border BackgroundColor="{StaticResource QuizCard}"
+                    StrokeShape="RoundRectangle 16"
+                    Stroke="{StaticResource QuizBorder}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Margin="0,0,0,16"
+                    MinimumHeightRequest="120">
+                <VerticalStackLayout Spacing="12" VerticalOptions="Center">
+                    <Label Text="{Binding QuestionText}"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource QuizTextPrimary}"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap" />
+
+                    <!-- Points earned toast -->
+                    <Border BackgroundColor="{StaticResource QuizSuccess}"
+                            StrokeShape="RoundRectangle 8"
+                            StrokeThickness="0"
+                            Padding="12,6"
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding ShowPointsEarned}">
+                        <Label FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalTextAlignment="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="+" />
+                                    <Span Text="{Binding PointsEarned}" />
+                                    <Span Text=" pts!" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Border>
+
+                    <Label Text="{Binding StatusMessage}"
+                           FontSize="13"
+                           TextColor="{StaticResource QuizTextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Answer buttons using FlexLayout with BindableLayout -->
+            <FlexLayout Direction="Row"
+                        Wrap="Wrap"
+                        JustifyContent="Center"
+                        AlignItems="Stretch">
+                <BindableLayout.ItemsSource>
+                    <Binding Path="AnswerButtons" />
+                </BindableLayout.ItemsSource>
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AnswerButtonModel">
+                        <Border BackgroundColor="{Binding BackgroundColor}"
+                                StrokeShape="RoundRectangle 12"
+                                Stroke="{Binding BorderColor}"
+                                StrokeThickness="2"
+                                Padding="0"
+                                WidthRequest="155"
+                                HeightRequest="90"
+                                Margin="5">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference GamePageRoot}, Path=BindingContext.SelectAnswerCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding Answer.Text}"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource QuizTextPrimary}"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   LineBreakMode="WordWrap"
+                                   Padding="12,8" />
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+
+        </VerticalStackLayout>
+
+        <!-- Round results overlay -->
+        <Grid IsVisible="{Binding ShowRoundResults}"
+              BackgroundColor="#CC0D0D1A">
+            <Border BackgroundColor="{StaticResource QuizCard}"
+                    StrokeShape="RoundRectangle 20"
+                    Stroke="{StaticResource QuizBorder}"
+                    StrokeThickness="1"
+                    Padding="24"
+                    Margin="24"
+                    VerticalOptions="Center">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Round Results"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource QuizTextPrimary}"
+                           HorizontalTextAlignment="Center" />
+
+                    <CollectionView ItemsSource="{Binding RoundScores}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:PlayerScoreDto">
+                                <Grid ColumnDefinitions="36,*,60,60" Padding="4,8">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Rank}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource QuizWarning}" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Username}"
+                                           FontSize="15"
+                                           TextColor="{StaticResource QuizTextPrimary}" />
+                                    <Label Grid.Column="2"
+                                           FontSize="13"
+                                           TextColor="{StaticResource QuizSuccess}"
+                                           HorizontalTextAlignment="End">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="+" />
+                                                <Span Text="{Binding RoundPoints}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Grid.Column="3"
+                                           Text="{Binding TotalScore}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource QuizTextPrimary}"
+                                           HorizontalTextAlignment="End" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="Next question coming..."
+                           FontSize="14"
+                           TextColor="{StaticResource QuizTextSecondary}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

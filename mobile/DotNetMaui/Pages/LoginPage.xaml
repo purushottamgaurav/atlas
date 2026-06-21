@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DotNetMaui.PageModels"
+             x:Class="DotNetMaui.Pages.LoginPage"
+             x:DataType="vm:LoginPageModel"
+             BackgroundColor="{StaticResource QuizBg}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Padding="20"
+                             MaximumWidthRequest="400">
+
+            <!-- Title -->
+            <Label Text="⚡ QuizBlitz"
+                   FontSize="42"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource QuizPrimary}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,8" />
+
+            <Label Text="Real-time multiplayer quiz game"
+                   FontSize="16"
+                   TextColor="{StaticResource QuizTextSecondary}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,32" />
+
+            <!-- Card -->
+            <Border BackgroundColor="{StaticResource QuizCard}"
+                    StrokeShape="RoundRectangle 16"
+                    Stroke="{StaticResource QuizBorder}"
+                    StrokeThickness="1"
+                    Padding="24">
+
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- Mode title (DataTrigger based) -->
+                    <Label x:Name="ModeTitleLabel"
+                           Text="Sign In"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource QuizTextPrimary}"
+                           HorizontalTextAlignment="Center">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding IsRegisterMode}"
+                                         Value="True">
+                                <Setter Property="Text" Value="Create Account" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <!-- Username (register only) -->
+                    <Border BackgroundColor="{StaticResource QuizSurface}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="{StaticResource QuizBorder}"
+                            StrokeThickness="1"
+                            Padding="12,0"
+                            IsVisible="{Binding IsRegisterMode}">
+                        <Entry Placeholder="Username"
+                               Text="{Binding Username}"
+                               PlaceholderColor="{StaticResource QuizTextSecondary}"
+                               TextColor="{StaticResource QuizTextPrimary}"
+                               BackgroundColor="Transparent"
+                               FontSize="16" />
+                    </Border>
+
+                    <!-- Email -->
+                    <Border BackgroundColor="{StaticResource QuizSurface}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="{StaticResource QuizBorder}"
+                            StrokeThickness="1"
+                            Padding="12,0">
+                        <Entry Placeholder="Email"
+                               Text="{Binding Email}"
+                               Keyboard="Email"
+                               PlaceholderColor="{StaticResource QuizTextSecondary}"
+                               TextColor="{StaticResource QuizTextPrimary}"
+                               BackgroundColor="Transparent"
+                               FontSize="16" />
+                    </Border>
+
+                    <!-- Password -->
+                    <Border BackgroundColor="{StaticResource QuizSurface}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="{StaticResource QuizBorder}"
+                            StrokeThickness="1"
+                            Padding="12,0">
+                        <Entry Placeholder="Password"
+                               Text="{Binding Password}"
+                               IsPassword="True"
+                               PlaceholderColor="{StaticResource QuizTextSecondary}"
+                               TextColor="{StaticResource QuizTextPrimary}"
+                               BackgroundColor="Transparent"
+                               FontSize="16" />
+                    </Border>
+
+                    <!-- Error message -->
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource QuizDanger}"
+                           FontSize="14"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}" />
+
+                    <!-- Submit button -->
+                    <Button x:Name="SubmitButton"
+                            Text="Login"
+                            Command="{Binding SubmitCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource QuizPrimary}"
+                            TextColor="White"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="52">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                         Binding="{Binding IsRegisterMode}"
+                                         Value="True">
+                                <Setter Property="Text" Value="Register" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <!-- Activity indicator -->
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       Color="{StaticResource QuizAccent}"
+                                       HorizontalOptions="Center" />
+
+                    <!-- Toggle mode -->
+                    <Button x:Name="ToggleButton"
+                            Text="New here? Create account"
+                            Command="{Binding ToggleModeCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource QuizAccent}"
+                            FontSize="14"
+                            BorderWidth="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                         Binding="{Binding IsRegisterMode}"
+                                         Value="True">
+                                <Setter Property="Text" Value="Already have an account? Sign in" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

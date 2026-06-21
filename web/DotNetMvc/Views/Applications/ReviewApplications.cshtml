@@ -1,0 +1,111 @@
+@model List<JobApplication>
+
+@{
+    ViewData["Title"] = "Review Applications";
+    var job = ViewBag.Job as Job;
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-controller="Jobs" asp-action="MyJobs" class="btn btn-outline-secondary btn-sm me-3">
+        <i class="bi bi-arrow-left me-1"></i>My Postings
+    </a>
+    <div>
+        <h1 class="h3 fw-bold mb-0">Applications — @job?.Title</h1>
+        <p class="text-muted mb-0">@Model.Count applicant@(Model.Count != 1 ? "s" : "") &middot; @job?.Company &middot; @job?.Location</p>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h5 class="mt-3 text-muted">No applications yet</h5>
+        <p class="text-muted">Applications will appear here once candidates apply.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var app in Model)
+        {
+            var statusClass = app.Status switch
+            {
+                ApplicationStatus.Accepted => "border-success",
+                ApplicationStatus.Rejected => "border-danger",
+                ApplicationStatus.UnderReview => "border-warning",
+                _ => ""
+            };
+            var badgeClass = app.Status switch
+            {
+                ApplicationStatus.Accepted => "bg-success",
+                ApplicationStatus.Rejected => "bg-danger",
+                ApplicationStatus.UnderReview => "bg-warning text-dark",
+                _ => "bg-secondary"
+            };
+            <div class="col-12">
+                <div class="card border-0 shadow-sm @statusClass" style="border-left: 4px solid !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">Applicant #@app.ApplicationId</h5>
+                                <p class="text-muted small mb-0">
+                                    Applied: @app.AppliedDate.ToString("MMM d, yyyy 'at' h:mm tt")
+                                </p>
+                            </div>
+                            <span class="badge @badgeClass fs-6">@app.Status</span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(app.Skills))
+                        {
+                            <div class="mb-3">
+                                <h6 class="fw-semibold text-muted small text-uppercase mb-1">Skills</h6>
+                                <p class="mb-0">@app.Skills</p>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <h6 class="fw-semibold text-muted small text-uppercase mb-1">Cover Letter</h6>
+                            <div class="bg-light rounded p-3 small">
+                                @Html.Raw(app.CoverLetter.Replace("\n", "<br />"))
+                            </div>
+                        </div>
+
+                        @if (app.Status == ApplicationStatus.Pending || app.Status == ApplicationStatus.UnderReview)
+                        {
+                            <div class="d-flex gap-2 flex-wrap">
+                                <form asp-controller="Applications" asp-action="UpdateStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@app.ApplicationId" />
+                                    <input type="hidden" name="jobId" value="@job!.JobId" />
+                                    <input type="hidden" name="status" value="@ApplicationStatus.UnderReview" />
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-eye me-1"></i>Mark Under Review
+                                    </button>
+                                </form>
+                                <form asp-controller="Applications" asp-action="UpdateStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@app.ApplicationId" />
+                                    <input type="hidden" name="jobId" value="@job!.JobId" />
+                                    <input type="hidden" name="status" value="@ApplicationStatus.Accepted" />
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle me-1"></i>Accept
+                                    </button>
+                                </form>
+                                <form asp-controller="Applications" asp-action="UpdateStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="applicationId" value="@app.ApplicationId" />
+                                    <input type="hidden" name="jobId" value="@job!.JobId" />
+                                    <input type="hidden" name="status" value="@ApplicationStatus.Rejected" />
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-x-circle me-1"></i>Reject
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">Decision made — @app.Status</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

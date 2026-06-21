@@ -1,0 +1,83 @@
+<div class="results-wrapper">
+  <div class="results-container">
+    <!-- Game Over Header -->
+    <div class="results-header text-center">
+      <div class="game-over-icon">&#127881;</div>
+      <h1 class="game-over-title">Game Over!</h1>
+      <div *ngIf="winner" class="winner-banner">
+        <span class="trophy">&#127942;</span>
+        <span class="winner-label">Winner:</span>
+        <span class="winner-name text-accent">{{ winner }}</span>
+      </div>
+    </div>
+
+    <!-- My Score Card -->
+    <div *ngIf="myEntry" class="my-score-card card">
+      <div class="my-score-header">
+        <span class="my-score-label">Your Result</span>
+        <span class="my-rank text-accent">#{{ myEntry.rank }}</span>
+      </div>
+      <div class="my-score-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ myEntry.totalScore }}</span>
+          <span class="stat-label text-muted">Total Score</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value text-success">{{ myEntry.correctAnswers }}</span>
+          <span class="stat-label text-muted">Correct</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value">{{ myEntry.totalQuestions }}</span>
+          <span class="stat-label text-muted">Questions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard-card card">
+      <h2 class="leaderboard-title">Final Leaderboard</h2>
+      <div *ngIf="leaderboard.length === 0" class="text-muted text-center" style="padding: 24px;">
+        No results available.
+      </div>
+      <table class="leaderboard-table" *ngIf="leaderboard.length > 0">
+        <thead>
+          <tr>
+            <th class="th-rank">Rank</th>
+            <th class="th-name">Player</th>
+            <th class="th-correct">Correct</th>
+            <th class="th-score">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let entry of leaderboard"
+            [class.row-gold]="entry.rank === 1"
+            [class.row-silver]="entry.rank === 2"
+            [class.row-bronze]="entry.rank === 3"
+            [class.row-me]="entry.userId === (myEntry?.userId ?? -1)"
+          >
+            <td class="td-rank">
+              <span *ngIf="medalFor(entry.rank)">{{ medalFor(entry.rank) }}</span>
+              <span *ngIf="!medalFor(entry.rank)" class="rank-num">#{{ entry.rank }}</span>
+            </td>
+            <td class="td-name">
+              {{ entry.username }}
+              <span *ngIf="entry.userId === (myEntry?.userId ?? -1)" class="you-tag">YOU</span>
+            </td>
+            <td class="td-correct text-success">{{ entry.correctAnswers }}/{{ entry.totalQuestions }}</td>
+            <td class="td-score">{{ entry.totalScore }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Back Button -->
+    <div class="back-btn-row">
+      <button class="btn btn-primary btn-lg back-btn" (click)="backToLobby()">
+        Back to Lobby
+      </button>
+    </div>
+  </div>
+</div>

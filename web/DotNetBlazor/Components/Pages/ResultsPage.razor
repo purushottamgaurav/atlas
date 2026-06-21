@@ -1,0 +1,84 @@
+@page "/results"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject SessionService Session
+@inject HubService Hub
+@inject NavigationManager Nav
+
+<PageTitle>QuizBlitz — Results</PageTitle>
+
+<div class="results-wrapper">
+    <div class="results-header text-center">
+        <h1 class="results-heading">Game Over!</h1>
+        @if (!string.IsNullOrEmpty(winner))
+        {
+            <p class="winner-line">&#127942; Winner: <strong class="text-accent">@winner</strong></p>
+        }
+    </div>
+
+    @if (myEntry is not null)
+    {
+        <div class="my-result-card quiz-card">
+            <span>Your Rank: <strong>#@myEntry.Rank</strong></span>
+            <span>Score: <strong class="text-accent">@myEntry.TotalScore</strong></span>
+            <span class="text-secondary">@myEntry.CorrectAnswers / @myEntry.TotalQuestions correct</span>
+        </div>
+    }
+
+    <div class="leaderboard quiz-card mt-4">
+        <h2 class="section-title mb-3">Final Leaderboard</h2>
+        <div class="lb-header lb-row text-secondary">
+            <span>Rank</span><span>Player</span><span>Correct</span><span>Score</span>
+        </div>
+        @foreach (var e in leaderboard)
+        {
+            <div class="lb-row @(e.Rank == 1 ? "lb-gold" : "")">
+                <span class="lb-rank">
+                    @(e.Rank switch { 1 => "🥇", 2 => "🥈", 3 => "🥉", _ => $"#{e.Rank}" })
+                </span>
+                <span class="lb-name">@e.Username</span>
+                <span class="lb-correct text-success">@e.CorrectAnswers</span>
+                <span class="lb-score text-accent">@e.TotalScore</span>
+            </div>
+        }
+        @if (leaderboard.Count == 0)
+        {
+            <p class="text-secondary text-center p-3">No results available.</p>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn-quiz btn-quiz-primary btn-lg" @onclick="BackToLobby">
+            Back to Lobby
+        </button>
+    </div>
+</div>
+
+@code {
+    List<LeaderboardEntryDto> leaderboard = [];
+    LeaderboardEntryDto? myEntry;
+    string winner = "";
+
+    protected override Task OnInitializedAsync()
+    {
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/login"); return Task.CompletedTask; }
+
+        var result = Session.LastGameResult;
+        if (result is not null)
+        {
+            leaderboard = result.Leaderboard ?? [];
+            winner = leaderboard.FirstOrDefault()?.Username ?? "";
+            myEntry = leaderboard.FirstOrDefault(e => e.UserId == Session.UserId);
+        }
+        return Task.CompletedTask;
+    }
+
+    async Task BackToLobby()
+    {
+        await Hub.DisposeAsync();
+        Session.LastGameResult = null;
+        Nav.NavigateTo("/lobby");
+    }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+}

@@ -1,0 +1,78 @@
+@page "/login"
+@page "/"
+@rendermode InteractiveServer
+@inject SessionService Session
+@inject ApiService Api
+@inject NavigationManager Nav
+
+<PageTitle>QuizBlitz — Login</PageTitle>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="logo-icon">&#9889;</span>
+            <h1 class="logo-title">QuizBlitz</h1>
+        </div>
+        <p class="text-secondary text-center mb-4">Multiplayer Quiz Game</p>
+
+        @if (isRegister)
+        {
+            <div class="form-group mb-3">
+                <label class="form-label text-secondary">Username</label>
+                <input class="form-control quiz-input" @bind="username" placeholder="Your username" />
+            </div>
+        }
+
+        <div class="form-group mb-3">
+            <label class="form-label text-secondary">Email</label>
+            <input class="form-control quiz-input" type="email" @bind="email" placeholder="you@example.com" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="form-label text-secondary">Password</label>
+            <input class="form-control quiz-input" type="password" @bind="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMsg))
+        {
+            <div class="alert-error mb-3">@errorMsg</div>
+        }
+
+        <button class="btn-quiz btn-quiz-primary w-100 mb-3" @onclick="Submit" disabled="@busy">
+            @(busy ? "Please wait..." : (isRegister ? "Create Account" : "Login"))
+        </button>
+
+        <button class="btn-quiz btn-quiz-ghost w-100" @onclick="ToggleMode">
+            @(isRegister ? "Already have an account? Login" : "New here? Create an account")
+        </button>
+    </div>
+</div>
+
+@code {
+    bool isRegister, busy;
+    string email = "", password = "", username = "", errorMsg = "";
+
+    protected override void OnInitialized()
+    {
+        if (Session.IsLoggedIn) Nav.NavigateTo("/lobby");
+    }
+
+    void ToggleMode() { isRegister = !isRegister; errorMsg = ""; }
+
+    async Task Submit()
+    {
+        busy = true; errorMsg = "";
+        try
+        {
+            var resp = isRegister
+                ? await Api.RegisterAsync(new RegisterRequest(username, email, password))
+                : await Api.LoginAsync(new LoginRequest(email, password));
+
+            if (resp is null) throw new InvalidOperationException("No response from server.");
+            Session.SetUser(resp);
+            Nav.NavigateTo("/lobby");
+        }
+        catch (Exception ex) { errorMsg = ex.Message; }
+        finally { busy = false; }
+    }
+}

@@ -1,0 +1,90 @@
+@model CreateJobViewModel
+
+@{
+    ViewData["Title"] = "Post a Job";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a asp-action="MyJobs" class="btn btn-outline-secondary btn-sm me-3">
+                <i class="bi bi-arrow-left me-1"></i>My Postings
+            </a>
+            <h1 class="h3 fw-bold mb-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Post a New Job</h1>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g. Senior Software Engineer" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="JobType" class="form-label fw-semibold"></label>
+                            <select asp-for="JobType" asp-items="Html.GetEnumSelectList<JobType>()" class="form-select">
+                                <option value="">Select type...</option>
+                            </select>
+                            <span asp-validation-for="JobType" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Company" class="form-label fw-semibold"></label>
+                            <input asp-for="Company" class="form-control" placeholder="Your company name" />
+                            <span asp-validation-for="Company" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
+                            <input asp-for="Location" class="form-control" placeholder="e.g. New York, NY or Remote" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="SalaryRange" class="form-label fw-semibold"></label>
+                            <input asp-for="SalaryRange" class="form-control" placeholder="e.g. $80,000 - $100,000 or $50/hr" />
+                            <span asp-validation-for="SalaryRange" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ApplicationDeadline" class="form-label fw-semibold"></label>
+                            <input asp-for="ApplicationDeadline" class="form-control" type="date" />
+                            <span asp-validation-for="ApplicationDeadline" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="6"
+                                  placeholder="Describe the role, responsibilities, and what makes it exciting..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Requirements" class="form-label fw-semibold">Requirements <span class="text-muted fw-normal">(optional)</span></label>
+                        <textarea asp-for="Requirements" class="form-control" rows="4"
+                                  placeholder="List skills, experience, qualifications required..."></textarea>
+                        <span asp-validation-for="Requirements" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send me-2"></i>Post Job
+                        </button>
+                        <a asp-action="MyJobs" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

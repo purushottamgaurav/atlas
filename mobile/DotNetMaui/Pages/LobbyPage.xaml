@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DotNetMaui.PageModels"
+             xmlns:models="clr-namespace:DotNetMaui.Models"
+             x:Class="DotNetMaui.Pages.LobbyPage"
+             x:DataType="vm:LobbyPageModel"
+             x:Name="LobbyPageRoot"
+             BackgroundColor="{StaticResource QuizBg}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource QuizSurface}"
+                StrokeThickness="0"
+                Padding="16,12">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="⚡ QuizBlitz"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource QuizPrimary}" />
+                    <Label Text="{Binding WelcomeText}"
+                           FontSize="14"
+                           TextColor="{StaticResource QuizTextSecondary}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1"
+                        Text="Logout"
+                        Command="{Binding LogoutCommand}"
+                        BackgroundColor="{StaticResource QuizCard}"
+                        TextColor="{StaticResource QuizDanger}"
+                        FontSize="14"
+                        Padding="12,8"
+                        CornerRadius="8" />
+            </Grid>
+        </Border>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="20">
+
+                <!-- Status message -->
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="{StaticResource QuizWarning}"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center"
+                       IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource QuizAccent}"
+                                   HorizontalOptions="Center" />
+
+                <!-- Active Rooms section -->
+                <Label Text="Active Rooms"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource QuizTextPrimary}" />
+
+                <CollectionView ItemsSource="{Binding ActiveRooms}"
+                                EmptyView="No active rooms. Create one below!"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:RoomDto">
+                            <Border BackgroundColor="{StaticResource QuizCard}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="{StaticResource QuizBorder}"
+                                    StrokeThickness="1"
+                                    Padding="16,12"
+                                    Margin="0,4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label Text="{Binding QuizTitle}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource QuizTextPrimary}" />
+                                        <Label FontSize="13"
+                                               TextColor="{StaticResource QuizTextSecondary}">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Code: " />
+                                                    <Span Text="{Binding Code}"
+                                                          FontAttributes="Bold"
+                                                          TextColor="{StaticResource QuizAccent}" />
+                                                    <Span Text="  •  " />
+                                                    <Span Text="{Binding PlayerCount}" />
+                                                    <Span Text="/" />
+                                                    <Span Text="{Binding MaxPlayers}" />
+                                                    <Span Text=" players" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1"
+                                            Text="Join"
+                                            Command="{Binding Source={x:Reference LobbyPageRoot}, Path=BindingContext.JoinActiveRoomCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="{StaticResource QuizPrimary}"
+                                            TextColor="White"
+                                            FontSize="14"
+                                            Padding="16,8"
+                                            CornerRadius="8" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Divider -->
+                <BoxView HeightRequest="1"
+                         BackgroundColor="{StaticResource QuizBorder}"
+                         Margin="0,8" />
+
+                <!-- Create Room section -->
+                <Label Text="Create a Room"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource QuizTextPrimary}" />
+
+                <Label Text="Select a quiz:"
+                       FontSize="14"
+                       TextColor="{StaticResource QuizTextSecondary}" />
+
+                <CollectionView ItemsSource="{Binding Quizzes}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedQuiz}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:QuizSummaryDto">
+                            <Border BackgroundColor="{StaticResource QuizCard}"
+                                    Margin="0,4"
+                                    Padding="16,12"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="{StaticResource QuizBorder}"
+                                    StrokeThickness="1">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroupList>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource QuizCard}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource QuizBorder}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource QuizPrimaryDark}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource QuizPrimary}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateGroupList>
+                                </VisualStateManager.VisualStateGroups>
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Title}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource QuizTextPrimary}" />
+                                    <Label FontSize="13"
+                                           TextColor="{StaticResource QuizTextSecondary}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding QuestionCount}" />
+                                                <Span Text=" questions  •  By " />
+                                                <Span Text="{Binding CreatedBy}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Create Room"
+                        Command="{Binding CreateRoomCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="{StaticResource QuizPrimary}"
+                        TextColor="White"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        HeightRequest="52" />
+
+                <!-- Divider -->
+                <BoxView HeightRequest="1"
+                         BackgroundColor="{StaticResource QuizBorder}"
+                         Margin="0,8" />
+
+                <!-- Join by code -->
+                <Label Text="Join by Code"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource QuizTextPrimary}" />
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource QuizSurface}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="{StaticResource QuizBorder}"
+                            StrokeThickness="1"
+                            Padding="12,0">
+                        <Entry Placeholder="Room code (e.g. ABC123)"
+                               Text="{Binding JoinCode}"
+                               PlaceholderColor="{StaticResource QuizTextSecondary}"
+                               TextColor="{StaticResource QuizTextPrimary}"
+                               BackgroundColor="Transparent"
+                               FontSize="16"
+                               HeightRequest="48" />
+                    </Border>
+                    <Button Grid.Column="1"
+                            Text="Join"
+                            Command="{Binding JoinRoomCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource QuizAccent}"
+                            TextColor="{StaticResource QuizBg}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Padding="20,0"
+                            CornerRadius="8"
+                            HeightRequest="48" />
+                </Grid>
+
+                <BoxView HeightRequest="40" BackgroundColor="Transparent" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

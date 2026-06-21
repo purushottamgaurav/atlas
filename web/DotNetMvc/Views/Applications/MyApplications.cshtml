@@ -1,0 +1,74 @@
+@model List<JobApplication>
+
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-0">My Applications</h1>
+        <p class="text-muted mb-0">@Model.Count application@(Model.Count != 1 ? "s" : "") submitted</p>
+    </div>
+    <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-primary">
+        <i class="bi bi-search me-1"></i>Browse More Jobs
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+        <h5 class="mt-3 text-muted">No applications yet</h5>
+        <p class="text-muted">Start browsing jobs and apply to positions that interest you.</p>
+        <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary">Browse Jobs</a>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Position</th>
+                        <th>Company</th>
+                        <th>Type</th>
+                        <th>Applied</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var app in Model)
+                    {
+                        var statusClass = app.Status switch
+                        {
+                            ApplicationStatus.Accepted => "bg-success",
+                            ApplicationStatus.Rejected => "bg-danger",
+                            ApplicationStatus.UnderReview => "bg-warning text-dark",
+                            _ => "bg-secondary"
+                        };
+                        <tr>
+                            <td>
+                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@app.JobId"
+                                   class="fw-semibold text-decoration-none">
+                                    @(app.Job?.Title ?? "Unknown Position")
+                                </a>
+                            </td>
+                            <td class="text-muted">@(app.Job?.Company ?? "—")</td>
+                            <td><span class="badge bg-light text-dark border small">@(app.Job?.JobType.ToString() ?? "—")</span></td>
+                            <td class="text-muted small">@app.AppliedDate.ToString("MMM d, yyyy")</td>
+                            <td class="text-center">
+                                <span class="badge @statusClass">@app.Status</span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@app.JobId"
+                                   class="btn btn-sm btn-outline-secondary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

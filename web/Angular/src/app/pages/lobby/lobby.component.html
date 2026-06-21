@@ -1,0 +1,111 @@
+<div class="lobby-wrapper">
+  <!-- Header Bar -->
+  <header class="lobby-header">
+    <div class="header-brand">
+      <span class="header-icon text-accent">&#9889;</span>
+      <span class="header-title text-accent">QuizBlitz</span>
+    </div>
+    <div class="header-right">
+      <span class="welcome-text text-muted">{{ welcome }}</span>
+      <button class="btn btn-ghost btn-sm" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="lobby-main">
+    <!-- Left Column: Active Rooms -->
+    <section class="lobby-section">
+      <h2 class="section-title">Active Rooms</h2>
+
+      <!-- Join by Code -->
+      <div class="join-code-bar card mb-16">
+        <p class="join-label text-muted">Join with a code</p>
+        <div class="join-row mt-8">
+          <input
+            class="input-field join-input"
+            type="text"
+            placeholder="Enter room code..."
+            [(ngModel)]="joinCode"
+            name="joinCode"
+            maxlength="8"
+            style="text-transform:uppercase"
+          />
+          <button
+            class="btn btn-primary"
+            [disabled]="busy || !joinCode.trim()"
+            (click)="joinRoom()"
+          >Join</button>
+        </div>
+      </div>
+
+      <!-- Room List -->
+      <div class="room-list">
+        <div *ngFor="let room of rooms" class="room-card card">
+          <div class="room-header flex justify-between align-center">
+            <span class="room-code text-accent">{{ room.code }}</span>
+            <span class="room-status" [class.status-waiting]="room.status === 'Waiting'" [class.status-active]="room.status === 'Active'">
+              {{ room.status }}
+            </span>
+          </div>
+          <p class="room-quiz-title mt-8">{{ room.quizTitle ?? 'Unknown Quiz' }}</p>
+          <div class="room-footer flex justify-between align-center mt-8">
+            <span class="text-muted room-players">
+              &#128101; {{ room.playerCount }} / {{ room.maxPlayers }}
+            </span>
+            <button
+              class="btn btn-primary btn-sm"
+              [disabled]="busy || room.status !== 'Waiting'"
+              (click)="joinRoom(room.code)"
+            >Join Room</button>
+          </div>
+        </div>
+        <div *ngIf="rooms.length === 0" class="empty-state text-muted text-center">
+          <p>No active rooms right now.</p>
+          <p class="mt-8">Create one to get started!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Create Room -->
+    <section class="lobby-section">
+      <h2 class="section-title">Create a Room</h2>
+
+      <!-- Quiz List -->
+      <div class="quiz-list">
+        <div
+          *ngFor="let quiz of quizzes"
+          class="quiz-item"
+          [class.quiz-item--selected]="selectedQuiz === quiz"
+          (click)="selectQuiz(quiz)"
+        >
+          <div class="quiz-item-header flex justify-between align-center">
+            <span class="quiz-title">{{ quiz.title }}</span>
+            <span class="quiz-q-count text-muted">{{ quiz.questionCount }}Q</span>
+          </div>
+          <div class="quiz-meta flex gap-8 mt-8">
+            <span *ngIf="quiz.category" class="quiz-tag">{{ quiz.category }}</span>
+            <span class="quiz-author text-muted">by {{ quiz.createdBy }}</span>
+          </div>
+          <p *ngIf="quiz.description" class="quiz-desc text-muted mt-8">{{ quiz.description }}</p>
+        </div>
+        <div *ngIf="quizzes.length === 0" class="empty-state text-muted text-center">
+          <p>No quizzes available.</p>
+          <p class="mt-8">Check that the backend is running.</p>
+        </div>
+      </div>
+
+      <!-- Create Button -->
+      <div class="create-bar mt-16">
+        <p *ngIf="status" class="error-msg mb-8">{{ status }}</p>
+        <button
+          class="btn btn-primary btn-lg create-btn"
+          [disabled]="busy || !selectedQuiz"
+          (click)="createRoom()"
+        >
+          {{ busy ? 'Creating...' : 'Create Room' }}
+          <span *ngIf="selectedQuiz" class="create-quiz-name">— {{ selectedQuiz.title }}</span>
+        </button>
+      </div>
+    </section>
+  </main>
+</div>

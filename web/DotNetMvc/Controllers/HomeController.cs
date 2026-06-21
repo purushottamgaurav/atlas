@@ -1,28 +1,42 @@
 using DotNetMvc.Models;
+using DotNetMvc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace DotNetMvc.Controllers
+namespace DotNetMvc.Controllers;
+
+public class HomeController : BaseController
 {
-    [Authorize]
-    public class HomeController : Controller
+    private readonly IUserProfileService _profileService;
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(IUserProfileService profileService, ILogger<HomeController> logger)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        _profileService = profileService;
+        _logger = logger;
+    }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+    public async Task<IActionResult> Index()
+    {
+        var userId = GetCurrentUserId();
+        if (!await _profileService.ProfileExistsAsync(userId))
+            return RedirectToAction("Setup", "Profile");
 
-        [AllowAnonymous]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        ViewData["Title"] = "Home";
+        return View();
+    }
+
+    public IActionResult About()
+    {
+        ViewData["Title"] = "About JobBoard";
+        return View();
+    }
+
+    [AllowAnonymous]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

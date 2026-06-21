@@ -1,15 +1,8 @@
-﻿using System.Windows;
+using System.Windows;
 
-namespace DotNetWpf
+namespace DotNetWpf;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-    }
+    public MainWindow() => InitializeComponent();
 }

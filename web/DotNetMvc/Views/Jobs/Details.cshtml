@@ -1,0 +1,173 @@
+@model JobDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Job.Title;
+    var badgeClass = Model.Job.JobType switch
+    {
+        JobType.FullTime => "bg-primary",
+        JobType.PartTime => "bg-info",
+        JobType.Contract => "bg-warning text-dark",
+        JobType.Internship => "bg-success",
+        JobType.Remote => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="row g-4">
+    <!-- Job Details -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="badge @badgeClass fs-6">@Model.Job.JobType</span>
+                    @if (Model.IsOwner)
+                    {
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@Model.Job.JobId" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Job.JobId" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <h1 class="h2 fw-bold mb-2">@Model.Job.Title</h1>
+                <p class="text-muted mb-1"><i class="bi bi-building me-2"></i><strong>@Model.Job.Company</strong></p>
+                <p class="text-muted mb-1"><i class="bi bi-geo-alt me-2"></i>@Model.Job.Location</p>
+                @if (!string.IsNullOrEmpty(Model.Job.SalaryRange))
+                {
+                    <p class="text-success fw-semibold mb-1"><i class="bi bi-currency-dollar me-2"></i>@Model.Job.SalaryRange</p>
+                }
+                @if (Model.Job.ApplicationDeadline.HasValue)
+                {
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-calendar-x me-2"></i>
+                        Deadline: <strong>@Model.Job.ApplicationDeadline.Value.ToString("MMMM d, yyyy")</strong>
+                        @if (Model.Job.ApplicationDeadline.Value < DateTime.UtcNow)
+                        {
+                            <span class="badge bg-danger ms-1">Closed</span>
+                        }
+                    </p>
+                }
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-clock me-1"></i>Posted @((DateTime.UtcNow - Model.Job.PostedDate).Days) day(s) ago
+                </p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Job Description</h5>
+                <div class="job-description">@Html.Raw(Model.Job.Description.Replace("\n", "<br />"))</div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Job.Requirements))
+        {
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Requirements</h5>
+                    <div>@Html.Raw(Model.Job.Requirements.Replace("\n", "<br />"))</div>
+                </div>
+            </div>
+        }
+
+        <!-- Application Form -->
+        @if (!Model.IsOwner)
+        {
+            if (Model.IsAlreadyApplied)
+            {
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    You have already applied for this position. Check <a asp-controller="Applications" asp-action="MyApplications" class="alert-link">My Applications</a> for status updates.
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-send me-2"></i>Apply for This Role</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="Applications" asp-action="Apply" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            <input type="hidden" asp-for="ApplicationForm.JobId" />
+                            <input type="hidden" asp-for="ApplicationForm.JobTitle" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Your Name</label>
+                                    <input asp-for="ApplicationForm.ApplicantName" class="form-control" readonly />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <input asp-for="ApplicationForm.Email" class="form-control" readonly />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ApplicationForm.Skills" class="form-label fw-semibold"></label>
+                                <input asp-for="ApplicationForm.Skills" class="form-control" placeholder="e.g. C#, Azure, React, SQL..." />
+                                <span asp-validation-for="ApplicationForm.Skills" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ApplicationForm.CoverLetter" class="form-label fw-semibold"></label>
+                                <textarea asp-for="ApplicationForm.CoverLetter" class="form-control" rows="6"
+                                          placeholder="Tell us why you're a great fit for this role (minimum 50 characters)..."></textarea>
+                                <span asp-validation-for="ApplicationForm.CoverLetter" class="text-danger small"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i>Submit Application
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+
+        @if (Model.IsOwner)
+        {
+            <a asp-controller="Applications" asp-action="ReviewApplications" asp-route-jobId="@Model.Job.JobId"
+               class="btn btn-outline-primary">
+                <i class="bi bi-people me-2"></i>Review @Model.ApplicationCount Application@(Model.ApplicationCount != 1 ? "s" : "")
+            </a>
+        }
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body p-4">
+                <h6 class="fw-bold mb-3">Job Summary</h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><i class="bi bi-briefcase me-2 text-primary"></i><strong>Type:</strong> @Model.Job.JobType</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i><strong>Location:</strong> @Model.Job.Location</li>
+                    @if (!string.IsNullOrEmpty(Model.Job.SalaryRange))
+                    {
+                        <li class="mb-2"><i class="bi bi-cash-stack me-2 text-primary"></i><strong>Salary:</strong> @Model.Job.SalaryRange</li>
+                    }
+                    <li class="mb-2"><i class="bi bi-calendar me-2 text-primary"></i><strong>Posted:</strong> @Model.Job.PostedDate.ToString("MMM d, yyyy")</li>
+                    <li class="mb-0"><i class="bi bi-people me-2 text-primary"></i><strong>Applicants:</strong> @Model.ApplicationCount</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h6 class="fw-bold mb-3">About @Model.Job.Company</h6>
+                <p class="text-muted small mb-3">This role is posted by <strong>@Model.Job.Company</strong>. Browse all their open positions to find a perfect fit.</p>
+                <a asp-controller="Jobs" asp-action="Index" asp-route-search="@Model.Job.Company" class="btn btn-outline-secondary btn-sm w-100">
+                    <i class="bi bi-search me-1"></i>More from @Model.Job.Company
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
