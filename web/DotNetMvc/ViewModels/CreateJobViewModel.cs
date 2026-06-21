@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using DotNetMvc.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace DotNetMvc.ViewModels;
 

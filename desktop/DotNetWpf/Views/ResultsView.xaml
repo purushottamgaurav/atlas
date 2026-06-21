@@ -1,0 +1,149 @@
+<UserControl x:Class="DotNetWpf.Views.ResultsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24">
+            <TextBlock Text="Game Over!" Style="{StaticResource TitleText}" HorizontalAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource HeadingText}">
+                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                    </Style>
+                </TextBlock.Style>
+                <Run Text="🏆 Winner: "/>
+                <Run Text="{Binding WinnerName}"/>
+            </TextBlock>
+
+            <!-- My result -->
+            <Border CornerRadius="10"
+                    Padding="20,12"
+                    Margin="0,16,0,0"
+                    Background="{StaticResource CardBrush}"
+                    BorderBrush="{StaticResource PrimaryBrush}"
+                    BorderThickness="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource BodyText}" Margin="0,0,16,0">
+                        <Run Text="Your rank: "/>
+                        <Run Text="{Binding MyRank}" FontWeight="Bold"/>
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource BodyText}">
+                        <Run Text="Score: "/>
+                        <Run Text="{Binding MyScore}"
+                             Foreground="{StaticResource AccentBrush}"
+                             FontWeight="Bold"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Leaderboard -->
+        <Border Grid.Row="1" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="Final Leaderboard" Style="{StaticResource HeadingText}" Margin="0,0,0,16"/>
+
+                <!-- Column headers -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Rank"  Style="{StaticResource SubtleText}"/>
+                    <TextBlock Grid.Column="1" Text="Player" Style="{StaticResource SubtleText}"/>
+                    <TextBlock Grid.Column="2" Text="Correct" Style="{StaticResource SubtleText}" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="Score"   Style="{StaticResource SubtleText}" HorizontalAlignment="Right"/>
+                </Grid>
+
+                <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Leaderboard}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="8"
+                                        Padding="12,10"
+                                        Margin="0,0,0,4">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Rank}" Value="1">
+                                                    <Setter Property="Background" Value="#FF2A2000"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Rank with medal for top 3 -->
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+                                                    <Setter Property="Text" Value="{Binding Rank}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Rank}" Value="1">
+                                                            <Setter Property="Text" Value="🥇"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Rank}" Value="2">
+                                                            <Setter Property="Text" Value="🥈"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Rank}" Value="3">
+                                                            <Setter Property="Text" Value="🥉"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Username}"
+                                                   Style="{StaticResource BodyText}"
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding CorrectAnswers}"
+                                                   Style="{StaticResource BodyText}"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{StaticResource SuccessBrush}"/>
+
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding TotalScore}"
+                                                   Style="{StaticResource BodyText}"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource AccentBrush}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer -->
+        <Button Grid.Row="2"
+                Content="Back to Lobby"
+                Command="{Binding BackToLobbyCommand}"
+                HorizontalAlignment="Center"
+                Margin="0,20,0,0"
+                Height="44"
+                Padding="32,10"/>
+    </Grid>
+</UserControl>
