@@ -1,0 +1,75 @@
+<div class="game-wrapper">
+  <!-- Round Results Overlay -->
+  <div class="results-overlay" *ngIf="showRoundResults">
+    <div class="results-modal card">
+      <h3 class="results-title">Round Results</h3>
+      <div class="results-scores">
+        <div class="score-row" *ngFor="let p of roundScores">
+          <span class="score-rank text-muted">#{{ p.rank }}</span>
+          <span class="score-name">{{ p.username }}</span>
+          <span class="score-round text-accent">+{{ p.roundPoints }}</span>
+          <span class="score-total">{{ p.totalScore }}</span>
+        </div>
+        <div *ngIf="roundScores.length === 0" class="text-muted text-center" style="padding: 20px;">
+          Waiting for results...
+        </div>
+      </div>
+      <p class="results-next text-muted text-center mt-16">Next question loading...</p>
+    </div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="game-topbar">
+    <div class="question-progress" *ngIf="question">
+      <span class="q-num text-accent">Q{{ question.questionNumber }}</span>
+      <span class="q-total text-muted">/ {{ question.totalQuestions }}</span>
+    </div>
+    <div class="score-display">
+      <span class="score-label text-muted">Score</span>
+      <span class="score-value">{{ myScore }}</span>
+    </div>
+  </div>
+
+  <!-- Timer Bar -->
+  <div class="timer-track">
+    <div
+      class="timer-fill"
+      [style.width.%]="timerPercent * 100"
+      [class.timer-fill--low]="timeLeft <= 5 && timeLeft > 0"
+    ></div>
+  </div>
+  <div class="timer-label-row">
+    <span class="timer-label" [class.text-danger]="timeLeft <= 5">
+      {{ timeLeft }}s
+    </span>
+    <span *ngIf="showPoints" class="points-earned text-success">+{{ pointsEarned }} pts</span>
+    <span *ngIf="status && !showPoints" class="answer-status" [class.text-success]="status === 'Correct!'" [class.text-danger]="status === 'Wrong!'">
+      {{ status }}
+    </span>
+  </div>
+
+  <!-- Question Card -->
+  <div class="question-area">
+    <div class="question-card card" *ngIf="question; else loadingTpl">
+      <p class="question-points text-muted">{{ question.points }} pts</p>
+      <h2 class="question-text">{{ question.text }}</h2>
+    </div>
+    <ng-template #loadingTpl>
+      <div class="question-card card text-center">
+        <p class="text-muted">Waiting for question...</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Answer Grid -->
+  <div class="answers-grid" *ngIf="question">
+    <button
+      *ngFor="let btn of answerButtons"
+      [class]="answerClass(btn)"
+      [disabled]="!inputEnabled"
+      (click)="selectAnswer(btn)"
+    >
+      {{ btn.answer.text }}
+    </button>
+  </div>
+</div>

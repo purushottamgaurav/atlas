@@ -1,0 +1,15 @@
+{
+  "/api": {
+    "target": "https://localhost:7008",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/hubs": {
+    "target": "https://localhost:7008",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true,
+    "logLevel": "info"
+  }
+}

@@ -1,0 +1,191 @@
+.room-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--quiz-bg);
+  position: relative;
+}
+
+/* Countdown Overlay */
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 13, 26, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.countdown-content {
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 20px;
+  color: var(--quiz-text-secondary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.countdown-number {
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--quiz-accent);
+  line-height: 1;
+  text-shadow: 0 0 60px rgba(0, 212, 255, 0.6);
+  animation: pulse-count 1s ease-in-out;
+}
+
+@keyframes pulse-count {
+  0% { transform: scale(1.4); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Header */
+.room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--quiz-surface);
+  border-bottom: 1px solid var(--quiz-border);
+}
+
+.room-header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.room-code-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.room-code-display {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 6px;
+}
+
+.header-placeholder {
+  width: 80px;
+}
+
+/* Body */
+.room-body {
+  flex: 1;
+  padding: 32px 24px;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.room-quiz-card {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.room-quiz-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.room-quiz-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--quiz-text);
+}
+
+/* Players */
+.players-section {
+  margin-bottom: 16px;
+}
+
+.players-heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-count {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.players-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.player-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--quiz-card);
+  border: 1px solid var(--quiz-border);
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.player-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--quiz-success);
+  box-shadow: 0 0 6px var(--quiz-success);
+  flex-shrink: 0;
+}
+
+.player-name {
+  color: var(--quiz-text);
+}
+
+.host-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 165, 2, 0.2);
+  color: var(--quiz-warning);
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.you-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(108, 99, 255, 0.2);
+  color: var(--quiz-primary);
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.room-actions {
+  text-align: center;
+}
+
+.start-btn {
+  width: 100%;
+  max-width: 320px;
+}
+
+.waiting-msg {
+  font-size: 14px;
+}

@@ -1,0 +1,69 @@
+<div class="login-page">
+  <div class="login-card card">
+    <div class="login-logo">
+      <span class="logo-icon">&#9889;</span>
+      <span class="logo-text text-accent">QuizBlitz</span>
+    </div>
+    <h2 class="login-title">{{ isRegisterMode ? 'Create Account' : 'Welcome Back' }}</h2>
+    <p class="login-sub text-muted">{{ isRegisterMode ? 'Join the ultimate quiz experience' : 'Sign in to continue playing' }}</p>
+
+    <form (ngSubmit)="submit()" class="login-form mt-24">
+      <div *ngIf="isRegisterMode" class="field-group mb-16">
+        <label class="field-label">Username</label>
+        <input
+          class="input-field"
+          type="text"
+          placeholder="Pick a cool username"
+          [(ngModel)]="username"
+          name="username"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="field-group mb-16">
+        <label class="field-label">Email</label>
+        <input
+          class="input-field"
+          type="email"
+          placeholder="you@example.com"
+          [(ngModel)]="email"
+          name="email"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="field-group mb-16">
+        <label class="field-label">Password</label>
+        <input
+          class="input-field"
+          type="password"
+          placeholder="••••••••"
+          [(ngModel)]="password"
+          name="password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <p *ngIf="error" class="error-msg">{{ error }}</p>
+
+      <button
+        class="btn btn-primary btn-lg submit-btn mt-16"
+        type="submit"
+        [disabled]="busy"
+      >
+        <span *ngIf="!busy">{{ isRegisterMode ? 'Create Account' : 'Sign In' }}</span>
+        <span *ngIf="busy" class="spinner"></span>
+      </button>
+    </form>
+
+    <div class="toggle-row mt-24">
+      <span class="text-muted">{{ isRegisterMode ? 'Already have an account?' : "Don't have an account?" }}</span>
+      <button class="toggle-btn" type="button" (click)="toggle()">
+        {{ isRegisterMode ? 'Sign In' : 'Register' }}
+      </button>
+    </div>
+  </div>
+</div>
