@@ -379,7 +379,7 @@ namespace DotNetConsole
             Array.Sort(a);
             Array.Sort(b);
 
-            if(new string(a)!= new string(b))
+            if (new string(a) != new string(b))
             {
                 Console.WriteLine("Not an anagram");
             }
@@ -398,7 +398,7 @@ namespace DotNetConsole
 
             char[] array = word.ToArray();
             int count = 0;
-            foreach(char ch in array)
+            foreach (char ch in array)
             {
                 if (ch == c)
                     count++;
@@ -414,8 +414,8 @@ namespace DotNetConsole
             string sanity = sentence.Trim();
 
             char[] wordArray = sentence.ToArray();
-            
-            foreach( char c in wordArray)
+
+            foreach (char c in wordArray)
             {
                 if (c == ' ')
                     count++;
@@ -432,12 +432,12 @@ namespace DotNetConsole
             char[] wordArray = word.ToArray();
             bool spaceDetected = true;
 
-            for( int i = 0; i<wordArray.Length;i++)
+            for (int i = 0; i < wordArray.Length; i++)
             {
                 if (spaceDetected)
-                   wordArray[i]= char.ToUpper(wordArray[i]);
+                    wordArray[i] = char.ToUpper(wordArray[i]);
 
-                if (wordArray[i]==' ')
+                if (wordArray[i] == ' ')
                 {
                     spaceDetected = true;
                 }
