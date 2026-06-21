@@ -1,8 +1,74 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section rounded-4 mb-5 p-5 text-white text-center">
+    <h1 class="display-4 fw-bold mb-3">Find Your Dream Job</h1>
+    <p class="lead mb-4 opacity-90">Thousands of opportunities from top companies. Post jobs or apply today.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a asp-controller="Jobs" asp-action="Index" class="btn btn-light btn-lg px-4 fw-semibold">
+            <i class="bi bi-search me-2"></i>Browse Jobs
+        </a>
+        @if (ViewBag.IsEmployer == true)
+        {
+            <a asp-controller="Jobs" asp-action="Create" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-plus-circle me-2"></i>Post a Job
+            </a>
+        }
+    </div>
 </div>
+
+<!-- Featured Jobs -->
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Latest Opportunities</h2>
+            <p class="text-muted mb-0">Freshly posted roles from top employers</p>
+        </div>
+        <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-primary">
+            View All <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+    @await Component.InvokeAsync("FeaturedJobs", new { count = 6 })
+</section>
+
+<!-- How It Works -->
+<section class="py-5 bg-light rounded-4 px-4 mb-4">
+    <h2 class="h3 fw-bold text-center mb-4">How It Works</h2>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <i class="bi bi-person-plus-fill fs-1 text-primary mb-3 d-block"></i>
+            <h5 class="fw-semibold">1. Create Your Profile</h5>
+            <p class="text-muted small">Sign in and set yourself up as a Job Seeker or Employer. Takes less than a minute.</p>
+        </div>
+        <div class="col-md-4">
+            @if (ViewBag.IsEmployer == true)
+            {
+                <i class="bi bi-pencil-square fs-1 text-success mb-3 d-block"></i>
+                <h5 class="fw-semibold">2. Post a Job</h5>
+                <p class="text-muted small">Fill in the details about your open role and reach thousands of qualified candidates.</p>
+            }
+            else
+            {
+                <i class="bi bi-binoculars-fill fs-1 text-success mb-3 d-block"></i>
+                <h5 class="fw-semibold">2. Discover Jobs</h5>
+                <p class="text-muted small">Browse and filter hundreds of opportunities by type, location, and keyword.</p>
+            }
+        </div>
+        <div class="col-md-4">
+            @if (ViewBag.IsEmployer == true)
+            {
+                <i class="bi bi-people-fill fs-1 text-warning mb-3 d-block"></i>
+                <h5 class="fw-semibold">3. Review Applicants</h5>
+                <p class="text-muted small">Read cover letters, review skills, and accept or reject applications from your dashboard.</p>
+            }
+            else
+            {
+                <i class="bi bi-send-fill fs-1 text-warning mb-3 d-block"></i>
+                <h5 class="fw-semibold">3. Apply in Seconds</h5>
+                <p class="text-muted small">Submit a cover letter and highlight your skills — no resume uploads required.</p>
+            }
+        </div>
+    </div>
+</section>

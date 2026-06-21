@@ -1,0 +1,26 @@
+@model JobListViewModel
+
+<form asp-controller="Jobs" asp-action="Index" method="get">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Keywords</label>
+        <input asp-for="SearchTerm" class="form-control" placeholder="Job title, company..." />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Job Type</label>
+        <select asp-for="SelectedJobType" asp-items="Html.GetEnumSelectList<JobType>()" class="form-select">
+            <option value="">All Types</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Location</label>
+        <select asp-for="SelectedLocation" asp-items="@(new SelectList(Model.AvailableLocations))" class="form-select">
+            <option value="">All Locations</option>
+        </select>
+    </div>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search me-1"></i>Search
+        </button>
+        <a asp-controller="Jobs" asp-action="Index" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+    </div>
+</form>

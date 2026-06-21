@@ -1,0 +1,47 @@
+@model Job
+
+@{
+    var daysSincePosted = (DateTime.UtcNow - Model.PostedDate).Days;
+    var postedLabel = daysSincePosted == 0 ? "Today" : daysSincePosted == 1 ? "1 day ago" : $"{daysSincePosted} days ago";
+
+    var badgeClass = Model.JobType switch
+    {
+        JobType.FullTime => "bg-primary",
+        JobType.PartTime => "bg-info",
+        JobType.Contract => "bg-warning text-dark",
+        JobType.Internship => "bg-success",
+        JobType.Remote => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="card h-100 job-card shadow-sm border-0">
+    <div class="card-body d-flex flex-column">
+        <div class="mb-2">
+            <span class="badge @badgeClass me-1">@Model.JobType</span>
+            @if (Model.ApplicationDeadline.HasValue && Model.ApplicationDeadline.Value < DateTime.UtcNow.AddDays(7))
+            {
+                <span class="badge bg-danger">Closing Soon</span>
+            }
+        </div>
+        <h5 class="card-title mb-1">
+            <a asp-controller="Jobs" asp-action="Details" asp-route-id="@Model.JobId"
+               class="text-decoration-none text-dark stretched-link">@Model.Title</a>
+        </h5>
+        <p class="text-muted small mb-1">
+            <i class="bi bi-building me-1"></i>@Model.Company
+        </p>
+        <p class="text-muted small mb-2">
+            <i class="bi bi-geo-alt me-1"></i>@Model.Location
+        </p>
+        @if (!string.IsNullOrEmpty(Model.SalaryRange))
+        {
+            <p class="text-success fw-semibold small mb-0">
+                <i class="bi bi-currency-dollar me-1"></i>@Model.SalaryRange
+            </p>
+        }
+        <p class="text-muted small mt-auto mb-0 pt-2">
+            <i class="bi bi-clock me-1"></i>@postedLabel
+        </p>
+    </div>
+</div>

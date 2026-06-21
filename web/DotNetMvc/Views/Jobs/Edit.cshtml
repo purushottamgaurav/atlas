@@ -1,0 +1,94 @@
+@model EditJobViewModel
+
+@{
+    ViewData["Title"] = "Edit Job";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a asp-action="MyJobs" class="btn btn-outline-secondary btn-sm me-3">
+                <i class="bi bi-arrow-left me-1"></i>My Postings
+            </a>
+            <h1 class="h3 fw-bold mb-0"><i class="bi bi-pencil me-2 text-primary"></i>Edit Job</h1>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Edit" asp-route-id="@Model.JobId" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+                    <input type="hidden" asp-for="JobId" />
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="JobType" class="form-label fw-semibold"></label>
+                            <select asp-for="JobType" asp-items="Html.GetEnumSelectList<JobType>()" class="form-select"></select>
+                            <span asp-validation-for="JobType" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Company" class="form-label fw-semibold"></label>
+                            <input asp-for="Company" class="form-control" />
+                            <span asp-validation-for="Company" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Location" class="form-label fw-semibold"></label>
+                            <input asp-for="Location" class="form-control" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="SalaryRange" class="form-label fw-semibold"></label>
+                            <input asp-for="SalaryRange" class="form-control" />
+                            <span asp-validation-for="SalaryRange" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ApplicationDeadline" class="form-label fw-semibold"></label>
+                            <input asp-for="ApplicationDeadline" class="form-control" type="date" />
+                            <span asp-validation-for="ApplicationDeadline" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="6"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Requirements" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Requirements" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Requirements" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                            <label asp-for="IsActive" class="form-check-label fw-semibold">Active (visible to job seekers)</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save me-2"></i>Save Changes
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.JobId" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

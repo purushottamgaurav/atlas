@@ -1,48 +1,116 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DotNetMvc</title>
+    <title>@ViewData["Title"] - JobBoard</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DotNetMvc.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DotNetMvc</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-4" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-briefcase-fill me-1 text-primary"></i>JobBoard
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Jobs" asp-action="Index">
+                                <i class="bi bi-search me-1"></i>Browse Jobs
+                            </a>
+                        </li>
+                        @if (ViewBag.IsEmployer == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Jobs" asp-action="Create">
+                                    <i class="bi bi-plus-circle me-1"></i>Post a Job
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Jobs" asp-action="MyJobs">
+                                    <i class="bi bi-list-ul me-1"></i>My Postings
+                                </a>
+                            </li>
+                        }
+                        else if (ViewBag.IsEmployer == false)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Applications" asp-action="MyApplications">
+                                    <i class="bi bi-file-earmark-text me-1"></i>My Applications
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center">
+                        @if (ViewBag.UserDisplayName != null)
+                        {
+                            <li class="nav-item me-2">
+                                <span class="nav-link text-light opacity-75">
+                                    <i class="bi bi-person-circle me-1"></i>@ViewBag.UserDisplayName
+                                </span>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Profile" asp-action="Index">
+                                <i class="bi bi-gear me-1"></i>Profile
+                            </a>
+                        </li>
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container mt-4">
+        <partial name="_AlertMessages" />
+        <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="bg-dark text-light py-4 mt-5">
         <div class="container">
-            &copy; 2026 - DotNetMvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h6 class="fw-bold"><i class="bi bi-briefcase-fill me-1 text-primary"></i>JobBoard</h6>
+                    <p class="text-muted small mb-0">Connecting talent with opportunity.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6 class="fw-bold">Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a asp-controller="Jobs" asp-action="Index" class="text-muted text-decoration-none">Browse Jobs</a></li>
+                        <li><a asp-controller="Home" asp-action="About" class="text-muted text-decoration-none">About</a></li>
+                        <li><a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6 class="fw-bold">Built With</h6>
+                    <p class="text-muted small mb-0">ASP.NET Core 10 MVC &middot; Entity Framework Core &middot; Bootstrap 5 &middot; Azure AD</p>
+                </div>
+            </div>
+            <hr class="border-secondary" />
+            <p class="text-muted small text-center mb-0">&copy; @DateTime.Now.Year JobBoard &mdash; ASP.NET Core MVC Demo</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

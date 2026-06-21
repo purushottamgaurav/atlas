@@ -1,0 +1,56 @@
+@model UserProfile
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <h1 class="h3 fw-bold mb-4"><i class="bi bi-person-circle me-2 text-primary"></i>My Profile</h1>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="avatar-circle mx-auto mb-3">
+                        <i class="bi bi-person-fill fs-1 text-primary"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.DisplayName</h4>
+                    <span class="badge @(Model.Role == UserRole.Employer ? "bg-primary" : "bg-success") fs-6">
+                        @Model.Role
+                    </span>
+                </div>
+
+                <hr />
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Email</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4 text-muted">Role</dt>
+                    <dd class="col-sm-8">@Model.Role</dd>
+
+                    @if (!string.IsNullOrEmpty(Model.CompanyName))
+                    {
+                        <dt class="col-sm-4 text-muted">Company</dt>
+                        <dd class="col-sm-8">@Model.CompanyName</dd>
+                    }
+                </dl>
+            </div>
+            <div class="card-footer bg-transparent">
+                <div class="d-flex gap-2">
+                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">
+                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                    </a>
+                    @if (Model.Role == UserRole.Employer)
+                    {
+                        <a asp-controller="Jobs" asp-action="MyJobs" class="btn btn-outline-secondary">My Postings</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Applications" asp-action="MyApplications" class="btn btn-outline-secondary">My Applications</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

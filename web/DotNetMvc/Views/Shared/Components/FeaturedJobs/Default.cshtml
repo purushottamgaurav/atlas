@@ -1,0 +1,10 @@
+@model List<Job>
+
+<div class="row g-3">
+    @foreach (var job in Model)
+    {
+        <div class="col-md-4 col-sm-6">
+            <partial name="_JobCard" model="job" />
+        </div>
+    }
+</div>

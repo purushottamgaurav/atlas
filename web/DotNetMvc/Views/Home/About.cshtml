@@ -1,0 +1,64 @@
+@{
+    ViewData["Title"] = "About JobBoard";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="h2 fw-bold mb-1"><i class="bi bi-briefcase-fill text-primary me-2"></i>About JobBoard</h1>
+        <p class="text-muted mb-4">A demonstration of ASP.NET Core MVC concepts</p>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">What is JobBoard?</h5>
+                <p>JobBoard is a full-stack job board portal built with <strong>ASP.NET Core 10 MVC</strong>. It demonstrates real-world patterns including Entity Framework Core, dependency injection, authentication, and responsive UI design.</p>
+                <p class="mb-0">Employers can post and manage job listings. Job seekers can browse, filter, and apply for positions — all within a clean, modern interface.</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">MVC Concepts Demonstrated</h5>
+                <div class="row g-2">
+                    @foreach (var concept in new[]
+                    {
+                        ("bi-database", "Entity Framework Core", "Code-first migrations with SQLite"),
+                        ("bi-diagram-3", "Dependency Injection", "Scoped services registered in Program.cs"),
+                        ("bi-shield-check", "Authentication", "Azure AD via Microsoft.Identity.Web"),
+                        ("bi-layout-split", "MVC Pattern", "Models, Views, Controllers, ViewModels"),
+                        ("bi-puzzle", "Partial Views", "Reusable components like job cards and alerts"),
+                        ("bi-box", "View Components", "FeaturedJobs with independent data fetching"),
+                        ("bi-funnel", "Action Filters", "Global logging filter with ViewBag injection"),
+                        ("bi-tags", "Tag Helpers", "asp-for, asp-items, asp-validation-for"),
+                        ("bi-check2-circle", "Model Validation", "DataAnnotations + jQuery Unobtrusive"),
+                        ("bi-signpost-split", "Routing", "Conventional + attribute routing"),
+                    })
+                    {
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start gap-2 mb-2">
+                                <i class="bi @concept.Item1 text-primary mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <div class="fw-semibold small">@concept.Item2</div>
+                                    <div class="text-muted small">@concept.Item3</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Technology Stack</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>ASP.NET Core 10 MVC</li>
+                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Entity Framework Core 9 with SQLite</li>
+                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Microsoft Identity Web (Azure AD / Entra ID)</li>
+                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Bootstrap 5 + Bootstrap Icons</li>
+                    <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>jQuery Validation Unobtrusive</li>
+                    <li class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i>C# 13 with nullable reference types</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
