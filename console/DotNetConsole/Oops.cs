@@ -130,7 +130,7 @@ namespace DotNetConsole
         {
             return 80000;
         }
-       
+
         public virtual int sdcasa()
         {
             return 5;
@@ -142,11 +142,14 @@ namespace DotNetConsole
     {
         public static void Test()
         {
+            //Employee e = new Employee();
+            //var adsa= new E();
             Manager a = new Manager();
             string gender= a.GetGender('F');
-            int salary = a.GetSalary();
+            Console.WriteLine(a.GetSalary());
         }
     }
 
     #endregion
+
 }
