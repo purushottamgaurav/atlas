@@ -1,0 +1,148 @@
+@page "/lobby"
+@rendermode InteractiveServer
+@inject SessionService Session
+@inject ApiService Api
+@inject HubService Hub
+@inject NavigationManager Nav
+
+<PageTitle>QuizBlitz — Lobby</PageTitle>
+
+<div class="lobby-wrapper">
+
+    <!-- Header -->
+    <header class="lobby-header">
+        <div class="lobby-header-left">
+            <span class="logo-icon-sm">&#9889;</span>
+            <span class="logo-text-sm">QuizBlitz</span>
+        </div>
+        <div class="lobby-header-right">
+            <span class="text-secondary me-3">@Session.Username</span>
+            <button class="btn-quiz btn-quiz-danger btn-sm" @onclick="Logout">Logout</button>
+        </div>
+    </header>
+
+    <div class="lobby-body">
+
+        <!-- Left: Active Rooms -->
+        <section class="lobby-section">
+            <h2 class="section-title">Active Rooms</h2>
+
+            <div class="join-row mb-4">
+                <input class="form-control quiz-input flex-1" @bind="joinCode" placeholder="Enter room code..." />
+                <button class="btn-quiz btn-quiz-primary ms-2" @onclick="JoinByCode" disabled="@busy">Join</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(statusMsg))
+            {
+                <div class="alert-error mb-3">@statusMsg</div>
+            }
+
+            @if (rooms.Count == 0)
+            {
+                <p class="text-secondary">No active rooms. Create one!</p>
+            }
+            else
+            {
+                @foreach (var room in rooms)
+                {
+                    <div class="room-card">
+                        <div class="room-card-info">
+                            <span class="room-title">@room.QuizTitle</span>
+                            <span class="room-meta text-secondary">
+                                Code: <strong class="text-accent">@room.Code</strong>
+                                &middot; @room.PlayerCount / @room.MaxPlayers players
+                            </span>
+                        </div>
+                        <button class="btn-quiz btn-quiz-primary btn-sm" @onclick="() => JoinRoom(room.Code)" disabled="@busy">
+                            Join &rarr;
+                        </button>
+                    </div>
+                }
+            }
+        </section>
+
+        <!-- Right: Create Room -->
+        <section class="lobby-section">
+            <h2 class="section-title">Host a Game</h2>
+            <p class="text-secondary mb-3">Select a quiz:</p>
+
+            <div class="quiz-list mb-4">
+                @foreach (var quiz in quizzes)
+                {
+                    <div class="quiz-item @(selectedQuiz == quiz ? "quiz-item--selected" : "")"
+                         @onclick="() => selectedQuiz = quiz">
+                        <div class="quiz-item-title">@quiz.Title</div>
+                        <div class="quiz-item-meta text-secondary">@quiz.QuestionCount questions</div>
+                    </div>
+                }
+            </div>
+
+            @if (selectedQuiz is not null)
+            {
+                <p class="text-accent mb-3">Selected: <strong>@selectedQuiz.Title</strong></p>
+            }
+
+            <button class="btn-quiz btn-quiz-primary w-100" @onclick="CreateRoom"
+                    disabled="@(busy || selectedQuiz is null)">
+                Create Room
+            </button>
+        </section>
+    </div>
+</div>
+
+@code {
+    List<QuizSummaryDto> quizzes = [];
+    List<RoomDto> rooms = [];
+    QuizSummaryDto? selectedQuiz;
+    string joinCode = "", statusMsg = "";
+    bool busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/login"); return; }
+        quizzes = await Api.GetQuizzesAsync() ?? [];
+        rooms   = await Api.GetActiveRoomsAsync() ?? [];
+    }
+
+    async Task CreateRoom()
+    {
+        if (selectedQuiz is null) return;
+        busy = true; statusMsg = "";
+        try
+        {
+            await Hub.ConnectAsync();
+            var room = await Api.CreateRoomAsync(new CreateRoomRequest(selectedQuiz.QuizId));
+            if (room is null) throw new InvalidOperationException("Failed to create room.");
+            await Hub.JoinRoomAsync(room.Code);
+            Session.CurrentRoomCode = room.Code;
+            Session.IsRoomHost = true;
+            Nav.NavigateTo($"/room/{room.Code}");
+        }
+        catch (Exception ex) { statusMsg = ex.Message; }
+        finally { busy = false; }
+    }
+
+    async Task JoinByCode() => await JoinRoom(joinCode.Trim().ToUpperInvariant());
+
+    async Task JoinRoom(string code)
+    {
+        if (string.IsNullOrEmpty(code)) return;
+        busy = true; statusMsg = "";
+        try
+        {
+            await Hub.ConnectAsync();
+            await Hub.JoinRoomAsync(code);
+            Session.CurrentRoomCode = code;
+            Session.IsRoomHost = false;
+            Nav.NavigateTo($"/room/{code}");
+        }
+        catch (Exception ex) { statusMsg = ex.Message; }
+        finally { busy = false; }
+    }
+
+    void Logout()
+    {
+        Session.Clear();
+        Nav.NavigateTo("/login");
+    }
+}

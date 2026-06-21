@@ -1,0 +1,220 @@
+@page "/game/{Code}"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject SessionService Session
+@inject HubService Hub
+@inject NavigationManager Nav
+
+<PageTitle>QuizBlitz — Game</PageTitle>
+
+<div class="game-wrapper">
+
+    <!-- Round results overlay -->
+    @if (showResults)
+    {
+        <div class="results-overlay">
+            <div class="results-modal quiz-card">
+                <h3 class="results-title">Round Results</h3>
+                <div class="results-list">
+                    @foreach (var p in roundScores)
+                    {
+                        <div class="result-row">
+                            <span class="result-rank text-secondary">#@p.Rank</span>
+                            <span class="result-name">@p.Username</span>
+                            <span class="result-pts text-accent">+@p.RoundPoints</span>
+                            <span class="result-total">@p.TotalScore</span>
+                        </div>
+                    }
+                </div>
+                <p class="text-secondary text-center mt-3">Next question coming...</p>
+            </div>
+        </div>
+    }
+
+    <!-- Top bar -->
+    <div class="game-topbar">
+        <div class="q-progress">
+            <span class="q-num text-accent">Q@(currentQ?.QuestionNumber)</span>
+            <span class="text-secondary">/ @currentQ?.TotalQuestions</span>
+        </div>
+        <div class="score-display">
+            <span class="score-label text-secondary">SCORE</span>
+            <span class="score-value">@myScore</span>
+        </div>
+    </div>
+
+    <!-- Timer bar -->
+    <div class="timer-track">
+        <div class="timer-fill @(timeLeft <= 5 ? "timer-fill--low" : "")"
+             style="width: @timerPercent%;
+                    transition: width 1s linear;"></div>
+    </div>
+    <div class="timer-meta">
+        <span class="timer-label @(timeLeft <= 5 ? "text-danger" : "text-secondary")">@timeLeft s</span>
+        @if (showPoints)
+        {
+            <span class="points-pop text-success">+@pointsEarned pts!</span>
+        }
+        @if (!string.IsNullOrEmpty(statusMsg) && !showPoints)
+        {
+            <span class="answer-status @(statusMsg == "Correct!" ? "text-success" : "text-secondary")">@statusMsg</span>
+        }
+    </div>
+
+    <!-- Question card -->
+    @if (currentQ is not null)
+    {
+        <div class="question-area quiz-card">
+            <p class="q-points text-secondary">@currentQ.Points pts</p>
+            <h2 class="q-text">@currentQ.Text</h2>
+        </div>
+
+        <!-- Answer grid -->
+        <div class="answers-grid">
+            @foreach (var btn in answerButtons)
+            {
+                <button class="answer-btn @AnswerClass(btn)"
+                        @onclick="() => SelectAnswer(btn)"
+                        disabled="@(!inputEnabled)">
+                    @btn.Answer.Text
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="question-area quiz-card text-center">
+            <p class="text-secondary">Waiting for question...</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Code { get; set; } = "";
+
+    GameQuestionDto? currentQ;
+    List<AnswerButton> answerButtons = [];
+    List<PlayerScoreDto> roundScores = [];
+    int timeLeft, timeLimitSeconds, myScore, pointsEarned;
+    int selectedAnswerId = -1;
+    bool inputEnabled, showResults, showPoints;
+    string statusMsg = "";
+    System.Timers.Timer? _timer;
+
+    double timerPercent => timeLimitSeconds > 0 ? (double)timeLeft / timeLimitSeconds * 100 : 0;
+
+    protected override Task OnInitializedAsync()
+    {
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/login"); return Task.CompletedTask; }
+
+        Hub.QuestionStarted += OnQuestionStarted;
+        Hub.AnswerReceived  += OnAnswerReceived;
+        Hub.PlayerAnswered  += OnPlayerAnswered;
+        Hub.QuestionEnded   += OnQuestionEnded;
+        Hub.GameEnded       += OnGameEnded;
+        Hub.ErrorReceived   += OnError;
+
+        if (Session.CurrentQuestion is not null)
+            LoadQuestion(Session.CurrentQuestion);
+
+        return Task.CompletedTask;
+    }
+
+    void LoadQuestion(GameQuestionDto q)
+    {
+        currentQ = q;
+        selectedAnswerId = -1;
+        showResults = false;
+        showPoints = false;
+        statusMsg = "";
+        inputEnabled = true;
+        timeLimitSeconds = q.TimeLimitSeconds;
+        timeLeft = q.TimeLimitSeconds;
+        answerButtons = q.Answers.Select(a => new AnswerButton { Answer = a }).ToList();
+
+        _timer?.Dispose();
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += async (_, _) =>
+        {
+            if (timeLeft > 0) timeLeft--;
+            else { _timer!.Stop(); inputEnabled = false; }
+            await InvokeAsync(StateHasChanged);
+        };
+        _timer.Start();
+    }
+
+    void OnQuestionStarted(GameQuestionDto q) =>
+        InvokeAsync(() => { Session.CurrentQuestion = q; LoadQuestion(q); StateHasChanged(); });
+
+    void OnAnswerReceived(AnswerResultDto r) =>
+        InvokeAsync(() =>
+        {
+            pointsEarned = r.PointsEarned; showPoints = r.PointsEarned > 0;
+            statusMsg = r.Message ?? (r.Success ? "Correct!" : "Wrong!");
+            StateHasChanged();
+        });
+
+    void OnPlayerAnswered(string name) =>
+        InvokeAsync(() => { statusMsg = $"{name} answered!"; StateHasChanged(); });
+
+    void OnQuestionEnded(QuestionResultDto r) =>
+        InvokeAsync(() =>
+        {
+            _timer?.Stop(); inputEnabled = false;
+            foreach (var btn in answerButtons)
+            {
+                if (btn.Answer.AnswerId == r.CorrectAnswerId) btn.State = AnswerState.Correct;
+                else if (btn.Answer.AnswerId == selectedAnswerId) btn.State = AnswerState.Wrong;
+            }
+            roundScores = r.PlayerScores;
+            var me = r.PlayerScores.FirstOrDefault(p => p.UserId == Session.UserId);
+            if (me is not null) myScore = me.TotalScore;
+            showResults = true;
+            StateHasChanged();
+        });
+
+    void OnGameEnded(GameResultDto r) =>
+        InvokeAsync(() =>
+        {
+            Session.LastGameResult = r;
+            Nav.NavigateTo("/results");
+        });
+
+    void OnError(string msg) =>
+        InvokeAsync(() => { statusMsg = msg; StateHasChanged(); });
+
+    async Task SelectAnswer(AnswerButton btn)
+    {
+        if (!inputEnabled || selectedAnswerId != -1) return;
+        selectedAnswerId = btn.Answer.AnswerId;
+        btn.State = AnswerState.Selected;
+        inputEnabled = false;
+        _timer?.Stop();
+        try { await Hub.SubmitAnswerAsync(Code, currentQ!.QuestionId, btn.Answer.AnswerId); }
+        catch (Exception ex) { statusMsg = ex.Message; }
+    }
+
+    string AnswerClass(AnswerButton btn) => btn.State switch
+    {
+        AnswerState.Selected => "answer-selected",
+        AnswerState.Correct  => "answer-correct",
+        AnswerState.Wrong    => "answer-wrong",
+        _                    => ""
+    };
+
+    public ValueTask DisposeAsync()
+    {
+        Hub.QuestionStarted -= OnQuestionStarted;
+        Hub.AnswerReceived  -= OnAnswerReceived;
+        Hub.PlayerAnswered  -= OnPlayerAnswered;
+        Hub.QuestionEnded   -= OnQuestionEnded;
+        Hub.GameEnded       -= OnGameEnded;
+        Hub.ErrorReceived   -= OnError;
+        _timer?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    // Nested types
+    enum AnswerState { Available, Selected, Correct, Wrong }
+    class AnswerButton { public AnswerOptionDto Answer { get; set; } = null!; public AnswerState State { get; set; } }
+}

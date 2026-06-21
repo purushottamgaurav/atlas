@@ -1,0 +1,160 @@
+@page "/room/{Code}"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject SessionService Session
+@inject ApiService Api
+@inject HubService Hub
+@inject NavigationManager Nav
+
+<PageTitle>QuizBlitz — Room @Code</PageTitle>
+
+<div class="room-wrapper">
+
+    <div class="room-header">
+        <div>
+            <h1 class="room-quiz-title">@quizTitle</h1>
+            <div class="room-code-row">
+                <span class="text-secondary">Room Code:</span>
+                <span class="room-code-big">@Code</span>
+            </div>
+        </div>
+        <button class="btn-quiz btn-quiz-ghost" @onclick="Leave">Leave</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(statusMsg))
+    {
+        <div class="alert-error mb-3">@statusMsg</div>
+    }
+
+    <!-- Countdown overlay -->
+    @if (countingDown)
+    {
+        <div class="countdown-overlay">
+            <div class="countdown-card">
+                <p class="countdown-label">Game starting in</p>
+                <span class="countdown-number">@countdown</span>
+            </div>
+        </div>
+    }
+
+    <!-- Player list -->
+    <div class="player-grid">
+        @foreach (var p in players)
+        {
+            <div class="player-chip">
+                <span class="player-dot"></span>
+                <span>@p.Username</span>
+                @if (p.IsHost) { <span class="host-badge">HOST</span> }
+            </div>
+        }
+    </div>
+
+    <p class="text-secondary mt-3">@players.Count player(s) connected</p>
+
+    @if (Session.IsRoomHost)
+    {
+        <button class="btn-quiz btn-quiz-primary btn-lg mt-4" @onclick="StartGame" disabled="@busy">
+            &#9654; Start Game
+        </button>
+    }
+    else
+    {
+        <p class="text-secondary mt-4">Waiting for host to start...</p>
+    }
+</div>
+
+@code {
+    [Parameter] public string Code { get; set; } = "";
+
+    List<PlayerDto> players = [];
+    string quizTitle = "", statusMsg = "";
+    bool busy, countingDown;
+    int countdown;
+    System.Timers.Timer? countdownTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsLoggedIn) { Nav.NavigateTo("/login"); return; }
+        Session.CurrentRoomCode = Code;
+
+        // Subscribe to hub events
+        Hub.RoomStateReceived += OnRoomState;
+        Hub.PlayerJoined      += OnPlayerJoined;
+        Hub.PlayerLeft        += OnPlayerLeft;
+        Hub.GameStarting      += OnGameStarting;
+        Hub.QuestionStarted   += OnQuestionStarted;
+        Hub.ErrorReceived     += OnError;
+
+        // Load initial room state via REST
+        var state = await Api.GetRoomAsync(Code);
+        if (state is not null)
+        {
+            quizTitle = state.QuizTitle ?? "";
+            players = state.Players.ToList();
+        }
+    }
+
+    void OnRoomState(RoomStateDto state) =>
+        InvokeAsync(() => { players = state.Players.ToList(); quizTitle = state.QuizTitle ?? ""; StateHasChanged(); });
+
+    void OnPlayerJoined(PlayerDto p) =>
+        InvokeAsync(() =>
+        {
+            if (!players.Any(x => x.UserId == p.UserId)) players.Add(p);
+            StateHasChanged();
+        });
+
+    void OnPlayerLeft(string name) =>
+        InvokeAsync(() => { players.RemoveAll(p => p.Username == name); StateHasChanged(); });
+
+    void OnGameStarting(int seconds) =>
+        InvokeAsync(() =>
+        {
+            countdown = seconds; countingDown = true; StateHasChanged();
+            countdownTimer = new System.Timers.Timer(1000);
+            countdownTimer.Elapsed += async (_, _) =>
+            {
+                countdown--;
+                if (countdown <= 0) countdownTimer!.Stop();
+                await InvokeAsync(StateHasChanged);
+            };
+            countdownTimer.Start();
+            return Task.CompletedTask;
+        });
+
+    void OnQuestionStarted(GameQuestionDto q) =>
+        InvokeAsync(() =>
+        {
+            Session.CurrentQuestion = q;
+            Nav.NavigateTo($"/game/{Code}");
+        });
+
+    void OnError(string msg) =>
+        InvokeAsync(() => { statusMsg = msg; StateHasChanged(); });
+
+    async Task StartGame()
+    {
+        busy = true;
+        try { await Hub.StartGameAsync(Code); }
+        catch (Exception ex) { statusMsg = ex.Message; }
+        finally { busy = false; }
+    }
+
+    async Task Leave()
+    {
+        try { await Hub.LeaveRoomAsync(Code); } catch { /* ignore */ }
+        Nav.NavigateTo("/lobby");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Hub.RoomStateReceived -= OnRoomState;
+        Hub.PlayerJoined      -= OnPlayerJoined;
+        Hub.PlayerLeft        -= OnPlayerLeft;
+        Hub.GameStarting      -= OnGameStarting;
+        Hub.QuestionStarted   -= OnQuestionStarted;
+        Hub.ErrorReceived     -= OnError;
+        countdownTimer?.Dispose();
+        await Task.CompletedTask;
+    }
+}
