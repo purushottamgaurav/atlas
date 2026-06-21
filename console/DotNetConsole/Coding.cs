@@ -367,5 +367,88 @@ namespace DotNetConsole
                     Console.Write(i + " ");
             }
         }
+
+        public static void Q4_Anagram()
+        {
+            string word = "listen";
+            string word2 = "silentt";
+
+            char[] a = word.ToArray();
+            char[] b = word2.ToArray();
+
+            Array.Sort(a);
+            Array.Sort(b);
+
+            if(new string(a)!= new string(b))
+            {
+                Console.WriteLine("Not an anagram");
+            }
+            else
+            {
+                Console.WriteLine("Anagram");
+            }
+        }
+
+        public static void Q5_CountOccurance()
+        {
+            string word = "programming";
+
+            Console.WriteLine($"Which character you want to count in {word}");
+            char c = char.Parse(Console.ReadLine());
+
+            char[] array = word.ToArray();
+            int count = 0;
+            foreach(char ch in array)
+            {
+                if (ch == c)
+                    count++;
+            }
+
+            Console.WriteLine(count);
+        }
+
+        public static void Q11_CountWords()
+        {
+            string sentence = " My name is PUrushottam Gaurav";
+            int count = 0;
+            string sanity = sentence.Trim();
+
+            char[] wordArray = sentence.ToArray();
+            
+            foreach( char c in wordArray)
+            {
+                if (c == ' ')
+                    count++;
+            }
+
+            Console.WriteLine($"No of words in the sentence is {count}");
+        }
+
+        public static void Q12_TitleCase()
+        {
+            string word = "my name is purushottam gaurav";
+            string sanitedWord = word.Trim();
+
+            char[] wordArray = word.ToArray();
+            bool spaceDetected = true;
+
+            for( int i = 0; i<wordArray.Length;i++)
+            {
+                if (spaceDetected)
+                   wordArray[i]= char.ToUpper(wordArray[i]);
+
+                if (wordArray[i]==' ')
+                {
+                    spaceDetected = true;
+                }
+                else
+                {
+                    spaceDetected = false;
+                }
+
+            }
+
+            Console.WriteLine(new string(wordArray));
+        }
     }
 }
