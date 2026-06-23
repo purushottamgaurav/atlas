@@ -28,11 +28,11 @@ public partial class RoomViewModel : ObservableObject
         _session = session;
 
         _hub.RoomStateReceived += OnRoomState;
-        _hub.PlayerJoined      += OnPlayerJoined;
-        _hub.PlayerLeft        += OnPlayerLeft;
-        _hub.GameStarting      += OnGameStarting;
-        _hub.QuestionStarted   += OnQuestionStarted;
-        _hub.ErrorReceived     += msg => StatusMessage = msg;
+        _hub.PlayerJoined += OnPlayerJoined;
+        _hub.PlayerLeft += OnPlayerLeft;
+        _hub.GameStarting += OnGameStarting;
+        _hub.QuestionStarted += OnQuestionStarted;
+        _hub.ErrorReceived += msg => StatusMessage = msg;
     }
 
     public void Initialize(RoomStateDto state, bool isHost)
@@ -112,9 +112,9 @@ public partial class RoomViewModel : ObservableObject
     private void Detach()
     {
         _hub.RoomStateReceived -= OnRoomState;
-        _hub.PlayerJoined      -= OnPlayerJoined;
-        _hub.PlayerLeft        -= OnPlayerLeft;
-        _hub.GameStarting      -= OnGameStarting;
-        _hub.QuestionStarted   -= OnQuestionStarted;
+        _hub.PlayerJoined -= OnPlayerJoined;
+        _hub.PlayerLeft -= OnPlayerLeft;
+        _hub.GameStarting -= OnGameStarting;
+        _hub.QuestionStarted -= OnQuestionStarted;
     }
 }

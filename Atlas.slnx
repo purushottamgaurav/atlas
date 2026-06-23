@@ -19,5 +19,6 @@
     <Project Path="web/DotNetFunctions/DotNetFunctions.csproj" Id="e264bf97-7143-4753-aa9a-2d44c7b83417" />
     <Project Path="web/DotNetMvc/DotNetMvc.csproj" Id="1a6f10e7-7115-4946-9ce2-58102612d843" />
     <Project Path="web/DotNetWebApi/DotNetWebApi.csproj" Id="a4cca474-8ffe-4530-9c1e-ea6f908a93ae" />
+    <Project Path="web/DotNetWebApiPractise/DotNetWebApiPractise.csproj" Id="20a98086-9d4a-4461-8c45-7135f16c2c43" />
   </Folder>
 </Solution>

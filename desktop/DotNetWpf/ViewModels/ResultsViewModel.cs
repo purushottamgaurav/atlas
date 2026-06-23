@@ -33,7 +33,7 @@ public partial class ResultsViewModel : ObservableObject
         var me = result.Leaderboard?.FirstOrDefault(e => e.UserId == _session.UserId);
         if (me != null)
         {
-            MyRank  = me.Rank;
+            MyRank = me.Rank;
             MyScore = me.TotalScore;
         }
 

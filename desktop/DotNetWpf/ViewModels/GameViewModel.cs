@@ -48,12 +48,12 @@ public partial class GameViewModel : ObservableObject
         _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTimerTick;
 
-        _hub.AnswerReceived   += OnAnswerReceived;
-        _hub.QuestionEnded    += OnQuestionEnded;
-        _hub.QuestionStarted  += OnQuestionStarted;
-        _hub.GameEnded        += OnGameEnded;
-        _hub.PlayerAnswered   += name => StatusMessage = $"{name} answered!";
-        _hub.ErrorReceived    += msg => StatusMessage = msg;
+        _hub.AnswerReceived += OnAnswerReceived;
+        _hub.QuestionEnded += OnQuestionEnded;
+        _hub.QuestionStarted += OnQuestionStarted;
+        _hub.GameEnded += OnGameEnded;
+        _hub.PlayerAnswered += name => StatusMessage = $"{name} answered!";
+        _hub.ErrorReceived += msg => StatusMessage = msg;
     }
 
     public void LoadQuestion(GameQuestionDto question, string roomCode)
@@ -62,15 +62,15 @@ public partial class GameViewModel : ObservableObject
         _currentQuestionId = question.QuestionId;
         _selectedAnswerId = null;
 
-        QuestionText    = question.Text;
-        QuestionNumber  = question.QuestionNumber;
-        TotalQuestions  = question.TotalQuestions;
+        QuestionText = question.Text;
+        QuestionNumber = question.QuestionNumber;
+        TotalQuestions = question.TotalQuestions;
         TimeLimitSeconds = question.TimeLimitSeconds;
-        TimeLeft        = question.TimeLimitSeconds;
-        StatusMessage   = string.Empty;
+        TimeLeft = question.TimeLimitSeconds;
+        StatusMessage = string.Empty;
         ShowRoundResults = false;
         ShowPointsEarned = false;
-        InputEnabled    = true;
+        InputEnabled = true;
 
         AnswerButtons = new ObservableCollection<AnswerButtonViewModel>(
             question.Answers.Select(a => new AnswerButtonViewModel { Answer = a }));
@@ -157,9 +157,9 @@ public partial class GameViewModel : ObservableObject
 
     private void Detach()
     {
-        _hub.AnswerReceived  -= OnAnswerReceived;
-        _hub.QuestionEnded   -= OnQuestionEnded;
+        _hub.AnswerReceived -= OnAnswerReceived;
+        _hub.QuestionEnded -= OnQuestionEnded;
         _hub.QuestionStarted -= OnQuestionStarted;
-        _hub.GameEnded       -= OnGameEnded;
+        _hub.GameEnded -= OnGameEnded;
     }
 }
