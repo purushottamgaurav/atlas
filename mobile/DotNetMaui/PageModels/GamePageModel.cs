@@ -18,17 +18,17 @@ public partial class AnswerButtonModel : ObservableObject
     public Color BackgroundColor => State switch
     {
         AnswerState.Selected => Color.FromArgb("#2D2D80"),
-        AnswerState.Correct  => Color.FromArgb("#1A4A2E"),
-        AnswerState.Wrong    => Color.FromArgb("#4A1A1A"),
-        _                    => Color.FromArgb("#1E1E38")
+        AnswerState.Correct => Color.FromArgb("#1A4A2E"),
+        AnswerState.Wrong => Color.FromArgb("#4A1A1A"),
+        _ => Color.FromArgb("#1E1E38")
     };
 
     public Color BorderColor => State switch
     {
         AnswerState.Selected => Color.FromArgb("#6C63FF"),
-        AnswerState.Correct  => Color.FromArgb("#2ECC71"),
-        AnswerState.Wrong    => Color.FromArgb("#FF4757"),
-        _                    => Color.FromArgb("#2D2D55")
+        AnswerState.Correct => Color.FromArgb("#2ECC71"),
+        AnswerState.Wrong => Color.FromArgb("#FF4757"),
+        _ => Color.FromArgb("#2D2D55")
     };
 }
 

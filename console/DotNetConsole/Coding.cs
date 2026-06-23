@@ -12,6 +12,10 @@ namespace DotNetConsole
         public static void Q1_ReverseString()
         {
             var name = "hello";
+
+            //LinQ
+            //Console.WriteLine(new string(name.Reverse().ToArray()));
+
             char[] charsOld = name.ToCharArray();
 
             int stringLenth = charsOld.Length;
@@ -45,115 +49,6 @@ namespace DotNetConsole
         }
 
 
-        public static void Q31_Largest()
-        {
-            int[] array = new int[] { 4, 5, 9, 6, 6, 15 };
-            int length = array.Length;
-            int largest = array[0];
-
-            for (int i = 0; i < length; i++)
-            {
-                if (array[i] > largest)
-                    largest = array[i];
-            }
-
-            Console.WriteLine($"Largest number is {largest}");
-        }
-
-        public static void Q33_ArraySum()
-        {
-            int[] numbers = new int[] { 2, 5, 9, 7, 6 };
-
-            int sum = 0;
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                sum += numbers[i];
-            }
-
-            Console.WriteLine($"The sum is {sum}");
-        }
-
-        public static void Q32_LowestNumber()
-        {
-            int[] nums = new int[] { 5, 8, 1, 9, 16, 54 };
-
-            int lowest = nums[0];
-
-            for (int i = 0; i < nums.Length; i++)
-            {
-                if (lowest > nums[i])
-                    lowest = nums[i];
-            }
-
-            Console.WriteLine($"The smallest number is {lowest}");
-        }
-
-        public static void Q34_AverageArray()
-        {
-            int[] numbers = { 5, 8, 6, 8, 9, 4, 35 };
-            double average = numbers.Average();
-
-            Console.WriteLine($"The average is {average}");
-        }
-
-        public static void Q35_ReverseArray()
-        {
-            int[] numbers = { 1, 5, 8, 6, 3, 7, 9 };
-            int[] reverse = new int[numbers.Length];
-
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                reverse[numbers.Length - 1 - i] = numbers[i];
-            }
-
-            Array.ForEach(reverse, x => Console.WriteLine(x));
-        }
-
-        public static void Q36_RemoveDuplicates()
-        {
-            //int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
-            //int[] result = nums.Distinct().ToArray();
-
-            int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
-            int[] newArray = new int[nums.Length];
-            newArray[0] = nums[0];
-            int uniquecount = 1;
-
-            bool IsUnique(int number)
-            {
-                for (int i = 0; i < newArray.Length; i++)
-                {
-                    if (newArray[i] == number)
-                        return false;
-                }
-
-                return true;
-            }
-
-            for (int i = 0; i < nums.Length; i++)
-            {
-                for (int j = i + 1; j <= nums.Length - 1; j++)
-                {
-                    if (nums[i] != nums[j])
-                    {
-                        if (!IsUnique(nums[j]))
-                            continue;
-
-                        newArray[uniquecount] = nums[j];
-                        uniquecount++;
-                    }
-                }
-            }
-
-            int[] result = new int[uniquecount];
-            for (int i = 0; i < uniquecount; i++)
-            {
-                result[i] = newArray[i];
-            }
-
-            Array.ForEach(result, x => Console.WriteLine(x));
-
-        }
 
 
         public static void Q3_CountVowels_Consonants()
@@ -175,6 +70,45 @@ namespace DotNetConsole
             }
 
             Console.WriteLine($"Consonants- {ccount}, Vowels- {vcount}");
+        }
+
+        public static void Q4_Anagram()
+        {
+            string word = "listen";
+            string word2 = "silentt";
+
+            char[] a = word.ToArray();
+            char[] b = word2.ToArray();
+
+            Array.Sort(a);
+            Array.Sort(b);
+
+            if (new string(a) != new string(b))
+            {
+                Console.WriteLine("Not an anagram");
+            }
+            else
+            {
+                Console.WriteLine("Anagram");
+            }
+        }
+
+        public static void Q5_CountOccurance()
+        {
+            string word = "programming";
+
+            Console.WriteLine($"Which character you want to count in {word}");
+            char c = char.Parse(Console.ReadLine());
+
+            char[] array = word.ToArray();
+            int count = 0;
+            foreach (char ch in array)
+            {
+                if (ch == c)
+                    count++;
+            }
+
+            Console.WriteLine(count);
         }
 
         public static void Q6_RemoveSpaces()
@@ -286,6 +220,249 @@ namespace DotNetConsole
             Console.WriteLine($"It contains only digit: {digit}");
         }
 
+
+        public static void Q11_CountWords()
+        {
+            string sentence = " My name is PUrushottam Gaurav";
+            int count = 0;
+            string sanity = sentence.Trim();
+
+            char[] wordArray = sentence.ToArray();
+
+            foreach (char c in wordArray)
+            {
+                if (c == ' ')
+                    count++;
+            }
+
+            Console.WriteLine($"No of words in the sentence is {count}");
+        }
+
+        public static void Q12_TitleCase()
+        {
+            string word = "my name is purushottam gaurav";
+            string sanitedWord = word.Trim();
+
+            char[] wordArray = word.ToArray();
+            bool spaceDetected = true;
+
+            for (int i = 0; i < wordArray.Length; i++)
+            {
+                if (spaceDetected)
+                    wordArray[i] = char.ToUpper(wordArray[i]);
+
+                if (wordArray[i] == ' ')
+                {
+                    spaceDetected = true;
+                }
+                else
+                {
+                    spaceDetected = false;
+                }
+
+            }
+
+            Console.WriteLine(new string(wordArray));
+        }
+
+        public static void Q14_RemoveDuplicates()
+        {
+            string name = "Purushottam";
+
+            //LinQ
+            //var a = new string(name.Distinct().ToArray());
+            //Console.WriteLine(a);
+
+            Dictionary<char, int> lookup = new Dictionary<char, int>();
+            string result = "";
+
+            foreach (char c in name)
+            {
+                if (!lookup.ContainsKey(c))
+                {
+                    lookup[c] = 1;
+                    result += c;
+                }
+            }
+
+            Console.WriteLine(result);
+        }
+
+        public static void Q15_LongestWord()
+        {
+            string word = " My name is Purushottam Gaurav";
+
+            //LinQ
+            //var longest = word.Split(' ').OrderByDescending(x=>x.Length).First();
+            //Console.WriteLine(longest);
+
+            var allWords = word.Split(' ');
+            int max = 0;
+
+            foreach (string s in allWords)
+            {
+                if (s.Length > max)
+                    max = s.Length;
+            }
+
+            Console.WriteLine(new string(allWords.Where(x => x.Length == max).First()));
+        }
+
+        public static void Q16_CountFrequency()
+        {
+            string word = " Purushottam";
+
+            //LinQ
+            //word.GroupBy(x => x).OrderBy(g=>g.Key).ToList().ForEach(x=>Console.WriteLine());
+
+            Dictionary<char, int> lookUp = new Dictionary<char, int>();
+
+            foreach (char c in word)
+            {
+                if (lookUp.ContainsKey(c))
+                {
+                    lookUp[c]++;
+                }
+                else
+                    lookUp[c] = 1;
+
+            }
+
+            foreach (var k in lookUp)
+            {
+                Console.WriteLine($"{k.Key} : {k.Value}");
+            }
+        }
+
+        public static void Q17_ReplaceOccurance()
+        {
+            string word = "I love cats, cats are amazing";
+
+            //LinQ
+            //Console.WriteLine( word.Replace("cats", "dogs"));
+
+
+        }
+        public static void Q31_Largest()
+        {
+            int[] array = new int[] { 4, 5, 9, 6, 6, 15 };
+            //LinQ
+            //Console.WriteLine(array.Max());
+
+            int length = array.Length;
+            int largest = array[0];
+
+            for (int i = 0; i < length; i++)
+            {
+                if (array[i] > largest)
+                    largest = array[i];
+            }
+
+            Console.WriteLine($"Largest number is {largest}");
+        }
+
+        public static void Q33_ArraySum()
+        {
+            int[] numbers = new int[] { 2, 5, 9, 7, 6 };
+
+            //LinQ
+            //Console.WriteLine(numbers.Sum());
+
+            int sum = 0;
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                sum += numbers[i];
+            }
+
+            Console.WriteLine($"The sum is {sum}");
+        }
+
+        public static void Q32_LowestNumber()
+        {
+            int[] nums = new int[] { 5, 8, 1, 9, 16, 54 };
+
+            //LinQ
+            //Console.WriteLine(nums.Min());
+
+            int lowest = nums[0];
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (lowest > nums[i])
+                    lowest = nums[i];
+            }
+
+            Console.WriteLine($"The smallest number is {lowest}");
+        }
+
+        public static void Q34_AverageArray()
+        {
+            int[] numbers = { 5, 8, 6, 8, 9, 4, 35 };
+            double average = numbers.Average();
+
+            Console.WriteLine($"The average is {average}");
+        }
+
+        public static void Q35_ReverseArray()
+        {
+            int[] numbers = { 1, 5, 8, 6, 3, 7, 9 };
+            int[] reverse = new int[numbers.Length];
+
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                reverse[numbers.Length - 1 - i] = numbers[i];
+            }
+
+            Array.ForEach(reverse, x => Console.WriteLine(x));
+        }
+
+        public static void Q36_RemoveDuplicates()
+        {
+            //int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
+            //int[] result = nums.Distinct().ToArray();
+
+            int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
+            int[] newArray = new int[nums.Length];
+            newArray[0] = nums[0];
+            int uniquecount = 1;
+
+            bool IsUnique(int number)
+            {
+                for (int i = 0; i < newArray.Length; i++)
+                {
+                    if (newArray[i] == number)
+                        return false;
+                }
+
+                return true;
+            }
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                for (int j = i + 1; j <= nums.Length - 1; j++)
+                {
+                    if (nums[i] != nums[j])
+                    {
+                        if (!IsUnique(nums[j]))
+                            continue;
+
+                        newArray[uniquecount] = nums[j];
+                        uniquecount++;
+                    }
+                }
+            }
+
+            int[] result = new int[uniquecount];
+            for (int i = 0; i < uniquecount; i++)
+            {
+                result[i] = newArray[i];
+            }
+
+            Array.ForEach(result, x => Console.WriteLine(x));
+
+        }
+
+
         public static void Q76_RightTriangle()
         {
             Console.WriteLine("Print the number of rows");
@@ -368,87 +545,8 @@ namespace DotNetConsole
             }
         }
 
-        public static void Q4_Anagram()
-        {
-            string word = "listen";
-            string word2 = "silentt";
 
-            char[] a = word.ToArray();
-            char[] b = word2.ToArray();
 
-            Array.Sort(a);
-            Array.Sort(b);
 
-            if (new string(a) != new string(b))
-            {
-                Console.WriteLine("Not an anagram");
-            }
-            else
-            {
-                Console.WriteLine("Anagram");
-            }
-        }
-
-        public static void Q5_CountOccurance()
-        {
-            string word = "programming";
-
-            Console.WriteLine($"Which character you want to count in {word}");
-            char c = char.Parse(Console.ReadLine());
-
-            char[] array = word.ToArray();
-            int count = 0;
-            foreach (char ch in array)
-            {
-                if (ch == c)
-                    count++;
-            }
-
-            Console.WriteLine(count);
-        }
-
-        public static void Q11_CountWords()
-        {
-            string sentence = " My name is PUrushottam Gaurav";
-            int count = 0;
-            string sanity = sentence.Trim();
-
-            char[] wordArray = sentence.ToArray();
-
-            foreach (char c in wordArray)
-            {
-                if (c == ' ')
-                    count++;
-            }
-
-            Console.WriteLine($"No of words in the sentence is {count}");
-        }
-
-        public static void Q12_TitleCase()
-        {
-            string word = "my name is purushottam gaurav";
-            string sanitedWord = word.Trim();
-
-            char[] wordArray = word.ToArray();
-            bool spaceDetected = true;
-
-            for (int i = 0; i < wordArray.Length; i++)
-            {
-                if (spaceDetected)
-                    wordArray[i] = char.ToUpper(wordArray[i]);
-
-                if (wordArray[i] == ' ')
-                {
-                    spaceDetected = true;
-                }
-                else
-                {
-                    spaceDetected = false;
-                }
-
-            }
-
-            Console.WriteLine(new string(wordArray));
-        }
     }
 }

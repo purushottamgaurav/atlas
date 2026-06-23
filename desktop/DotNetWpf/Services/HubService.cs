@@ -13,18 +13,18 @@ public class HubService
     private readonly SessionStore _session;
 
     // ── Server → Client events ────────────────────────────────────────────────
-    public event Action<RoomStateDto>?    RoomStateReceived;
-    public event Action<PlayerDto>?       PlayerJoined;
-    public event Action<string>?          PlayerLeft;
-    public event Action<int>?             GameStarting;       // payload = countdown seconds
+    public event Action<RoomStateDto>? RoomStateReceived;
+    public event Action<PlayerDto>? PlayerJoined;
+    public event Action<string>? PlayerLeft;
+    public event Action<int>? GameStarting;       // payload = countdown seconds
     public event Action<GameQuestionDto>? QuestionStarted;
     public event Action<AnswerResultDto>? AnswerReceived;
-    public event Action<string>?          PlayerAnswered;     // username who answered
+    public event Action<string>? PlayerAnswered;     // username who answered
     public event Action<QuestionResultDto>? QuestionEnded;
-    public event Action<GameResultDto>?   GameEnded;
-    public event Action<string>?          ErrorReceived;
-    public event Action?                  Reconnecting;
-    public event Action?                  Reconnected;
+    public event Action<GameResultDto>? GameEnded;
+    public event Action<string>? ErrorReceived;
+    public event Action? Reconnecting;
+    public event Action? Reconnected;
 
     public HubConnectionState State =>
         _connection?.State ?? HubConnectionState.Disconnected;
@@ -51,8 +51,8 @@ public class HubService
 
         RegisterHandlers();
 
-        _connection.Reconnecting  += _ => { Dispatch(() => Reconnecting?.Invoke()); return Task.CompletedTask; };
-        _connection.Reconnected   += _ => { Dispatch(() => Reconnected?.Invoke()); return Task.CompletedTask; };
+        _connection.Reconnecting += _ => { Dispatch(() => Reconnecting?.Invoke()); return Task.CompletedTask; };
+        _connection.Reconnected += _ => { Dispatch(() => Reconnected?.Invoke()); return Task.CompletedTask; };
 
         await _connection.StartAsync();
     }
@@ -85,9 +85,9 @@ public class HubService
             {
                 var dto = new AnswerResultDto
                 {
-                    Success      = data.TryGetProperty("success",      out var s) && s.GetBoolean(),
+                    Success = data.TryGetProperty("success", out var s) && s.GetBoolean(),
                     PointsEarned = data.TryGetProperty("pointsEarned", out var p) ? p.GetInt32() : 0,
-                    Message      = data.TryGetProperty("message",      out var m) ? m.GetString() : null,
+                    Message = data.TryGetProperty("message", out var m) ? m.GetString() : null,
                 };
                 Dispatch(() => AnswerReceived?.Invoke(dto));
             });

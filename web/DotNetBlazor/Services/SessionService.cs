@@ -1,4 +1,5 @@
 namespace DotNetBlazor.Services;
+
 using DotNetBlazor.Models;
 
 public class SessionService
