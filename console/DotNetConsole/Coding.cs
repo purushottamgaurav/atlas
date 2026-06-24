@@ -525,6 +525,24 @@ namespace DotNetConsole
 
         }
 
+        public static void Q79_FizzBuzz()
+        {
+            // 1 to N ,,, multiple of 3 ,, print Fizz and multiple of 5 print Buzz multipleof both print fIzzBuzz
+            int n = 20;
+
+            for( int i = 1; i<n;i++)
+            {
+                if ((i % 3) == 0 && (i % 5) == 0)
+                    Console.Write("FizzBuzz "); 
+                else if ((i % 3) == 0)
+                    Console.Write("Fizz ");
+                else if ((i % 5) == 0)
+                    Console.Write("Buzz ");
+                else Console.Write(i+ " ");
+            }
+
+        }
+
         public static void Q96_PrimeNumber()
         {
             for (int i = 3; i < 100; i++)

@@ -1,4 +1,5 @@
-﻿using DotNetWebApiPractise.Services;
+﻿using DotNetWebApiPractise.Custom;
+using DotNetWebApiPractise.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetWebApiPractise.Controllers
@@ -13,6 +14,8 @@ namespace DotNetWebApiPractise.Controllers
             _employeeService = employeeService;
         }
 
+        [ActionFilter]
+        [LoggingMethodName]
         [HttpGet()]
         public async Task<IActionResult> GetAllEmployee()
         {
