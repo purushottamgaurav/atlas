@@ -1,3 +1,4 @@
+using DotNetWebApiPractise.Custom;
 using DotNetWebApiPractise.Data;
 using DotNetWebApiPractise.Services;
 using Microsoft.AspNetCore.Authentication.Negotiate;
@@ -36,6 +37,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<LoggingMiddleware>();
 
 app.MapControllers();
 
