@@ -16,20 +16,28 @@ namespace DotNetConsole
             //LinQ
             //Console.WriteLine(new string(name.Reverse().ToArray()));
 
-            char[] charsOld = name.ToCharArray();
+            //char[] charsOld = name.ToCharArray();
 
-            int stringLenth = charsOld.Length;
+            //int stringLenth = charsOld.Length;
 
-            char[] charsNew = new char[stringLenth];
+            //char[] charsNew = new char[stringLenth];
 
-            for (int i = stringLenth; i > 0; i--)
+            //for (int i = stringLenth; i > 0; i--)
+            //{
+            //    charsNew[stringLenth - i] = charsOld[i - 1];
+            //}
+
+            //var newString = new String(charsNew);
+            //Console.WriteLine(newString);
+
+            // I 2
+            string reverse = string.Empty;
+            for(int i = 0; i< name.Length;i++)
             {
-                charsNew[stringLenth - i] = charsOld[i - 1];
+                reverse += name[name.Length - i-1];
             }
 
-            var newString = new String(charsNew);
-            Console.WriteLine(newString);
-
+            Console.WriteLine(reverse);
         }
 
 
@@ -169,36 +177,56 @@ namespace DotNetConsole
             string word = "Purushottam Gaurav";
             char[] wordArray = word.ToArray();
 
-            char[] duplicateArray = new char[wordArray.Length];
-            int count = 0;
-            for (int i = 0; i < wordArray.Length; i++)
-            {
-                if (isDuplicate(wordArray[i]))
-                    continue;
+            //char[] duplicateArray = new char[wordArray.Length];
+            //int count = 0;
+            //for (int i = 0; i < wordArray.Length; i++)
+            //{
+            //    if (isDuplicate(wordArray[i]))
+            //        continue;
 
-                for (int j = i + 1; j < wordArray.Length; j++)
+            //    for (int j = i + 1; j < wordArray.Length; j++)
+            //    {
+            //        if (wordArray[i] == wordArray[j])
+            //        {
+            //            duplicateArray[count] = wordArray[i];
+            //            count++;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            //bool isDuplicate(char c)
+            //{
+            //    foreach (char cd in duplicateArray)
+            //    {
+            //        if (cd == c)
+            //            return true;
+            //    }
+            //    return false;
+            //}
+
+            //Array.ForEach(duplicateArray, x => Console.WriteLine(x));
+
+            // I 2
+            Dictionary<char, int> unique = new Dictionary<char, int>();
+
+            foreach( char c in word)
+            {
+                if (unique.ContainsKey(c))
                 {
-                    if (wordArray[i] == wordArray[j])
-                    {
-                        duplicateArray[count] = wordArray[i];
-                        count++;
-                        break;
-                    }
+                    unique[c]++;
                 }
+                else
+                    unique[c] = 1;
             }
 
-            bool isDuplicate(char c)
+            foreach(var v in unique)
             {
-                foreach (char cd in duplicateArray)
+                if(v.Value>1)
                 {
-                    if (cd == c)
-                        return true;
+                    Console.WriteLine($"The duplicate entries are {v.Key}: Count {v.Value}");
                 }
-                return false;
             }
-
-            Array.ForEach(duplicateArray, x => Console.WriteLine(x));
-
 
         }
 
@@ -343,6 +371,71 @@ namespace DotNetConsole
 
 
         }
+
+        public static void Q18_SubString()
+        {
+            string subString = "Helloo";
+            string word = "Hello World";
+
+            //if(word.Contains(subString))
+            //{
+            //    Console.WriteLine("Is a sub string");
+            //}
+
+            // T - 2
+
+        }
+
+        public static void Q19_Compress()
+        {
+            string word = "aaaabbccccccdd";
+
+            Dictionary<char, int> freq = new();
+
+            foreach( char c in word)
+            {
+                if (freq.ContainsKey(c))
+                    freq[c]++;
+                else freq[c] = 1;
+            }
+
+            foreach( var v in freq)
+            {
+                Console.Write(v.Key + "" + v.Value);
+            }
+        }
+
+       
+        public static void Q21_Most_Frequent()
+        {
+            string word = "mississippi";
+
+            Dictionary<char, int> freq = new();
+            foreach(char c in word)
+            {
+                if (freq.ContainsKey(c))
+                    freq[c]++;
+                else freq[c] = 1;
+            }
+
+            var highest = freq.OrderByDescending(x => x.Value).First();
+            Console.WriteLine(highest.Key + "" + highest.Value);
+        }
+
+        public static void Q22_UniqueChara()
+        {
+            string word = "puru";
+
+            if (word.Distinct().Count() == word.Length)
+                Console.WriteLine("Is Unique");
+        }
+
+        public static void Q23_ReverseVowels()
+        {
+              
+        }
+
+
         public static void Q31_Largest()
         {
             int[] array = new int[] { 4, 5, 9, 6, 6, 15 };

@@ -720,7 +720,7 @@ select c.customername, p.productname, p.productprice
 select c.customername, p.productname
     from Customers c
     left join Products p on c.customerid = p.productbuyerid
-
+     
 -- ─────────────────────────────────────────────────────────────
 -- Q9. Find customers who have NOT bought any product.
 -- ─────────────────────────────────────────────────────────────
