@@ -1,13 +1,16 @@
-# .NET Developer MCQ Exam (3 Years Experience)
-### 200 Questions with Detailed Explanations
+# .NET Developer MCQ Exam
+### Beginner → Intermediate | Heavy on Code / Output Prediction
+
+> Solve every question first. Scroll to the **Answer Key** at the bottom for answers + brief explanations.
+> Focus is on logical, output-prediction, and code-trace questions over pure theory.
 
 ---
 
-## SECTION 1: C# FUNDAMENTALS & ADVANCED CONCEPTS (Q1–Q35)
+## SECTION 1: C# BASICS & OUTPUT PREDICTION (Q1–Q35)
 
 ---
 
-**Q1.** What is the output of the following code?
+**Q1.** What is the output?
 ```csharp
 int x = 5;
 Console.WriteLine(x++ + " " + ++x);
@@ -17,93 +20,89 @@ Console.WriteLine(x++ + " " + ++x);
 - C) 5 6
 - D) 6 6
 
-**✅ Answer: A) 5 7**
+---
 
-> `x++` is post-increment: uses current value (5), then increments x to 6. `++x` is pre-increment: increments x from 6 to 7, then uses it. Result: "5 7".
+**Q2.** What is the output?
+```csharp
+int a = 10, b = 3;
+Console.Write(a / b + " " + a % b);
+```
+- A) 3.33 1
+- B) 3 1
+- C) 3.33 0.33
+- D) 4 1
 
 ---
 
-**Q2.** Which access modifier makes a member accessible only within the same assembly?
+**Q3.** What is the output?
+```csharp
+int i = 1;
+while (i < 5) { i *= 2; }
+Console.Write(i);
+```
+- A) 4
+- B) 8
+- C) 16
+- D) 5
+
+---
+
+**Q4.** What is the output?
+```csharp
+string s = "abc";
+s += "def";
+Console.Write(s.Length);
+```
+- A) 3
+- B) 6
+- C) 7
+- D) Error
+
+---
+
+**Q5.** What is the output?
+```csharp
+int[] arr = { 1, 2, 3, 4 };
+Console.Write(arr.Length + " " + arr[arr.Length - 1]);
+```
+- A) 3 4
+- B) 4 4
+- C) 4 3
+- D) 5 4
+
+---
+
+**Q6.** Which access modifier makes a member accessible only within the same assembly?
 - A) private
 - B) protected
 - C) internal
 - D) public
 
-**✅ Answer: C) internal**
+---
 
-> `internal` restricts access to the current assembly. `private` is class-only, `protected` allows derived classes (even in other assemblies), and `public` is unrestricted.
+**Q7.** What is the output?
+```csharp
+bool b = true;
+Console.Write(!b || (1 == 1));
+```
+- A) True
+- B) False
+- C) 1
+- D) Error
 
 ---
 
-**Q3.** What does the `sealed` keyword do when applied to a class?
-- A) Prevents the class from being instantiated
-- B) Prevents the class from being inherited
-- C) Makes all members private
-- D) Makes the class static
-
-**✅ Answer: B) Prevents the class from being inherited**
-
-> `sealed` prevents inheritance. Unlike `abstract` (which can't be instantiated), `sealed` classes can be instantiated but not subclassed. `string` in .NET is a classic example of a sealed class.
-
----
-
-**Q4.** What is the difference between `ref` and `out` parameters in C#?
-- A) `ref` requires initialization before passing; `out` does not
-- B) `out` requires initialization before passing; `ref` does not
-- C) Both require initialization before passing
-- D) Neither requires initialization
-
-**✅ Answer: A) `ref` requires initialization before passing; `out` does not**
-
-> `ref` passes an already-initialized variable by reference. `out` is used when a method returns multiple values — the caller doesn't need to initialize, but the method must assign a value before returning.
-
----
-
-**Q5.** What is boxing and unboxing in C#?
-- A) Converting a value type to a reference type and vice versa
-- B) Converting a string to an integer and vice versa
-- C) Wrapping a method in a delegate
-- D) Casting between two reference types
-
-**✅ Answer: A) Converting a value type to a reference type and vice versa**
-
-> Boxing wraps a value type (e.g., `int`) into a heap-allocated `object`. Unboxing extracts it back. This involves memory allocation and type checking, making it a performance concern in loops.
-
----
-
-**Q6.** Which of the following is a value type in C#?
-- A) string
-- B) object
-- C) struct
-- D) class
-
-**✅ Answer: C) struct**
-
-> `struct` is a value type stored on the stack (or inline). `string`, `object`, and `class` types are reference types stored on the heap.
-
----
-
-**Q7.** What keyword is used to define an extension method?
-- A) virtual
-- B) static
-- C) override
-- D) partial
-
-**✅ Answer: B) static**
-
-> Extension methods are defined in a `static` class using a `static` method, with the first parameter prefixed with `this`. Example: `public static int WordCount(this string str)`.
-
----
-
-**Q8.** What is a delegate in C#?
-- A) A base class for all types
-- B) A type-safe function pointer
-- C) A keyword for async programming
-- D) A type of interface
-
-**✅ Answer: B) A type-safe function pointer**
-
-> A delegate is a type that holds a reference to a method with a compatible signature. It enables callback patterns, events, and LINQ lambdas. `Func<>`, `Action<>`, and `Predicate<>` are built-in generic delegates.
+**Q8.** What is the output?
+```csharp
+int x = 5;
+int y = x;
+y = 10;
+Console.Write(x + " " + y);
+```
+- A) 10 10
+- B) 5 10
+- C) 5 5
+- D) 10 5
 
 ---
 
@@ -111,2386 +110,2370 @@ Console.WriteLine(x++ + " " + ++x);
 ```csharp
 string a = "hello";
 string b = "hello";
-Console.WriteLine(object.ReferenceEquals(a, b));
+Console.Write(object.ReferenceEquals(a, b));
 ```
 - A) False
 - B) True
 - C) Compile error
 - D) Runtime exception
 
-**✅ Answer: B) True**
-
-> C# interns string literals at compile time. Both `a` and `b` point to the same interned string object in memory, so `ReferenceEquals` returns `true`.
-
 ---
 
-**Q10.** What does the `?? ` operator do?
+**Q10.** What does the `??` operator do?
 - A) Checks for null and throws an exception
 - B) Returns the left operand if not null, otherwise returns the right operand
 - C) Converts null to a boolean false
 - D) Performs a null-safe method call
 
-**✅ Answer: B) Returns the left operand if not null, otherwise returns the right operand**
+---
 
-> The null-coalescing operator `??` returns the left-hand value if it's not null; otherwise it returns the right-hand value. E.g., `string name = input ?? "default"`.
+**Q11.** What is the output?
+```csharp
+int? a = null;
+int b = a ?? 99;
+Console.Write(b);
+```
+- A) 0
+- B) null
+- C) 99
+- D) Exception
 
 ---
 
-**Q11.** Which of the following correctly describes a `record` type in C# 9+?
-- A) A mutable reference type with auto-generated constructors
-- B) An immutable reference type with value-based equality
-- C) A value type similar to a struct
-- D) An abstract class with required members
-
-**✅ Answer: B) An immutable reference type with value-based equality**
-
-> `record` types in C# 9+ are reference types that use value-based equality (comparing property values, not references), support `with` expressions for non-destructive mutation, and auto-generate `ToString`, `GetHashCode`, and `Equals`.
-
----
-
-**Q12.** What is the purpose of the `using` statement in C#?
-- A) To import namespaces
-- B) To ensure IDisposable objects are properly disposed
-- C) Both A and B
-- D) To declare global variables
-
-**✅ Answer: C) Both A and B**
-
-> `using` serves two purposes: as a directive to import namespaces (`using System;`), and as a statement to ensure `IDisposable` objects are disposed after the block (`using (var conn = new SqlConnection(...)) { }`).
+**Q12.** What is the output?
+```csharp
+int? a = null;
+int? b = 5;
+Console.WriteLine((a + b)?.ToString() ?? "null");
+```
+- A) 5
+- B) null
+- C) 0
+- D) Throws NullReferenceException
 
 ---
 
-**Q13.** What is the difference between `IEnumerable<T>` and `IQueryable<T>`?
-- A) `IEnumerable` is for in-memory collections; `IQueryable` allows expression trees to be translated (e.g., to SQL)
-- B) `IQueryable` is faster for in-memory operations
-- C) `IEnumerable` works with databases; `IQueryable` works with lists
-- D) There is no difference
-
-**✅ Answer: A) `IEnumerable` is for in-memory collections; `IQueryable` allows expression trees to be translated (e.g., to SQL)**
-
-> `IEnumerable` processes data in memory (C# code). `IQueryable` builds expression trees that providers (like EF Core) translate to SQL, allowing server-side filtering. Using `IEnumerable` on a DB query fetches all rows first, then filters — a serious performance pitfall.
+**Q13.** What does the `sealed` keyword do when applied to a class?
+- A) Prevents the class from being instantiated
+- B) Prevents the class from being inherited
+- C) Makes all members private
+- D) Makes the class static
 
 ---
 
-**Q14.** What does `virtual` keyword allow?
-- A) A method to be called without an object instance
-- B) A method to be overridden in derived classes
-- C) A method to be hidden in derived classes
-- D) A method to run asynchronously
-
-**✅ Answer: B) A method to be overridden in derived classes**
-
-> `virtual` marks a method as overridable. Derived classes use `override` to provide a new implementation. Without `virtual`, a method cannot be polymorphically overridden (only hidden with `new`).
+**Q14.** What is the difference between `ref` and `out` parameters?
+- A) `ref` requires initialization before passing; `out` does not
+- B) `out` requires initialization before passing; `ref` does not
+- C) Both require initialization
+- D) Neither requires initialization
 
 ---
 
-**Q15.** What is the difference between `abstract` class and `interface` in C# 8+?
-- A) Interfaces can have default implementations; abstract classes cannot have constructors
-- B) Abstract classes can have state and constructors; interfaces can have default method implementations but not state
-- C) They are identical in C# 8+
-- D) Interfaces support multiple inheritance; abstract classes do not
-
-**✅ Answer: B) Abstract classes can have state and constructors; interfaces can have default method implementations but not state**
-
-> In C# 8+, interfaces gained default implementations. However, abstract classes can have fields, constructors, and full state. Interfaces still cannot have instance fields. A class can implement multiple interfaces but inherit from only one abstract class.
-
----
-
-**Q16.** What is a `Func<int, int, bool>` delegate?
-- A) A function taking two booleans and returning an int
-- B) A function taking two ints and returning a bool
-- C) A function taking a bool and returning two ints
-- D) A function taking no parameters and returning a bool
-
-**✅ Answer: B) A function taking two ints and returning a bool**
-
-> In `Func<T1, T2, TResult>`, the last type parameter is always the return type. So `Func<int, int, bool>` takes two `int` parameters and returns a `bool`.
+**Q15.** What is the output?
+```csharp
+void Increment(int x) { x++; }
+int n = 5;
+Increment(n);
+Console.Write(n);
+```
+- A) 5
+- B) 6
+- C) 0
+- D) Error
 
 ---
 
-**Q17.** What is covariance in C# generics?
-- A) Allowing a derived type where a base type is expected (using `out`)
-- B) Allowing a base type where a derived type is expected (using `in`)
-- C) Converting value types to reference types
-- D) Enabling method overloading with generic constraints
-
-**✅ Answer: A) Allowing a derived type where a base type is expected (using `out`)**
-
-> Covariance (`out`) allows using a more derived type. E.g., `IEnumerable<Dog>` can be assigned to `IEnumerable<Animal>` because `IEnumerable<T>` is covariant. Contravariance (`in`) works the other direction.
-
----
-
-**Q18.** What does the `params` keyword do?
-- A) Makes a parameter optional with a default value
-- B) Allows a method to accept a variable number of arguments as an array
-- C) Passes a parameter by reference
-- D) Declares named parameters
-
-**✅ Answer: B) Allows a method to accept a variable number of arguments as an array**
-
-> `params` lets callers pass any number of arguments: `void Log(params string[] messages)`. Internally, they're treated as an array. Only one `params` parameter is allowed per method, and it must be the last parameter.
+**Q16.** What is the output?
+```csharp
+void Increment(ref int x) { x++; }
+int n = 5;
+Increment(ref n);
+Console.Write(n);
+```
+- A) 5
+- B) 6
+- C) 0
+- D) Error
 
 ---
 
-**Q19.** What is the result of `typeof(int) == typeof(Int32)`?
-- A) False — they are different types
-- B) True — `int` is an alias for `System.Int32`
-- C) Compile error
-- D) Runtime exception
-
-**✅ Answer: B) True — `int` is an alias for `System.Int32`**
-
-> In C#, `int` is syntactic sugar for `System.Int32`. They are the same type, so `typeof(int) == typeof(Int32)` is `true`.
-
----
-
-**Q20.** What is a `partial` class?
-- A) A class that cannot be fully instantiated
-- B) A class definition split across multiple files
-- C) A class with some abstract methods
-- D) A class sealed from inheritance
-
-**✅ Answer: B) A class definition split across multiple files**
-
-> `partial` allows a class, struct, or interface to be split across multiple files. This is commonly used with code-generated files (e.g., EF migrations, WinForms designer) to separate auto-generated code from hand-written code.
+**Q17.** What is the output?
+```csharp
+int Foo(int x) => x switch {
+    < 0 => -1,
+    0 => 0,
+    > 0 and < 10 => 1,
+    _ => 10
+};
+Console.Write(Foo(-5) + " " + Foo(5) + " " + Foo(50));
+```
+- A) -1 1 10
+- B) 0 5 50
+- C) -5 5 50
+- D) Compile error
 
 ---
 
-**Q21.** Which collection should you use for fast key-value lookups?
-- A) List<T>
-- B) Queue<T>
-- C) Dictionary<TKey, TValue>
-- D) LinkedList<T>
-
-**✅ Answer: C) Dictionary<TKey, TValue>**
-
-> `Dictionary<TKey, TValue>` uses a hash table internally, giving O(1) average-case lookup, insertion, and deletion. `List<T>` is O(n) for lookups unless sorted.
+**Q18.** What is boxing?
+- A) Converting a value type to a reference type (wrapping it in an object)
+- B) Converting a string to an integer
+- C) Wrapping a method in a delegate
+- D) Casting between two reference types
 
 ---
 
-**Q22.** What is the purpose of `IDisposable`?
-- A) To mark a class as garbage-collected
-- B) To provide a deterministic cleanup mechanism for unmanaged resources
-- C) To prevent an object from being created more than once
-- D) To make a class serializable
-
-**✅ Answer: B) To provide a deterministic cleanup mechanism for unmanaged resources**
-
-> `IDisposable.Dispose()` is called explicitly (or via `using`) to release unmanaged resources (file handles, DB connections, etc.) before GC runs. GC handles managed memory but doesn't know about unmanaged resources.
+**Q19.** Which of the following is a value type?
+- A) string
+- B) object
+- C) struct
+- D) class
 
 ---
 
-**Q23.** What happens when you throw an exception inside a `finally` block?
-- A) The original exception is preserved and both are thrown
+**Q20.** What does `nameof(myVar)` return at compile time?
+- A) "var"
+- B) "myVar"
+- C) Type of myVar
+- D) Memory address
+
+---
+
+**Q21.** What is the output?
+```csharp
+public static int Test() {
+    try { return 1; }
+    finally { Console.Write("F"); }
+}
+Console.Write(Test());
+```
+- A) 1F
+- B) F1
+- C) 1
+- D) Compile error
+
+---
+
+**Q22.** What happens when you throw an exception inside a `finally` block?
+- A) The original exception is preserved
 - B) The finally exception replaces the original exception
 - C) Compile error
 - D) The finally block is skipped
 
-**✅ Answer: B) The finally exception replaces the original exception**
-
-> If an exception is thrown inside `finally`, it replaces the original exception. The original exception is lost. This is a common gotcha — avoid throwing from `finally` blocks.
-
 ---
 
-**Q24.** What is the difference between `==` and `.Equals()` for strings?
-- A) `==` compares references; `.Equals()` compares values
-- B) For strings, both compare values (content), but `==` is overloaded
-- C) `.Equals()` is case-sensitive; `==` is not
-- D) They are completely identical for all types
-
-**✅ Answer: B) For strings, both compare values (content), but `==` is overloaded**
-
-> The `string` class overloads `==` to compare content, not references. So `"abc" == "abc"` is `true`. But for general objects, `==` compares references. Always use `string.Equals(a, b, StringComparison.OrdinalIgnoreCase)` for culture-safe comparison.
-
----
-
-**Q25.** What is a nullable value type in C#?
-- A) A reference type that can hold null
-- B) A value type wrapped with `Nullable<T>` that can hold null
-- C) A string that defaults to null
-- D) An interface that returns null
-
-**✅ Answer: B) A value type wrapped with `Nullable<T>` that can hold null**
-
-> `int?` is shorthand for `Nullable<int>`. It adds a `HasValue` property and allows `null` assignment. Useful for database scenarios where numeric columns may be NULL.
-
----
-
-**Q26.** Which statement about `static` constructors is correct?
-- A) They can take parameters
-- B) They are called once per object instantiation
-- C) They are called once per type, automatically, before first use
-- D) They must be explicitly invoked
-
-**✅ Answer: C) They are called once per type, automatically, before first use**
-
-> A static constructor runs exactly once — the first time the type is used. It initializes static fields and cannot have access modifiers or parameters. You cannot control when it runs.
-
----
-
-**Q27.** What does `nameof()` return?
-- A) The full namespace path of a type
-- B) The compile-time string name of a variable, type, or member
-- C) The runtime type name
-- D) The assembly name
-
-**✅ Answer: B) The compile-time string name of a variable, type, or member**
-
-> `nameof(myVariable)` returns `"myVariable"` as a string at compile time. This is useful for argument validation (`throw new ArgumentNullException(nameof(param))`) because it's refactor-safe.
-
----
-
-**Q28.** What is pattern matching in C#?
-- A) Matching regex patterns against strings
-- B) Testing whether a value has a certain shape or type and extracting data from it
-- C) A design pattern for observer implementations
-- D) Matching method signatures to delegates
-
-**✅ Answer: B) Testing whether a value has a certain shape or type and extracting data from it**
-
-> Pattern matching (C# 7+) allows `is` type patterns (`if (obj is string s)`), switch expressions with patterns, property patterns (`obj is { Name: "Alice" }`), and more. It enables expressive, concise type discrimination.
-
----
-
-**Q29.** What is the difference between `throw` and `throw ex` in a catch block?
-- A) They are identical
-- B) `throw` rethrows the original exception preserving the stack trace; `throw ex` resets the stack trace
-- C) `throw ex` preserves the stack trace; `throw` resets it
+**Q23.** What is the difference between `throw` and `throw ex` in a catch block?
+- A) Identical
+- B) `throw` preserves the original stack trace; `throw ex` resets it
+- C) `throw ex` preserves stack trace; `throw` resets
 - D) `throw` only works for system exceptions
 
-**✅ Answer: B) `throw` rethrows the original exception preserving the stack trace; `throw ex` resets the stack trace**
+---
 
-> `throw;` (bare rethrow) preserves the original stack trace, making debugging easier. `throw ex;` starts a new stack trace from the current location, hiding the real origin of the error.
+**Q24.** What is the output?
+```csharp
+try {
+    Console.Write("A");
+    throw new Exception();
+} catch {
+    Console.Write("B");
+} finally {
+    Console.Write("C");
+}
+```
+- A) AB
+- B) ABC
+- C) AC
+- D) BCA
 
 ---
 
-**Q30.** What does `Span<T>` provide?
-- A) Thread-safe access to arrays
-- B) A type-safe, memory-safe slice of contiguous memory with no heap allocation
-- C) A lazy evaluation wrapper around collections
-- D) A thread-local storage mechanism
-
-**✅ Answer: B) A type-safe, memory-safe slice of contiguous memory with no heap allocation**
-
-> `Span<T>` is a stack-only struct that represents a contiguous region of memory (array slice, stack memory, native memory) without allocating on the heap. It enables high-performance, zero-copy operations.
-
----
-
-**Q31.** What does `yield return` do?
-- A) Exits the current method with a value
-- B) Creates a lazy, stateful iterator without manually implementing IEnumerator
-- C) Returns a Task with a result
-- D) Yields CPU time to another thread
-
-**✅ Answer: B) Creates a lazy, stateful iterator without manually implementing IEnumerator**
-
-> `yield return` pauses the method, returns a value, and resumes from where it left off on the next call. The compiler generates a state machine that implements `IEnumerator<T>`. Useful for memory-efficient sequences.
+**Q25.** What is the output?
+```csharp
+int x = 10;
+if (x > 5)
+    if (x > 20)
+        Console.Write("A");
+    else
+        Console.Write("B");
+```
+- A) A
+- B) B
+- C) AB
+- D) (no output)
 
 ---
 
-**Q32.** What is the `dynamic` type in C#?
-- A) A type resolved at compile time
-- B) A type that bypasses compile-time type checking and is resolved at runtime
-- C) A synonym for `object`
-- D) A type that always returns the fastest available overload
-
-**✅ Answer: B) A type that bypasses compile-time type checking and is resolved at runtime**
-
-> `dynamic` defers type checking to runtime via the DLR (Dynamic Language Runtime). Useful for interop with COM, reflection-heavy code, or dynamic languages. It trades compile-time safety for flexibility.
-
----
-
-**Q33.** What is the purpose of the `volatile` keyword?
-- A) Prevents a field from being serialized
-- B) Ensures a field is always read/written directly to main memory, preventing CPU caching optimizations
-- C) Makes a field thread-safe
-- D) Prevents the garbage collector from collecting the field
-
-**✅ Answer: B) Ensures a field is always read/written directly to main memory, preventing CPU caching optimizations**
-
-> `volatile` tells the compiler and CPU not to cache the field value in a register. It prevents instruction reordering for that field. However, it does not guarantee atomicity for compound operations — use `Interlocked` or `lock` for that.
+**Q26.** What is the output?
+```csharp
+for (int i = 0; i < 3; i++) {
+    if (i == 1) continue;
+    Console.Write(i);
+}
+```
+- A) 012
+- B) 02
+- C) 12
+- D) 0
 
 ---
 
-**Q34.** What is the output?
+**Q27.** What is the output?
+```csharp
+int sum = 0;
+for (int i = 1; i <= 5; i++) {
+    if (i == 3) break;
+    sum += i;
+}
+Console.Write(sum);
+```
+- A) 6
+- B) 3
+- C) 10
+- D) 15
+
+---
+
+**Q28.** What is the output?
+```csharp
+string s = null;
+Console.Write(s?.Length ?? -1);
+```
+- A) 0
+- B) -1
+- C) null
+- D) NullReferenceException
+
+---
+
+**Q29.** What is the output?
 ```csharp
 var list = new List<Action>();
 for (int i = 0; i < 3; i++)
     list.Add(() => Console.Write(i));
 list.ForEach(a => a());
 ```
-- A) 0 1 2
-- B) 3 3 3
-- C) 0 0 0
+- A) 012
+- B) 333
+- C) 000
 - D) Compile error
 
-**✅ Answer: B) 3 3 3**
+---
 
-> This is the classic closure-over-loop-variable bug. All lambdas capture the same variable `i` by reference, not by value. By the time they execute, `i` is 3. To fix: `int copy = i; list.Add(() => Console.Write(copy));`
+**Q30.** What is the output?
+```csharp
+Action act = null;
+for (int i = 0; i < 3; i++) {
+    int local = i;
+    act += () => Console.Write(local);
+}
+act();
+```
+- A) 012
+- B) 333
+- C) 000
+- D) NullReferenceException
 
 ---
 
-**Q35.** What does the `in` parameter modifier do in C# 7.2+?
-- A) Passes a parameter by value
-- B) Passes a parameter by read-only reference (cannot be modified)
-- C) Passes a parameter as an output parameter
-- D) Marks a parameter as optional
-
-**✅ Answer: B) Passes a parameter by read-only reference (cannot be modified)**
-
-> `in` passes large value types (like big structs) by reference for performance, while guaranteeing the callee cannot modify the value. It combines the efficiency of `ref` with the safety guarantee that the original value won't change.
+**Q31.** What does `var` do in C#?
+- A) Declares a dynamic type
+- B) Compile-time inferred static type
+- C) A reference to a value type
+- D) Declares a constant
 
 ---
 
-## SECTION 2: .NET FUNDAMENTALS & CLR (Q36–Q55)
+**Q32.** What is the output?
+```csharp
+int x = 10;
+object o = x;
+int y = (int)o;
+Console.Write(y);
+```
+- A) 10
+- B) 0
+- C) Compile error
+- D) InvalidCastException
 
 ---
 
-**Q36.** What is the CLR?
-- A) Common Language Runtime — the execution engine for .NET code
-- B) Common Library Repository — a package manager
-- C) Component Layer Reference — a design pattern
-- D) Cross-Language Runtime — a cross-platform OS
-
-**✅ Answer: A) Common Language Runtime — the execution engine for .NET code**
-
-> The CLR is the virtual machine component of .NET. It handles JIT compilation of IL to native code, memory management (GC), exception handling, type safety, and security.
+**Q33.** What is the output?
+```csharp
+string s1 = "hello";
+string s2 = "HELLO";
+Console.Write(s1.Equals(s2, StringComparison.OrdinalIgnoreCase));
+```
+- A) True
+- B) False
+- C) Throws
+- D) null
 
 ---
 
-**Q37.** What is IL (Intermediate Language)?
-- A) Native machine code produced by the C# compiler
-- B) A CPU-independent bytecode compiled from C#, then JIT-compiled to native code at runtime
-- C) A markup language for .NET configuration
+**Q34.** What is the difference between `==` and `.Equals()` for strings?
+- A) `==` compares references; `.Equals()` compares values
+- B) For strings, both compare content (because `==` is overloaded)
+- C) `.Equals()` is case-sensitive; `==` is not
+- D) They are different for all types
+
+---
+
+**Q35.** What is the output?
+```csharp
+char c = 'A';
+Console.Write((int)c);
+```
+- A) A
+- B) 65
+- C) 97
+- D) 0
+
+---
+
+## SECTION 2: OOP, GENERICS & C# FEATURES (Q36–Q55)
+
+---
+
+**Q36.** Which keyword allows a method to be overridden in a derived class?
+- A) static
+- B) virtual
+- C) sealed
+- D) override
+
+---
+
+**Q37.** What is the output?
+```csharp
+class A { public virtual void Show() => Console.Write("A"); }
+class B : A { public override void Show() => Console.Write("B"); }
+A obj = new B();
+obj.Show();
+```
+- A) A
+- B) B
+- C) AB
+- D) Compile error
+
+---
+
+**Q38.** What is the output?
+```csharp
+class A { public void Show() => Console.Write("A"); }
+class B : A { public new void Show() => Console.Write("B"); }
+A obj = new B();
+obj.Show();
+```
+- A) A
+- B) B
+- C) AB
+- D) Compile error
+
+---
+
+**Q39.** Can an abstract class have a constructor?
+- A) No, abstract classes cannot have constructors
+- B) Yes, called by derived classes during instantiation
+- C) Only if it's parameterless
+- D) Only static constructors
+
+---
+
+**Q40.** What is the difference between abstract class and interface (C# 8+)?
+- A) Both are identical
+- B) Abstract class can have state and constructors; interface can have default methods but no instance state
+- C) Interfaces support multiple inheritance; abstract classes don't (true)
+- D) Both B and C
+
+---
+
+**Q41.** What is the output?
+```csharp
+interface IShape { void Draw(); }
+class Circle : IShape { public void Draw() => Console.Write("Circle"); }
+IShape s = new Circle();
+s.Draw();
+```
+- A) Circle
+- B) IShape
+- C) Compile error
+- D) (no output)
+
+---
+
+**Q42.** A `Func<int, int, bool>` delegate represents:
+- A) A function taking two booleans returning an int
+- B) A function taking two ints returning a bool
+- C) A function taking a bool and returning two ints
+- D) A function with no parameters
+
+---
+
+**Q43.** What does `params` keyword do?
+- A) Makes a parameter optional
+- B) Allows a method to accept a variable number of arguments as an array
+- C) Passes a parameter by reference
+- D) Declares named parameters
+
+---
+
+**Q44.** What is the output?
+```csharp
+int Add(params int[] nums) {
+    int sum = 0;
+    foreach (var n in nums) sum += n;
+    return sum;
+}
+Console.Write(Add(1, 2, 3, 4));
+```
+- A) 10
+- B) 6
+- C) 4
+- D) Error
+
+---
+
+**Q45.** What is the result of `typeof(int) == typeof(Int32)`?
+- A) False
+- B) True — `int` is an alias for `System.Int32`
+- C) Compile error
+- D) Runtime exception
+
+---
+
+**Q46.** What is the output?
+```csharp
+class Box<T> { public T Value; }
+var b = new Box<int> { Value = 42 };
+Console.Write(b.Value);
+```
+- A) 42
+- B) 0
+- C) Compile error
+- D) null
+
+---
+
+**Q47.** What does `nameof()` return?
+- A) The full namespace
+- B) The compile-time string name of a variable/type/member
+- C) The runtime type name
+- D) The assembly name
+
+---
+
+**Q48.** What is a `partial` class?
+- A) A class that cannot be fully instantiated
+- B) A class definition split across multiple files
+- C) A class with abstract methods
+- D) A sealed class
+
+---
+
+**Q49.** What is the output?
+```csharp
+record Point(int X, int Y);
+var p1 = new Point(1, 2);
+var p2 = new Point(1, 2);
+Console.Write(p1 == p2);
+```
+- A) True
+- B) False
+- C) Throws
+- D) Compile error
+
+---
+
+**Q50.** What is the output?
+```csharp
+record Point(int X, int Y);
+var p1 = new Point(1, 2);
+var p2 = p1 with { Y = 3 };
+Console.Write(p1.X + " " + p2.Y);
+```
+- A) 1 3
+- B) 1 2
+- C) 0 3
+- D) Compile error
+
+---
+
+**Q51.** What does `init` accessor do?
+- A) Makes the property write-only
+- B) Allows setting only during object construction / initializer
+- C) Initializes the property to default
+- D) Marks it as ignored by serialisers
+
+---
+
+**Q52.** What is a nullable value type in C#?
+- A) A reference type that holds null
+- B) A value type wrapped with `Nullable<T>` that can hold null
+- C) A string defaulting to null
+- D) An interface returning null
+
+---
+
+**Q53.** What is the output?
+```csharp
+int? a = null;
+Console.Write(a.HasValue);
+```
+- A) True
+- B) False
+- C) null
+- D) Throws
+
+---
+
+**Q54.** What does the `in` parameter modifier do (C# 7.2+)?
+- A) Passes by value
+- B) Passes by read-only reference (caller's variable cannot be modified)
+- C) Output parameter
+- D) Optional parameter
+
+---
+
+**Q55.** What is the output?
+```csharp
+enum Color { Red = 1, Green, Blue }
+Console.Write((int)Color.Blue);
+```
+- A) 0
+- B) 2
+- C) 3
+- D) Blue
+
+---
+
+## SECTION 3: COLLECTIONS & LINQ (Q56–Q90)
+
+---
+
+**Q56.** Which collection should you use for fast key-value lookups?
+- A) List<T>
+- B) Queue<T>
+- C) Dictionary<TKey, TValue>
+- D) LinkedList<T>
+
+---
+
+**Q57.** What is the output?
+```csharp
+var list = new List<int> { 1, 2, 3 };
+list.Add(4);
+list.Remove(2);
+Console.Write(string.Join(",", list));
+```
+- A) 1,2,3,4
+- B) 1,3,4
+- C) 1,2,3
+- D) 2,3,4
+
+---
+
+**Q58.** What is the output?
+```csharp
+var dict = new Dictionary<string, int> { ["a"] = 1, ["b"] = 2 };
+dict["a"] = 10;
+Console.Write(dict["a"]);
+```
+- A) 1
+- B) 10
+- C) 0
+- D) Throws — duplicate key
+
+---
+
+**Q59.** What is the output?
+```csharp
+var set = new HashSet<int> { 1, 2, 3 };
+set.Add(2);
+Console.Write(set.Count);
+```
+- A) 3
+- B) 4
+- C) 2
+- D) Throws
+
+---
+
+**Q60.** What is the output?
+```csharp
+var q = new Queue<int>();
+q.Enqueue(1); q.Enqueue(2); q.Enqueue(3);
+Console.Write(q.Dequeue());
+```
+- A) 1
+- B) 2
+- C) 3
+- D) Throws
+
+---
+
+**Q61.** What is the output?
+```csharp
+var s = new Stack<int>();
+s.Push(1); s.Push(2); s.Push(3);
+Console.Write(s.Pop());
+```
+- A) 1
+- B) 2
+- C) 3
+- D) Throws
+
+---
+
+**Q62.** What is the output?
+```csharp
+List<int> list = new() { 1, 2, 3 };
+foreach (var i in list) {
+    if (i == 2) list.Remove(i);
+}
+```
+- A) list becomes {1, 3}
+- B) Throws InvalidOperationException
+- C) Loop silently breaks
+- D) No change
+
+---
+
+**Q63.** What is deferred execution in LINQ?
+- A) Running LINQ queries on a background thread
+- B) The query is not executed when defined — it executes when iterated
+- C) Caching query results
+- D) Postponing compilation
+
+---
+
+**Q64.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4, 5 };
+var q = nums.Where(n => n > 2);
+Console.Write(string.Join(",", q));
+```
+- A) 1,2
+- B) 3,4,5
+- C) 1,2,3,4,5
+- D) (deferred, no output)
+
+---
+
+**Q65.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4, 5 };
+var result = nums.Where(n => n > 2).Select(n => n * 2);
+Console.Write(string.Join(",", result));
+```
+- A) 3,4,5
+- B) 6,8,10
+- C) 2,4,6,8,10
+- D) Deferred — no output
+
+---
+
+**Q66.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3 };
+IEnumerable<int> q = nums.Select(n => { Console.Write(n); return n * 2; });
+var first = q.First();
+Console.Write("|");
+var list = q.ToList();
+```
+- A) 123|123
+- B) 1|123
+- C) 1|1
+- D) 123|
+
+---
+
+**Q67.** What is the difference between `First()` and `FirstOrDefault()`?
+- A) `First()` returns null if no match; `FirstOrDefault()` throws
+- B) `First()` throws if no match; `FirstOrDefault()` returns default value
+- C) Identical
+- D) `FirstOrDefault()` is slower
+
+---
+
+**Q68.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4 };
+Console.Write(nums.Sum() + " " + nums.Average());
+```
+- A) 10 2.5
+- B) 10 2
+- C) 4 2
+- D) 24 2.5
+
+---
+
+**Q69.** What does `Any()` do?
+- A) Returns true if every element matches
+- B) Returns true if at least one element matches (or sequence is non-empty)
+- C) Counts matches
+- D) Returns the first match
+
+---
+
+**Q70.** What does `All()` do?
+- A) Returns true if every element matches the predicate
+- B) Returns true if any element matches
+- C) Returns all elements
+- D) Same as `Where`
+
+---
+
+**Q71.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4 };
+Console.Write(nums.All(n => n > 0) + " " + nums.Any(n => n > 5));
+```
+- A) True False
+- B) False True
+- C) True True
+- D) False False
+
+---
+
+**Q72.** What does `SelectMany()` do?
+- A) Selects multiple properties
+- B) Flattens a collection of collections into a single sequence
+- C) Selects elements with multiple conditions
+- D) Selects first and last elements
+
+---
+
+**Q73.** What is the output?
+```csharp
+var lists = new[] { new[] {1, 2}, new[] {3, 4} };
+var flat = lists.SelectMany(x => x);
+Console.Write(string.Join(",", flat));
+```
+- A) 1,2,3,4
+- B) 1,3,2,4
+- C) {1,2},{3,4}
+- D) Compile error
+
+---
+
+**Q74.** What is the output?
+```csharp
+var nums = new[] { 5, 3, 1, 4, 2 };
+var sorted = nums.OrderBy(n => n);
+Console.Write(string.Join(",", sorted));
+```
+- A) 5,3,1,4,2
+- B) 1,2,3,4,5
+- C) 5,4,3,2,1
+- D) Deferred
+
+---
+
+**Q75.** What does `GroupBy()` return?
+- A) A sorted sequence
+- B) `IEnumerable<IGrouping<TKey, TElement>>`
+- C) A Dictionary
+- D) A flat sequence
+
+---
+
+**Q76.** What is the output?
+```csharp
+var words = new[] { "apple", "banana", "avocado" };
+var grouped = words.GroupBy(w => w[0]).Count();
+Console.Write(grouped);
+```
+- A) 1
+- B) 2
+- C) 3
+- D) 0
+
+---
+
+**Q77.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4, 5 };
+Console.Write(nums.Take(2).Sum() + " " + nums.Skip(2).Sum());
+```
+- A) 3 12
+- B) 1 14
+- C) 6 9
+- D) 5 10
+
+---
+
+**Q78.** What does `Distinct()` do?
+- A) Returns elements satisfying a condition
+- B) Returns unique elements based on default equality
+- C) Sorts the sequence
+- D) Reverses the sequence
+
+---
+
+**Q79.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 2, 3, 3, 3 };
+Console.Write(nums.Distinct().Count());
+```
+- A) 6
+- B) 3
+- C) 2
+- D) 1
+
+---
+
+**Q80.** What is the difference between `IEnumerable.Count()` and `List.Count`?
+- A) Identical
+- B) `IEnumerable.Count()` may iterate the whole sequence; `List.Count` is O(1)
+- C) `List.Count` is slower
+- D) `IEnumerable.Count()` is cached
+
+---
+
+**Q81.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4, 5 };
+Console.Write(nums.Aggregate(0, (acc, n) => acc + n));
+```
+- A) 0
+- B) 15
+- C) 5
+- D) 1
+
+---
+
+**Q82.** What does `TakeWhile()` do?
+- A) Takes elements while a condition is true, stopping at the first false
+- B) Same as `Where`
+- C) Random subset
+- D) All elements until end
+
+---
+
+**Q83.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 1, 4 };
+var r = nums.TakeWhile(n => n < 3);
+Console.Write(string.Join(",", r));
+```
+- A) 1,2
+- B) 1,2,1
+- C) 1,2,3
+- D) 1,2,1,4
+
+---
+
+**Q84.** What is the output?
+```csharp
+var a = new[] { 1, 2, 3 };
+var b = new[] { 10, 20, 30 };
+var z = a.Zip(b, (x, y) => x + y);
+Console.Write(string.Join(",", z));
+```
+- A) 11,22,33
+- B) 1,2,3,10,20,30
+- C) 10,40,90
+- D) Error
+
+---
+
+**Q85.** What is the output?
+```csharp
+var nums = Enumerable.Range(1, 5);
+Console.Write(string.Join(",", nums));
+```
+- A) 0,1,2,3,4
+- B) 1,2,3,4,5
+- C) 1,2,3,4
+- D) 1,5
+
+---
+
+**Q86.** What does `ToList()` do that `AsEnumerable()` does not?
+- A) ToList materialises (executes) the query; AsEnumerable just changes the static type
+- B) Identical
+- C) AsEnumerable runs the query
+- D) ToList returns IEnumerable
+
+---
+
+**Q87.** What is the output?
+```csharp
+var nums = new List<int> { 1, 2, 3 };
+var r = nums.Reverse<int>();
+Console.Write(string.Join(",", r));
+```
+- A) 1,2,3
+- B) 3,2,1
+- C) Empty
+- D) Throws
+
+---
+
+**Q88.** What is `IEnumerable<T>` vs `IQueryable<T>`?
+- A) `IEnumerable` runs in memory; `IQueryable` allows expression trees translated (e.g., to SQL)
+- B) `IQueryable` is faster for in-memory ops
+- C) `IEnumerable` is for databases
+- D) Identical
+
+---
+
+**Q89.** What does `Single()` do?
+- A) Returns the first element
+- B) Throws if zero OR more than one element matches
+- C) Returns default for empty
+- D) Returns last element
+
+---
+
+**Q90.** What is the output?
+```csharp
+var nums = new[] { 10, 20, 30 };
+Console.Write(nums.Min() + " " + nums.Max());
+```
+- A) 0 30
+- B) 10 30
+- C) 10 20
+- D) 20 30
+
+---
+
+## SECTION 4: ASYNC/AWAIT & THREADING (Q91–Q115)
+
+---
+
+**Q91.** What is the output?
+```csharp
+async Task<int> GetAsync() => await Task.FromResult(42);
+Console.Write(await GetAsync());
+```
+- A) 42
+- B) 0
+- C) Task<int>
+- D) Compile error
+
+---
+
+**Q92.** What does `async/await` do under the hood?
+- A) Creates a new thread
+- B) Transforms the method into a state machine for non-blocking waiting
+- C) Runs on the thread pool always
+- D) Spawns a background process
+
+---
+
+**Q93.** What is `Task.Run()` used for?
+- A) Running async code synchronously
+- B) Offloading CPU-bound work to a thread pool thread
+- C) Creating a cancelled task
+- D) Scheduling for a specific time
+
+---
+
+**Q94.** What is the output?
+```csharp
+async Task<int> A() => 1 + await Task.FromResult(2);
+async Task<int> B() {
+    var x = A();
+    return await x + await x;
+}
+Console.Write(await B());
+```
+- A) 6
+- B) 3
+- C) Throws on second await
+- D) Hangs
+
+---
+
+**Q95.** Predict the output:
+```csharp
+int x = 0;
+Parallel.For(0, 100_000, _ => x++);
+Console.Write(x);
+```
+- A) 100000
+- B) Usually less than 100000 due to race condition
+- C) 0
+- D) Compile error
+
+---
+
+**Q96.** Predict the output:
+```csharp
+int x = 0;
+var tasks = Enumerable.Range(0, 1000)
+    .Select(_ => Task.Run(() => Interlocked.Increment(ref x)))
+    .ToArray();
+await Task.WhenAll(tasks);
+Console.Write(x);
+```
+- A) 1000
+- B) Less than 1000
+- C) 0
+- D) Compile error
+
+---
+
+**Q97.** What is `Task.WhenAll` vs `Task.WhenAny`?
+- A) `WhenAll` returns first; `WhenAny` returns all
+- B) `WhenAll` completes when all tasks complete; `WhenAny` when the first completes
+- C) Identical
+- D) `WhenAny` waits with a timeout
+
+---
+
+**Q98.** What is the output?
+```csharp
+async Task<int> Run() {
+    using var cts = new CancellationTokenSource(100);
+    try { await Task.Delay(1000, cts.Token); return 1; }
+    catch (TaskCanceledException) { return 2; }
+}
+Console.Write(await Run());
+```
+- A) 1
+- B) 2
+- C) Throws
+- D) Hangs
+
+---
+
+**Q99.** Why is `async void` an anti-pattern (outside event handlers)?
+- A) Compile error
+- B) Cannot be awaited; exceptions escape and can crash the process
+- C) Slower than async Task
+- D) Disables Task.Run
+
+---
+
+**Q100.** What is the difference between `Task` and `ValueTask`?
+- A) ValueTask always allocates
+- B) ValueTask avoids heap allocation when the result is synchronously available
+- C) Identical
+- D) ValueTask supports cancellation; Task does not
+
+---
+
+**Q101.** What is `CancellationToken` used for?
+- A) Cancelling DB transactions
+- B) Cooperative cancellation of async operations
+- C) Setting a timeout
+- D) Cancelling a thread
+
+---
+
+**Q102.** What is the output?
+```csharp
+int counter = 0;
+var tasks = new Task[5];
+for (int i = 0; i < 5; i++)
+    tasks[i] = Task.Run(() => Interlocked.Increment(ref counter));
+Task.WaitAll(tasks);
+Console.Write(counter);
+```
+- A) 0
+- B) 5
+- C) Random < 5
+- D) Throws
+
+---
+
+**Q103.** Why is `lock(this)` problematic?
+- A) Compile error
+- B) External code can take the same lock, causing deadlocks
+- C) Only on structs
+- D) It's the recommended pattern
+
+---
+
+**Q104.** What is `SemaphoreSlim` used for?
+- A) Mutual exclusion for one thread
+- B) Limiting the number of concurrent accessors of a resource (with async wait support)
+- C) Thread-local storage
+- D) Inter-thread signalling
+
+---
+
+**Q105.** What is `Interlocked.Increment()` used for?
+- A) Incrementing a loop counter
+- B) Atomic increment, thread-safe, without a lock
+- C) Incrementing a Semaphore
+- D) Incrementing a concurrent collection
+
+---
+
+**Q106.** What is `ConfigureAwait(false)` used for?
+- A) Cancelling a task
+- B) Telling the awaiter not to resume on the original synchronization context
+- C) Running on a specific thread
+- D) Making await fault-tolerant
+
+---
+
+**Q107.** What is a deadlock?
+- A) A task that never starts
+- B) Two operations waiting indefinitely for each other to release resources
+- C) A race condition
+- D) An exception in a finally block
+
+---
+
+**Q108.** Why is `Task.Result` dangerous in WinForms/legacy ASP.NET?
+- A) Throws immediately
+- B) Blocks the captured sync-context thread the continuation needs → deadlock
+- C) Uses too much memory
+- D) Disables Task scheduling
+
+---
+
+**Q109.** What's the difference between `lock` and `Mutex`?
+- A) Identical
+- B) `lock` is process-local (Monitor); `Mutex` is cross-process (kernel object, slower)
+- C) `lock` is cross-process; `Mutex` is process-local
+- D) `Mutex` is faster
+
+---
+
+**Q110.** What is `ThreadLocal<T>` vs `AsyncLocal<T>`?
+- A) Identical
+- B) `ThreadLocal` is per OS thread; `AsyncLocal` flows across async/await continuations
+- C) `AsyncLocal` is process-wide
+- D) `ThreadLocal` flows with await
+
+---
+
+**Q111.** What is `Parallel.ForEach`?
+- A) Async foreach
+- B) Parallel loop distributing work across thread-pool threads concurrently
+- C) Runs on UI thread
+- D) A LINQ operator
+
+---
+
+**Q112.** What is `Channel<T>`?
+- A) Inter-process pipe
+- B) High-performance, thread-safe producer-consumer data structure for async pipelines
+- C) Network socket
+- D) Pub/Sub event bus
+
+---
+
+**Q113.** What is the output?
+```csharp
+async Task<int> AddAsync(int a, int b) => a + b;
+var t1 = AddAsync(1, 2);
+var t2 = AddAsync(3, 4);
+Console.Write(await t1 + await t2);
+```
+- A) 10
+- B) 3
+- C) 7
+- D) Compile error
+
+---
+
+**Q114.** What does `Volatile.Read` provide?
+- A) Atomic 64-bit reads
+- B) An acquire-fence read so subsequent reads/writes can't be reordered before it
+- C) A lock
+- D) Thread-local read
+
+---
+
+**Q115.** What is `Monitor` in C#?
+- A) CPU monitor
+- B) The sync primitive underneath the `lock` keyword (`Monitor.Enter` / `Monitor.Exit`)
+- C) UI component
+- D) Diagnostic tool
+
+---
+
+## SECTION 5: .NET / CLR FUNDAMENTALS (Q116–Q135)
+
+---
+
+**Q116.** What is the CLR?
+- A) Common Language Runtime — the execution engine for .NET
+- B) Common Library Repository
+- C) Component Layer Reference
+- D) Cross-Language Runtime
+
+---
+
+**Q117.** What is IL (Intermediate Language)?
+- A) Native machine code
+- B) CPU-independent bytecode compiled from C#, JIT-compiled to native at runtime
+- C) A markup language
 - D) An interpreted scripting language
 
-**✅ Answer: B) A CPU-independent bytecode compiled from C#, then JIT-compiled to native code at runtime**
-
-> When you compile C#, the compiler produces IL (also called MSIL or CIL). At runtime, the JIT compiler translates IL to native machine code for the target CPU. This enables cross-language interoperability and cross-platform targeting.
-
 ---
 
-**Q38.** What is the difference between .NET Framework and .NET Core?
-- A) .NET Framework is cross-platform; .NET Core is Windows-only
-- B) .NET Core is cross-platform, open-source, and modular; .NET Framework is Windows-only and legacy
-- C) They are the same product with different version numbers
-- D) .NET Core only runs on Linux
-
-**✅ Answer: B) .NET Core is cross-platform, open-source, and modular; .NET Framework is Windows-only and legacy**
-
-> .NET Framework is the original Windows-only implementation. .NET Core (now just ".NET" from v5 onwards) is cross-platform, open-source, and the future of .NET. New projects should target .NET 6/7/8+.
-
----
-
-**Q39.** How does the Garbage Collector (GC) work in .NET?
-- A) It immediately deletes objects when they go out of scope
-- B) It periodically identifies unreachable objects and reclaims their memory using a generational algorithm
-- C) It uses reference counting like C++
-- D) Developers must manually call GC.Collect() for cleanup
-
-**✅ Answer: B) It periodically identifies unreachable objects and reclaims their memory using a generational algorithm**
-
-> .NET GC uses three generations (0, 1, 2). Short-lived objects in Gen 0 are collected frequently. Surviving objects are promoted to Gen 1, then Gen 2. The GC traces object reachability from roots (stack, statics) — unreachable objects are collected.
-
----
-
-**Q40.** What is the Large Object Heap (LOH)?
-- A) A separate heap for objects larger than 85,000 bytes, not compacted by default
-- B) The heap used for static variables
-- C) A heap reserved for string interning
-- D) A garbage-collected heap for COM interop objects
-
-**✅ Answer: A) A separate heap for objects larger than 85,000 bytes, not compacted by default**
-
-> Objects ≥ 85,000 bytes go to the LOH. The LOH is collected during Gen 2 GC and historically wasn't compacted (causing fragmentation). In .NET 4.5.1+, you can enable LOH compaction with `GCSettings.LargeObjectHeapCompactionMode`.
-
----
-
-**Q41.** What is JIT compilation?
-- A) Compiling C# source code to IL at build time
+**Q118.** What is JIT compilation?
+- A) Compiling C# source to IL at build
 - B) Translating IL to native machine code at runtime, just before execution
-- C) Compiling all code ahead-of-time during installation
-- D) A tool for minifying .NET assemblies
-
-**✅ Answer: B) Translating IL to native machine code at runtime, just before execution**
-
-> JIT (Just-In-Time) compiles IL to native code the first time each method is called. The compiled code is cached for subsequent calls. AOT (Ahead-of-Time) compilation (like Native AOT in .NET 7+) pre-compiles to native code for faster startup.
+- C) Ahead-of-time during install
+- D) A minifier
 
 ---
 
-**Q42.** What is an Assembly in .NET?
-- A) A compiled .exe or .dll file that is the unit of deployment and versioning in .NET
-- B) A collection of C# source files
+**Q119.** What's the difference between .NET Framework and .NET (Core)?
+- A) .NET Framework is cross-platform; .NET Core is Windows-only
+- B) .NET (Core) is cross-platform, open-source, modular; .NET Framework is Windows-only legacy
+- C) Identical
+- D) .NET Core is Linux-only
+
+---
+
+**Q120.** How does the Garbage Collector work?
+- A) Deletes objects when they go out of scope
+- B) Periodically identifies unreachable objects and reclaims them with a generational algorithm
+- C) Reference counting like C++
+- D) Manual via GC.Collect
+
+---
+
+**Q121.** What is the Large Object Heap (LOH)?
+- A) A separate heap for objects > 85,000 bytes; not compacted by default
+- B) Heap for static variables
+- C) Reserved for string interning
+- D) For COM interop objects
+
+---
+
+**Q122.** What is the difference between Stack and Heap?
+- A) Stack stores references; Heap stores values
+- B) Stack stores value types and method frames (LIFO); Heap stores reference type instances (GC managed)
+- C) Stack is for threads; Heap is single-threaded
+- D) They are the same
+
+---
+
+**Q123.** What is an Assembly?
+- A) A compiled `.exe` or `.dll` — unit of deployment and versioning
+- B) A collection of source files
 - C) A NuGet package
-- D) A project file (.csproj)
-
-**✅ Answer: A) A compiled .exe or .dll file that is the unit of deployment and versioning in .NET**
-
-> An assembly is the basic unit of deployment in .NET. It contains IL code, a manifest (metadata), and optionally resources. Assemblies are versioned and can be strongly named for GAC deployment.
+- D) A `.csproj` file
 
 ---
 
-**Q43.** What is the GAC (Global Assembly Cache)?
-- A) A central repository for storing shared .NET assemblies across multiple applications
-- B) A NuGet package cache folder
-- C) The garbage collector's internal memory cache
-- D) A compiled cache of JIT-compiled native code
-
-**✅ Answer: A) A central repository for storing shared .NET assemblies across multiple applications**
-
-> The GAC stores strongly named assemblies that can be shared by multiple applications on the same machine. It's less relevant in modern .NET (Core) which prefers self-contained deployments.
+**Q124.** What does `GC.SuppressFinalize(this)` do?
+- A) Prevents GC from collecting the object
+- B) Tells GC not to call the finalizer (cleanup done via Dispose)
+- C) Forces immediate collection
+- D) Removes all references
 
 ---
 
-**Q44.** What does `AppDomain` represent?
-- A) A logical isolation boundary for running .NET code within a process
-- B) The URL domain of a web application
-- C) A thread pool partition
-- D) A network domain for authentication
-
-**✅ Answer: A) A logical isolation boundary for running .NET code within a process**
-
-> In .NET Framework, `AppDomain` provided isolation within a process (separate heaps, security boundaries). In .NET Core/.NET 5+, AppDomains are not supported for isolation — use separate processes instead.
+**Q125.** What is `IDisposable` used for?
+- A) Marking a class as GC-eligible
+- B) Providing deterministic cleanup of unmanaged resources
+- C) Preventing multiple instantiation
+- D) Serialization
 
 ---
 
-**Q45.** What is the purpose of `GC.SuppressFinalize(this)`?
-- A) Prevents the GC from ever collecting the object
-- B) Tells the GC not to call the finalizer since cleanup was already done in Dispose()
-- C) Forces an immediate garbage collection
-- D) Removes an object from all references
-
-**✅ Answer: B) Tells the GC not to call the finalizer since cleanup was already done in Dispose()**
-
-> In the Dispose pattern, after calling `Dispose()`, you call `GC.SuppressFinalize(this)` to prevent the finalizer from running again, which would be wasteful since resources are already released.
+**Q126.** What does `using` statement do?
+- A) Imports namespaces
+- B) Ensures IDisposable objects are disposed at end of scope
+- C) Both
+- D) Declares global variables
 
 ---
 
-**Q46.** What is the difference between `Stack` and `Heap` in .NET?
-- A) Stack stores reference types; Heap stores value types
-- B) Stack stores value types and method frames (LIFO); Heap stores reference type instances (GC-managed)
-- C) Stack is for multi-threading; Heap is single-threaded
-- D) They are the same memory region
-
-**✅ Answer: B) Stack stores value types and method frames (LIFO); Heap stores reference type instances (GC-managed)**
-
-> The stack holds local value types and method call frames. The heap holds all objects (reference types). When a method exits, stack frames are popped automatically. Heap objects persist until the GC collects them.
+**Q127.** What is Reflection?
+- A) Mirror design pattern
+- B) Ability to inspect and manipulate types/methods/properties at runtime
+- C) Compile-time code generation
+- D) Optical networking
 
 ---
 
-**Q47.** What does `WeakReference<T>` allow?
-- A) A reference that increases reference count but not GC eligibility
-- B) A reference to an object that doesn't prevent GC from collecting it
-- C) A reference that is automatically nulled when the object is accessed
-- D) A thread-local reference
-
-**✅ Answer: B) A reference to an object that doesn't prevent GC from collecting it**
-
-> `WeakReference<T>` lets you hold a reference to an object without rooting it. The GC can still collect the object. Useful for caches — you can check `TryGetTarget()` and rebuild if collected. Prevents memory leaks in cache scenarios.
-
----
-
-**Q48.** What is Reflection in .NET?
-- A) A design pattern for mirroring object state
-- B) The ability to inspect and manipulate types, methods, and properties at runtime
-- C) A compile-time code generation feature
-- D) An optical networking protocol
-
-**✅ Answer: B) The ability to inspect and manipulate types, methods, and properties at runtime**
-
-> Reflection allows examining assemblies, types, and members at runtime via `System.Reflection`. It powers DI containers, ORMs, serializers, and test frameworks. Performance overhead is significant; cache `MethodInfo` objects if using frequently.
-
----
-
-**Q49.** What is the purpose of `Activator.CreateInstance()`?
-- A) Starts the .NET runtime
+**Q128.** What does `Activator.CreateInstance()` do?
+- A) Starts the runtime
 - B) Creates an instance of a type dynamically at runtime using reflection
 - C) Activates a background service
 - D) Initializes a static class
 
-**✅ Answer: B) Creates an instance of a type dynamically at runtime using reflection**
+---
 
-> `Activator.CreateInstance(type)` creates an object of the given type without knowing it at compile time. Used in DI containers, plugin systems, and factories. It invokes the parameterless constructor by default.
+**Q129.** What is `WeakReference<T>`?
+- A) A reference that increments refcount
+- B) A reference that does not prevent GC from collecting the target
+- C) A reference auto-nulled on access
+- D) Thread-local reference
 
 ---
 
-**Q50.** What is a strongly-typed Assembly?
-- A) An assembly compiled with strict type checking
-- B) An assembly signed with a public/private key pair to guarantee identity and version
-- C) An assembly with no external dependencies
-- D) An assembly stored in the GAC by default
-
-**✅ Answer: B) An assembly signed with a public/private key pair to guarantee identity and version**
-
-> Strong naming gives an assembly a unique identity (name + version + culture + public key token). This prevents assembly spoofing and is required for GAC deployment.
+**Q130.** What does the `volatile` keyword do?
+- A) Prevents serialization
+- B) Ensures reads/writes go to main memory (preventing certain caching/reordering)
+- C) Makes the field thread-safe (atomic)
+- D) Prevents GC
 
 ---
 
-**Q51.** What is the difference between `System.Exception` and `System.ApplicationException`?
-- A) `ApplicationException` is for CLR errors; `Exception` is for application errors
-- B) They are functionally equivalent — `ApplicationException` was intended for app-level errors but the distinction is no longer recommended
-- C) `ApplicationException` cannot be caught
-- D) `System.Exception` is for fatal errors only
-
-**✅ Answer: B) They are functionally equivalent — `ApplicationException` was intended for app-level errors but the distinction is no longer recommended**
-
-> `ApplicationException` was originally meant to distinguish app-level from system-level exceptions, but this convention was abandoned. Best practice is to derive custom exceptions directly from `Exception`.
-
----
-
-**Q52.** What does the `[Serializable]` attribute do?
-- A) Makes a class JSON-serializable
-- B) Marks a class as compatible with binary serialization (BinaryFormatter)
-- C) Enables XML serialization
-- D) Prevents the class from being serialized
-
-**✅ Answer: B) Marks a class as compatible with binary serialization (BinaryFormatter)**
-
-> `[Serializable]` enables `BinaryFormatter` and `SoapFormatter` serialization. Note: `BinaryFormatter` is obsolete and removed in .NET 9 due to security vulnerabilities. Use `System.Text.Json` or `Newtonsoft.Json` instead.
-
----
-
-**Q53.** What is `CultureInfo` used for?
-- A) Managing database connection cultures
-- B) Providing locale-specific formatting for dates, numbers, currencies, and strings
-- C) Setting the UI language of Windows
-- D) Configuring time zone information
-
-**✅ Answer: B) Providing locale-specific formatting for dates, numbers, currencies, and strings**
-
-> `CultureInfo` controls formatting rules for dates (`dd/MM/yyyy` vs `MM/dd/yyyy`), numbers (decimal separators), and currencies. Use `CultureInfo.InvariantCulture` for serialization/parsing to avoid locale-dependent bugs.
-
----
-
-**Q54.** What does `Environment.Exit(0)` do?
+**Q131.** What does `Environment.Exit(0)` do?
 - A) Exits the current method
 - B) Terminates the process immediately with exit code 0
 - C) Disposes all IDisposable objects
-- D) Causes a soft restart of the application
-
-**✅ Answer: B) Terminates the process immediately with exit code 0**
-
-> `Environment.Exit()` terminates the process. Exit code 0 conventionally means success. Unlike an exception, it does not unwind the stack, so `finally` blocks may not run. Avoid in production code — prefer graceful shutdown.
+- D) Soft restart
 
 ---
 
-**Q55.** What is `Marshal` class used for?
-- A) Coordinating parallel tasks
-- B) Interoperating with unmanaged (native) code — allocating/freeing unmanaged memory, converting types
-- C) Serializing objects to JSON
-- D) Managing thread synchronization
-
-**✅ Answer: B) Interoperating with unmanaged (native) code — allocating/freeing unmanaged memory, converting types**
-
-> `System.Runtime.InteropServices.Marshal` provides methods for P/Invoke interop: converting between managed and unmanaged types, allocating unmanaged memory, and copying data between managed and native buffers.
-
----
-
-## SECTION 3: ASP.NET CORE (Q56–Q80)
-
----
-
-**Q56.** What is the role of `Program.cs` in ASP.NET Core 6+?
-- A) The entry point that configures services (DI) and the HTTP middleware pipeline
-- B) A configuration file for routing only
-- C) The main controller class
-- D) The startup script for IIS
-
-**✅ Answer: A) The entry point that configures services (DI) and the HTTP middleware pipeline**
-
-> In .NET 6+, `Program.cs` uses the minimal hosting model: `builder.Services` for DI registration, and `app.Use*` for middleware pipeline configuration. `Startup.cs` is no longer required.
+**Q132.** What is the output?
+```csharp
+struct Point { public int X; }
+Point p1 = new Point { X = 5 };
+Point p2 = p1;
+p2.X = 10;
+Console.Write(p1.X + " " + p2.X);
+```
+- A) 10 10
+- B) 5 10
+- C) 5 5
+- D) 10 5
 
 ---
 
-**Q57.** What is middleware in ASP.NET Core?
-- A) A database abstraction layer
-- B) Software components in the HTTP request/response pipeline that can process, modify, or short-circuit requests
-- C) JavaScript libraries loaded by the server
-- D) Authentication tokens
-
-**✅ Answer: B) Software components in the HTTP request/response pipeline that can process, modify, or short-circuit requests**
-
-> Middleware forms a pipeline. Each component calls `next()` to pass control. Examples: authentication, logging, exception handling, CORS, routing. Order matters — middleware is executed in registration order.
-
----
-
-**Q58.** What is the difference between `app.Use()` and `app.Run()` in middleware?
-- A) `app.Use()` is for terminal middleware; `app.Run()` passes to the next component
-- B) `app.Use()` can call next middleware; `app.Run()` is terminal and does not call next
-- C) They are identical
-- D) `app.Run()` is for routing only
-
-**✅ Answer: B) `app.Use()` can call next middleware; `app.Run()` is terminal and does not call next**
-
-> `app.Use()` takes a `next` parameter and can continue the pipeline. `app.Run()` is a terminal delegate — nothing runs after it. Using `app.Run()` before other middleware will short-circuit all subsequent middleware.
+**Q133.** What is the output?
+```csharp
+class Point { public int X; }
+Point p1 = new Point { X = 5 };
+Point p2 = p1;
+p2.X = 10;
+Console.Write(p1.X + " " + p2.X);
+```
+- A) 10 10
+- B) 5 10
+- C) 5 5
+- D) 10 5
 
 ---
 
-**Q59.** What does `[ApiController]` attribute do in ASP.NET Core?
-- A) Marks a class as a view controller for MVC
-- B) Enables automatic model validation, binding source inference, and problem details responses
-- C) Registers the controller in DI
-- D) Enables routing for Razor Pages
-
-**✅ Answer: B) Enables automatic model validation, binding source inference, and problem details responses**
-
-> `[ApiController]` automatically returns 400 responses when `ModelState` is invalid, infers `[FromBody]` for complex types, and formats error responses using `ProblemDetails`. It's required for proper Web API behavior.
+**Q134.** What does `[Serializable]` attribute do?
+- A) Makes a class JSON-serializable
+- B) Marks a class compatible with binary serialization (legacy BinaryFormatter)
+- C) Enables XML serialization
+- D) Prevents serialization
 
 ---
 
-**Q60.** What is the difference between `IActionResult` and `ActionResult<T>`?
-- A) They are identical
-- B) `ActionResult<T>` provides type-safe return values enabling Swagger/OpenAPI to document response types; `IActionResult` is untyped
-- C) `IActionResult` is for async controllers; `ActionResult<T>` is for sync
-- D) `ActionResult<T>` only works with JSON
-
-**✅ Answer: B) `ActionResult<T>` provides type-safe return values enabling Swagger/OpenAPI to document response types; `IActionResult` is untyped**
-
-> `ActionResult<T>` allows returning either an `ActionResult` (e.g., `NotFound()`) or a `T` directly, and OpenAPI/Swagger can automatically detect the `T` type for documentation.
+**Q135.** What is `Span<T>`?
+- A) A thread-safe array
+- B) A type-safe, memory-safe slice of contiguous memory with no heap allocation
+- C) A lazy wrapper
+- D) Thread-local storage
 
 ---
 
-**Q61.** What is Razor Pages vs MVC in ASP.NET Core?
-- A) Razor Pages uses a page-centric model (page + code-behind); MVC uses a Controller-View-Model pattern
-- B) Razor Pages is for APIs; MVC is for web pages
-- C) They are the same pattern
-- D) MVC is deprecated in favor of Razor Pages
-
-**✅ Answer: A) Razor Pages uses a page-centric model (page + code-behind); MVC uses a Controller-View-Model pattern**
-
-> Razor Pages organizes page-specific logic into `PageModel` classes co-located with the `.cshtml` view. MVC separates controllers, views, and models. Razor Pages is simpler for page-focused UIs; MVC offers more flexibility.
+## SECTION 6: ASP.NET CORE (Q136–Q160)
 
 ---
 
-**Q62.** What is the purpose of `appsettings.json`?
-- A) To store compiled application binaries
-- B) To provide hierarchical application configuration (connection strings, feature flags, etc.)
-- C) To define HTTP routes
-- D) To store NuGet package references
-
-**✅ Answer: B) To provide hierarchical application configuration (connection strings, feature flags, etc.)**
-
-> `appsettings.json` stores configuration in JSON format. It can be overridden by `appsettings.{Environment}.json`, environment variables, or command-line args. Accessed via `IConfiguration` in DI.
+**Q136.** Where in the middleware pipeline should `UseAuthentication()` and `UseAuthorization()` sit?
+- A) Anywhere
+- B) After `UseRouting()` and before endpoints; Authentication before Authorization
+- C) Before UseRouting
+- D) After endpoints
 
 ---
 
-**Q63.** How do you bind configuration sections to strongly-typed classes?
-- A) Using `[Bind]` attribute on the class
-- B) Using `services.Configure<T>(configuration.GetSection("SectionName"))`
-- C) Manually reading each key from IConfiguration
-- D) Using `[Configuration]` attribute
-
-**✅ Answer: B) Using `services.Configure<T>(configuration.GetSection("SectionName"))`**
-
-> `Configure<T>` binds a config section to a POCO class and registers it as `IOptions<T>`. Inject `IOptions<T>` (static snapshot), `IOptionsSnapshot<T>` (reloaded per request), or `IOptionsMonitor<T>` (change notifications).
+**Q137.** What is the difference between `app.Use()` and `app.Run()`?
+- A) Use is terminal; Run is not
+- B) Use can call next middleware; Run is terminal (no next)
+- C) Identical
+- D) Run is for routing only
 
 ---
 
-**Q64.** What does `UseRouting()` and `UseEndpoints()` do?
-- A) `UseRouting()` matches incoming requests to route patterns; `UseEndpoints()` executes the matched endpoint
-- B) `UseRouting()` sends responses; `UseEndpoints()` reads requests
-- C) They configure SSL routing
-- D) They are only needed for Razor Pages
-
-**✅ Answer: A) `UseRouting()` matches incoming requests to route patterns; `UseEndpoints()` executes the matched endpoint**
-
-> `UseRouting()` analyzes the request and selects an endpoint. Middleware between `UseRouting` and `UseEndpoints` can inspect the selected endpoint (e.g., for authorization). `UseEndpoints()` executes the matched controller action or route handler.
+**Q138.** What does `[ApiController]` enable?
+- A) MVC view rendering
+- B) Auto model validation (400 ProblemDetails), `[FromBody]` inference, required binding sources
+- C) Registers controller in DI
+- D) Razor Pages routing
 
 ---
 
-**Q65.** What is Content Negotiation in ASP.NET Core Web API?
-- A) Negotiating SSL certificates
-- B) The process of selecting the response format (JSON, XML, etc.) based on the `Accept` header
-- C) Compressing HTTP responses
-- D) Caching API responses
-
-**✅ Answer: B) The process of selecting the response format (JSON, XML, etc.) based on the `Accept` header**
-
-> When a client sends `Accept: application/xml`, the server uses output formatters to serialize the response as XML if the formatter is registered. By default, ASP.NET Core only includes JSON formatter. XML requires `AddXmlSerializerFormatters()`.
+**Q139.** What is the difference between `IActionResult` and `ActionResult<T>`?
+- A) Identical
+- B) `ActionResult<T>` is typed, allowing OpenAPI/Swagger to infer response shape and implicit conversion
+- C) `IActionResult` is for async only
+- D) `ActionResult<T>` only returns JSON
 
 ---
 
-**Q66.** What is the purpose of `[Route]` attribute in ASP.NET Core?
-- A) Registers the controller in the service container
-- B) Defines URL patterns for controller actions
-- C) Specifies allowed HTTP methods
-- D) Configures response caching
-
-**✅ Answer: B) Defines URL patterns for controller actions**
-
-> `[Route("api/[controller]")]` on a controller sets the base route. `[Route("{id}")]` on an action adds a template. Route tokens like `[controller]` and `[action]` are replaced with the class/method names.
+**Q140.** What is the correct DI lifetime for `DbContext`?
+- A) Singleton
+- B) Scoped (one per HTTP request)
+- C) Transient
+- D) Static field
 
 ---
 
-**Q67.** What is Model Binding in ASP.NET Core?
-- A) Connecting the database to model classes
-- B) The process of mapping HTTP request data (query strings, route values, body) to action method parameters
-- C) Binding views to models in MVC
-- D) Linking two model classes with a foreign key
-
-**✅ Answer: B) The process of mapping HTTP request data (query strings, route values, body) to action method parameters**
-
-> Model binding automatically maps incoming request data to action parameters. Sources include route data, query string, form data, and body (JSON). `[FromBody]`, `[FromQuery]`, `[FromRoute]` control the source explicitly.
+**Q141.** What is the difference between `AddSingleton`, `AddScoped`, and `AddTransient`?
+- A) Singleton = per request; Scoped = per app; Transient = new
+- B) Singleton = per app lifetime; Scoped = per HTTP request; Transient = new every resolution
+- C) All create new instances each time
+- D) Scoped is for DBs only
 
 ---
 
-**Q68.** What does `[HttpGet]`, `[HttpPost]` etc. do?
+**Q142.** What is `appsettings.json` for?
+- A) Compiled binaries
+- B) Hierarchical app configuration (connection strings, feature flags, etc.)
+- C) HTTP routes
+- D) NuGet package references
+
+---
+
+**Q143.** How do you bind a configuration section to a strongly-typed class?
+- A) `[Bind]` attribute
+- B) `services.Configure<T>(config.GetSection("X"))`
+- C) Manually read each key
+- D) `[Configuration]` attribute
+
+---
+
+**Q144.** What does `[HttpGet]`, `[HttpPost]` do on action methods?
 - A) Restricts the action to a specific HTTP method
-- B) Specifies the response content type
-- C) Defines authorization requirements
-- D) Sets the HTTP response status code
-
-**✅ Answer: A) Restricts the action to a specific HTTP method**
-
-> HTTP method attributes restrict which HTTP verb triggers the action. `[HttpGet]` only responds to GET, `[HttpPost]` to POST, etc. They can also define route templates: `[HttpGet("{id:int}")]`.
+- B) Sets the content type
+- C) Defines authorization
+- D) Sets the status code
 
 ---
 
-**Q69.** What is IHostedService?
-- A) An interface for creating background services in ASP.NET Core
-- B) A service for hosting static files
-- C) An IIS hosting configuration interface
-- D) A service for managing HTTP sessions
-
-**✅ Answer: A) An interface for creating background services in ASP.NET Core**
-
-> `IHostedService` (or `BackgroundService`) allows long-running background tasks (message queue consumers, schedulers, health probes). Register with `services.AddHostedService<T>()`. `BackgroundService` is an abstract base that simplifies implementation.
+**Q145.** What is Model Binding in ASP.NET Core?
+- A) Connecting DB to model classes
+- B) Mapping HTTP request data (route, query, body) to action parameters
+- C) Binding views to models
+- D) Linking model classes with FK
 
 ---
 
-**Q70.** What is CORS in ASP.NET Core?
-- A) A caching strategy for static files
-- B) Cross-Origin Resource Sharing — a mechanism that controls which domains can make browser requests to your API
-- C) A compression algorithm
-- D) A SQL injection prevention technique
-
-**✅ Answer: B) Cross-Origin Resource Sharing — a mechanism that controls which domains can make browser requests to your API**
-
-> Browsers enforce the same-origin policy. CORS headers (`Access-Control-Allow-Origin`) tell the browser which cross-origin requests are allowed. In ASP.NET Core, configure with `services.AddCors()` and `app.UseCors()`.
+**Q146.** What does `[FromBody]` indicate?
+- A) Parameter is read from the route
+- B) Parameter is read from the HTTP request body (typically JSON)
+- C) Parameter is read from the query string
+- D) Parameter is from headers
 
 ---
 
-**Q71.** What is the purpose of `IActionFilter`?
-- A) Filters invalid model states automatically
-- B) Intercepts controller action execution — runs before and after an action
-- C) Validates JWT tokens
-- D) Compresses action results
-
-**✅ Answer: B) Intercepts controller action execution — runs before and after an action**
-
-> Action filters implement `OnActionExecuting` (before) and `OnActionExecuted` (after) the action runs. Used for logging, validation, caching, and modifying results. Other filter types: Authorization, Resource, Exception, Result.
-
----
-
-**Q72.** What is the Minimal API feature in .NET 6+?
-- A) A stripped-down version of ASP.NET with no routing
-- B) A lightweight approach to define HTTP endpoints with minimal ceremony, without controllers
-- C) An API with no authentication
-- D) A performance-only API mode
-
-**✅ Answer: B) A lightweight approach to define HTTP endpoints with minimal ceremony, without controllers**
-
-> Minimal APIs define endpoints directly: `app.MapGet("/products", () => db.Products.ToList())`. No controllers or action attributes needed. Excellent for microservices and small APIs.
-
----
-
-**Q73.** What does `app.UseExceptionHandler("/Error")` do?
-- A) Logs all exceptions to a file
-- B) Catches unhandled exceptions and redirects to the specified error path
-- C) Prevents exceptions from propagating
-- D) Sends 500 status without a body
-
-**✅ Answer: B) Catches unhandled exceptions and redirects to the specified error path**
-
-> `UseExceptionHandler` is production-grade exception middleware. In development, `UseDeveloperExceptionPage()` is preferred instead (shows full stack trace). In production, redirect to an error page or use `UseExceptionHandler(opts => opts.Run(...))` for JSON error responses.
-
----
-
-**Q74.** What is Response Caching in ASP.NET Core?
-- A) Storing database query results in memory
-- B) Caching HTTP responses on the server or client based on response headers (`Cache-Control`)
-- C) Caching authentication tokens
-- D) Caching static files on CDN
-
-**✅ Answer: B) Caching HTTP responses on the server or client based on response headers (`Cache-Control`)**
-
-> `[ResponseCache]` attribute adds `Cache-Control` headers. The `UseResponseCaching()` middleware enables server-side caching. `IMemoryCache` or `IDistributedCache` provide in-process/Redis caching for more control.
-
----
-
-**Q75.** What is Health Checks in ASP.NET Core?
-- A) A code quality tool
-- B) A mechanism to expose endpoints reporting the health status of dependencies (DB, external APIs, etc.)
-- C) A unit test framework
-- D) A monitoring tool for CPU usage
-
-**✅ Answer: B) A mechanism to expose endpoints reporting the health status of dependencies (DB, external APIs, etc.)**
-
-> Health checks are registered via `services.AddHealthChecks()` and exposed at `/health`. Kubernetes liveness/readiness probes, load balancers, and monitoring tools use these endpoints to check if the app is ready to serve traffic.
-
----
-
-**Q76.** What is `IHttpContextAccessor`?
-- A) Provides access to the current HTTP context outside of controllers (e.g., in services)
-- B) A client for making outbound HTTP requests
-- C) An accessor for reading HTTP headers from config
-- D) A factory for creating HttpClient instances
-
-**✅ Answer: A) Provides access to the current HTTP context outside of controllers (e.g., in services)**
-
-> Controllers have `HttpContext` directly. Services don't. `IHttpContextAccessor` lets services access the request context (user identity, headers). Register with `services.AddHttpContextAccessor()`. Avoid in concurrent scenarios.
-
----
-
-**Q77.** What does `UseHttpsRedirection()` do?
-- A) Encrypts the database connection
+**Q147.** What does `UseHttpsRedirection()` do?
+- A) Encrypts the DB connection
 - B) Automatically redirects HTTP requests to HTTPS
-- C) Validates SSL certificates
-- D) Configures HSTS headers
-
-**✅ Answer: B) Automatically redirects HTTP requests to HTTPS**
-
-> `UseHttpsRedirection()` returns a 301/307 redirect from HTTP to HTTPS. Combined with `UseHsts()` (which sets the Strict-Transport-Security header), it ensures clients always use HTTPS.
+- C) Validates SSL certs
+- D) Configures HSTS
 
 ---
 
-**Q78.** What is Output Caching in .NET 7+?
-- A) Identical to Response Caching
-- B) A new, more powerful caching middleware that caches full response bodies server-side with support for cache invalidation and policies
-- C) A front-end caching mechanism
-- D) Caching of compiled Razor views
-
-**✅ Answer: B) A new, more powerful caching middleware that caches full response bodies server-side with support for cache invalidation and policies**
-
-> Output Caching (added in .NET 7) improves on Response Caching with cache invalidation tags, configurable policies, and `vary-by` conditions. It stores the full response and can be invalidated programmatically.
+**Q148.** What is middleware in ASP.NET Core?
+- A) A DB abstraction layer
+- B) Components in the HTTP request/response pipeline that can process, modify, or short-circuit requests
+- C) Server-loaded JS libraries
+- D) Auth tokens
 
 ---
 
-**Q79.** What is Rate Limiting in ASP.NET Core 7+?
-- A) Limiting API response size
-- B) Throttling incoming requests to protect the server from overload
-- C) Setting CPU usage caps for each request
-- D) Limiting the number of database connections
-
-**✅ Answer: B) Throttling incoming requests to protect the server from overload**
-
-> ASP.NET Core 7+ includes built-in rate limiting middleware (`UseRateLimiter()`). Supports fixed window, sliding window, token bucket, and concurrency limiters. Configured via `services.AddRateLimiter()`.
+**Q149.** What is CORS?
+- A) Static file caching
+- B) Cross-Origin Resource Sharing — controls which browser origins can call your API
+- C) A compression algorithm
+- D) SQL injection prevention
 
 ---
 
-**Q80.** What is the difference between `AddSingleton`, `AddScoped`, and `AddTransient`?
-- A) Singleton = one per request; Scoped = one per app; Transient = always new
-- B) Singleton = one per app lifetime; Scoped = one per HTTP request; Transient = new instance every time
-- C) They all create new instances on each resolution
-- D) Scoped is for databases only
-
-**✅ Answer: B) Singleton = one per app lifetime; Scoped = one per HTTP request; Transient = new instance every time**
-
-> This is critical for DI lifetime management. Singletons are shared application-wide. Scoped instances are shared within a request but new across requests. Transient instances are always new — best for lightweight, stateless services.
+**Q150.** What does `IHostedService` do?
+- A) Hosts static files
+- B) Interface for background services in ASP.NET Core
+- C) IIS hosting config
+- D) Manages HTTP sessions
 
 ---
 
-## SECTION 4: ENTITY FRAMEWORK CORE (Q81–Q100)
+**Q151.** What is Content Negotiation?
+- A) Negotiating SSL certs
+- B) Selecting response format (JSON/XML) based on `Accept` header
+- C) Compression
+- D) Caching
 
 ---
 
-**Q81.** What is Entity Framework Core?
-- A) A JavaScript ORM for Node.js
-- B) A lightweight, cross-platform Object-Relational Mapper for .NET
-- C) A SQL query parser
-- D) A database migration tool only
-
-**✅ Answer: B) A lightweight, cross-platform Object-Relational Mapper for .NET**
-
-> EF Core maps .NET objects to database tables, allowing CRUD operations via LINQ without writing raw SQL. It supports code-first, database-first, and migrations.
+**Q152.** What does `app.UseExceptionHandler("/Error")` do?
+- A) Logs to file
+- B) Catches unhandled exceptions and routes to the specified error path
+- C) Prevents propagation
+- D) Returns 500 with no body
 
 ---
 
-**Q82.** What is the difference between `Add` and `Attach` in EF Core?
-- A) `Add` marks an entity as new (INSERT); `Attach` marks it as existing (no immediate SQL, just tracking)
-- B) `Attach` marks an entity as new; `Add` is for existing entities
-- C) They are identical
-- D) `Add` is for bulk inserts; `Attach` is for single records
-
-**✅ Answer: A) `Add` marks an entity as new (INSERT); `Attach` marks it as existing (no immediate SQL, just tracking)**
-
-> `Add` puts the entity in `EntityState.Added` — EF will INSERT it on `SaveChanges`. `Attach` puts it in `EntityState.Unchanged` — useful when you have a disconnected entity you want to track without inserting.
+**Q153.** What is the Minimal API in .NET 6+?
+- A) Stripped-down ASP.NET with no routing
+- B) Lightweight way to define HTTP endpoints with minimal ceremony, no controllers
+- C) An API without authentication
+- D) Performance-only mode
 
 ---
 
-**Q83.** What is Lazy Loading in EF Core?
-- A) Deferring database operations until needed
-- B) Automatically loading related entities when a navigation property is first accessed
-- C) Loading only the first 10 rows of a result set
-- D) Caching query results for later use
-
-**✅ Answer: B) Automatically loading related entities when a navigation property is first accessed**
-
-> With lazy loading enabled (requires `Microsoft.EntityFrameworkCore.Proxies`), accessing `order.Customer` will automatically query the database if `Customer` hasn't been loaded. This can cause N+1 query problems.
+**Q154.** What does `IHttpClientFactory` solve?
+- A) Required for HTTPS
+- B) Manual `new HttpClient()` causes socket exhaustion; factory pools handlers safely
+- C) HttpClient is not thread-safe
+- D) HttpClient doesn't support JSON
 
 ---
 
-**Q84.** What is Eager Loading in EF Core?
-- A) Loading all data upfront regardless of need
+**Q155.** What is `IHttpContextAccessor`?
+- A) An outbound HTTP client
+- B) Access to the current HTTP context outside controllers (e.g., in services)
+- C) Reads HTTP headers from config
+- D) Factory for HttpClient
+
+---
+
+**Q156.** What is the role of `Program.cs` in ASP.NET Core 6+?
+- A) Routing-only configuration
+- B) Entry point that configures services (DI) and the HTTP middleware pipeline
+- C) Main controller
+- D) IIS startup script
+
+---
+
+**Q157.** What is the purpose of `[Route]` attribute?
+- A) Registers the controller in DI
+- B) Defines URL patterns for controller actions
+- C) Specifies HTTP methods
+- D) Configures caching
+
+---
+
+**Q158.** What is the order of MVC filters around an action?
+- A) Action → Authorization → Resource → Result
+- B) Authorization → Resource → Action → (action runs) → Result → Exception (on error)
+- C) Result → Action → Resource → Authorization
+- D) Random
+
+---
+
+**Q159.** What is Rate Limiting in ASP.NET Core 7+?
+- A) Limiting response size
+- B) Throttling incoming requests to protect the server
+- C) CPU caps per request
+- D) Limiting DB connections
+
+---
+
+**Q160.** What does `[FromServices]` do?
+- A) Marks param as session value
+- B) Resolves the parameter from DI instead of from request data
+- C) Triggers a service call
+- D) Only works on Razor Pages
+
+---
+
+## SECTION 7: ENTITY FRAMEWORK CORE (Q161–Q180)
+
+---
+
+**Q161.** What is `DbContext`?
+- A) A connection string
+- B) Primary class for DB operations — represents a session with the database
+- C) A config file
+- D) Migration runner
+
+---
+
+**Q162.** What does `SaveChanges()` do?
+- A) Writes to a local cache
+- B) Generates and executes SQL INSERT/UPDATE/DELETE for all tracked changes
+- C) Manually commits a transaction
+- D) Refreshes entities from DB
+
+---
+
+**Q163.** What is the difference between `Add` and `Attach`?
+- A) Add marks as new (INSERT); Attach marks as existing (tracked, no immediate SQL)
+- B) Attach marks as new; Add as existing
+- C) Identical
+- D) Add is bulk; Attach is single
+
+---
+
+**Q164.** What is Eager Loading?
+- A) Loading all data upfront regardless
 - B) Loading related entities as part of the initial query using `.Include()`
-- C) Caching entities for fast access
-- D) Pre-compiling LINQ queries
-
-**✅ Answer: B) Loading related entities as part of the initial query using `.Include()`**
-
-> `dbContext.Orders.Include(o => o.Customer).Include(o => o.Items).ToList()` generates a JOIN query fetching orders with their customers and items in a single round trip, avoiding N+1.
+- C) Caching entities
+- D) Precompiling LINQ
 
 ---
 
-**Q85.** What is N+1 query problem in EF Core?
+**Q165.** What is Lazy Loading?
+- A) Deferring all DB ops
+- B) Loading related entities automatically when navigation property is first accessed
+- C) Loading top 10 rows
+- D) Result caching
+
+---
+
+**Q166.** What is the N+1 query problem?
 - A) Running the same query 1000 times
-- B) Executing 1 query to get a list, then N additional queries to get related data for each item
+- B) 1 query for a list, then N additional queries to fetch related data per item
 - C) A query with N joins
-- D) A query that returns N+1 rows than expected
-
-**✅ Answer: B) Executing 1 query to get a list, then N additional queries to get related data for each item**
-
-> Example: Querying 100 orders without `.Include(o => o.Customer)` then accessing `order.Customer` in a loop fires 100 additional DB queries. Solve with Eager Loading (`.Include()`) or Explicit Loading.
+- D) Returns N+1 rows than expected
 
 ---
 
-**Q86.** What is a Migration in EF Core?
-- A) Moving the database to a different server
-- B) A code-generated file that describes incremental schema changes to apply to the database
-- C) A data transfer between tables
-- D) Converting from SQL Server to PostgreSQL
-
-**✅ Answer: B) A code-generated file that describes incremental schema changes to apply to the database**
-
-> Migrations (via `dotnet ef migrations add`) generate `Up()` and `Down()` methods representing schema changes. `dotnet ef database update` applies pending migrations to the database.
+**Q167.** What does `.AsNoTracking()` do?
+- A) Disables LINQ translation
+- B) Disables change tracking, improving read-only query performance
+- C) Prevents deletes
+- D) Disables lazy loading
 
 ---
 
-**Q87.** What does `.AsNoTracking()` do?
-- A) Disables LINQ query translation
-- B) Tells EF Core not to track the returned entities, improving read-only query performance
-- C) Prevents entities from being deleted
-- D) Disables lazy loading for the query
-
-**✅ Answer: B) Tells EF Core not to track the returned entities, improving read-only query performance**
-
-> By default, EF Core tracks all loaded entities in the `ChangeTracker`. `.AsNoTracking()` skips this for read-only scenarios, reducing memory usage and improving performance — ideal for GET endpoints.
+**Q168.** What is a Migration in EF Core?
+- A) Moving DB to a different server
+- B) Code-generated file describing incremental schema changes
+- C) Transferring data between tables
+- D) Converting DB engines
 
 ---
 
-**Q88.** What is the `DbContext` in EF Core?
-- A) A database connection string
-- B) The primary class for database operations — represents a session with the database
-- C) A configuration file for database settings
-- D) A migration runner
-
-**✅ Answer: B) The primary class for database operations — represents a session with the database**
-
-> `DbContext` exposes `DbSet<T>` properties for each entity, manages change tracking, and handles the `SaveChanges()` unit-of-work pattern. It should be registered as `Scoped` in DI.
+**Q169.** What does `.Find()` do that `FirstOrDefault()` doesn't?
+- A) `.Find()` checks the change tracker cache first (PK lookup); `FirstOrDefault()` always queries DB
+- B) FirstOrDefault checks cache
+- C) Identical
+- D) Find returns all matches
 
 ---
 
-**Q89.** What does `SaveChanges()` do?
-- A) Writes changes to a local cache
-- B) Generates and executes SQL INSERT/UPDATE/DELETE statements for all tracked entity changes
-- C) Commits a transaction manually
-- D) Refreshes the entities from the database
-
-**✅ Answer: B) Generates and executes SQL INSERT/UPDATE/DELETE statements for all tracked entity changes**
-
-> `SaveChanges()` inspects the ChangeTracker, generates SQL for Added/Modified/Deleted entities, and executes them in a transaction. `SaveChangesAsync()` is the async version.
+**Q170.** What does the Fluent API in EF Core do?
+- A) A JS query syntax
+- B) Configures entity mappings in code via method chaining in `OnModelCreating()`
+- C) REST query API
+- D) Auto-generated API layer
 
 ---
 
-**Q90.** What is the Fluent API in EF Core?
-- A) A JavaScript query syntax for EF
-- B) A way to configure entity mappings in code using method chaining in `OnModelCreating()`
-- C) A REST API style for querying data
-- D) An auto-generated API layer on top of EF
-
-**✅ Answer: B) A way to configure entity mappings in code using method chaining in `OnModelCreating()`**
-
-> Fluent API (`modelBuilder.Entity<Order>().HasKey(o => o.Id)`) configures table names, column types, relationships, indexes, etc. It's more powerful than Data Annotations and keeps entity classes clean.
-
----
-
-**Q91.** What is the difference between `.Find()` and `.FirstOrDefault()`?
-- A) `.Find()` uses primary key and checks the cache first; `.FirstOrDefault()` always queries the database
-- B) `.FirstOrDefault()` checks cache; `.Find()` always queries
-- C) They are identical
-- D) `.Find()` returns all matches; `.FirstOrDefault()` returns one
-
-**✅ Answer: A) `.Find()` uses primary key and checks the cache first; `.FirstOrDefault()` always queries the database**
-
-> `Find(id)` checks the ChangeTracker first before hitting the database — perfect for cache-friendly lookups by primary key. `FirstOrDefault()` always translates to SQL.
-
----
-
-**Q92.** What is Explicit Loading in EF Core?
-- A) Loading entities using raw SQL
-- B) Manually loading related entities after the main entity is already loaded, using `.Entry().Collection().Load()`
-- C) Using `Include()` in the initial query
-- D) Loading all tables at application startup
-
-**✅ Answer: B) Manually loading related entities after the main entity is already loaded, using `.Entry().Collection().Load()`**
-
-> Explicit loading: `context.Entry(order).Collection(o => o.Items).Load()`. Useful when you need related data conditionally — load only if needed, avoiding unnecessary joins.
-
----
-
-**Q93.** What does `[DatabaseGenerated(DatabaseGeneratedOption.Identity)]` do?
-- A) Marks the column as auto-incremented by the database
-- B) Makes the column read-only
-- C) Sets the column as the primary key
-- D) Generates a GUID automatically
-
-**✅ Answer: A) Marks the column as auto-incremented by the database**
-
-> This tells EF Core that the database generates the value on INSERT (e.g., `IDENTITY` in SQL Server). EF won't try to insert a value for this column and will read back the generated value after INSERT.
-
----
-
-**Q94.** What is Connection Resiliency in EF Core?
-- A) Automatically scaling database connections
-- B) Automatic retry logic for transient database failures
-- C) Load balancing database connections
-- D) Encrypting the connection string
-
-**✅ Answer: B) Automatic retry logic for transient database failures**
-
-> Configure with `options.UseNpgsql(cs, o => o.EnableRetryOnFailure())`. EF Core's execution strategy retries failed operations (network blips, timeout) up to a specified number of times — critical for cloud databases.
-
----
-
-**Q95.** What is the purpose of `IEntityTypeConfiguration<T>`?
-- A) Configuring HTTP endpoints for entities
-- B) Separating Fluent API entity configuration into individual classes for organization
-- C) Auto-generating APIs for entity types
-- D) Validating entity data before saving
-
-**✅ Answer: B) Separating Fluent API entity configuration into individual classes for organization**
-
-> Instead of putting all mappings in `OnModelCreating()`, you create separate classes: `class OrderConfig : IEntityTypeConfiguration<Order>`. Apply with `modelBuilder.ApplyConfigurationsFromAssembly(assembly)`.
-
----
-
-**Q96.** What does `HasQueryFilter()` do in EF Core?
-- A) Adds a global WHERE clause to all queries for that entity type (e.g., soft delete, multi-tenancy)
-- B) Validates query syntax at startup
-- C) Limits query result size
-- D) Caches query results
-
-**✅ Answer: A) Adds a global WHERE clause to all queries for that entity type (e.g., soft delete, multi-tenancy)**
-
-> `modelBuilder.Entity<Post>().HasQueryFilter(p => !p.IsDeleted)` automatically appends `WHERE IsDeleted = 0` to every query for `Post`. Essential for soft-delete patterns. Override with `.IgnoreQueryFilters()`.
-
----
-
-**Q97.** What is Split Query in EF Core?
-- A) Running queries on multiple databases simultaneously
-- B) Splitting a single LINQ query with multiple includes into separate SQL queries to avoid cartesian explosion
-- C) Partitioning large queries for parallel execution
-- D) Breaking queries into pages
-
-**✅ Answer: B) Splitting a single LINQ query with multiple includes into separate SQL queries to avoid cartesian explosion**
-
-> `AsSplitQuery()` tells EF to execute multiple SELECT statements instead of one with JOINs. Without it, joining multiple collection navigations causes row multiplication (cartesian explosion). Each query is efficient but requires multiple round trips.
-
----
-
-**Q98.** What is Owned Entity in EF Core?
-- A) An entity that is always private
-- B) A type whose lifetime is tied to an owner entity — mapped as part of the owner's table by default
-- C) An entity with a composite key
-- D) An entity that cannot be queried independently
-
-**✅ Answer: B) A type whose lifetime is tied to an owner entity — mapped as part of the owner's table by default**
-
-> Owned entities (configured with `OwnsOne` / `OwnsMany`) represent value objects stored within the owner's table. Example: `Address` owned by `Customer` — `Address` columns live in the `Customers` table.
-
----
-
-**Q99.** What is `ExecuteUpdateAsync()` in EF Core 7+?
-- A) Runs migrations asynchronously
-- B) Performs a bulk UPDATE via SQL without loading entities into memory
-- C) Updates the connection string at runtime
+**Q171.** What is `ExecuteUpdateAsync()` in EF Core 7+?
+- A) Runs migrations async
+- B) Bulk UPDATE in SQL without loading entities into ChangeTracker
+- C) Updates connection string at runtime
 - D) Schedules deferred updates
 
-**✅ Answer: B) Performs a bulk UPDATE via SQL without loading entities into memory**
+---
 
-> EF Core 7 introduced `ExecuteUpdateAsync()` and `ExecuteDeleteAsync()` for bulk operations. Unlike `SaveChanges()`, they don't load entities into the ChangeTracker — generating a single efficient UPDATE/DELETE SQL statement.
+**Q172.** What does `HasQueryFilter()` do?
+- A) Validates query syntax
+- B) Adds an implicit WHERE clause to all queries for that entity (e.g., soft delete, multi-tenancy)
+- C) Limits result size
+- D) Caches results
 
 ---
 
-**Q100.** What is a Shadow Property in EF Core?
-- A) A property visible only in debug mode
-- B) A property defined in the EF model but not in the entity class — exists only in the database schema
-- C) A calculated property that isn't persisted
+**Q173.** What does `.Include()` do?
+- A) Includes a column
+- B) Eager loads related entities via JOIN
+- C) Adds a filter
+- D) Adds an index
+
+---
+
+**Q174.** What is `AsSplitQuery()` used for?
+- A) Sharding
+- B) Splitting a query with multiple Includes into separate SQL queries — avoids cartesian explosion
+- C) Parallel execution
+- D) Pagination
+
+---
+
+**Q175.** What does `[DatabaseGenerated(DatabaseGeneratedOption.Identity)]` mean?
+- A) Marks the column as auto-incremented by the DB
+- B) Makes it read-only
+- C) Sets as primary key
+- D) Generates a GUID
+
+---
+
+**Q176.** What is Connection Resiliency in EF Core?
+- A) Auto-scaling connections
+- B) Automatic retry logic for transient DB failures
+- C) Load balancing
+- D) Encrypting the connection string
+
+---
+
+**Q177.** What is an Owned Entity in EF Core?
+- A) An always-private entity
+- B) A type whose lifetime is tied to an owner — by default mapped into the owner's table (value object)
+- C) Composite key entity
+- D) Cannot be queried
+
+---
+
+**Q178.** What is a Shadow Property?
+- A) Visible only in debug
+- B) A property in the EF model but not in the entity class — exists only in DB schema
+- C) Calculated, not persisted
 - D) A private backing field
 
-**✅ Answer: B) A property defined in the EF model but not in the entity class — exists only in the database schema**
-
-> Shadow properties are configured via Fluent API: `modelBuilder.Entity<Blog>().Property<DateTime>("LastUpdated")`. EF manages them transparently. Useful for audit fields without polluting domain models.
-
----
-
-## SECTION 5: LINQ (Q101–Q115)
-
----
-
-**Q101.** What is deferred execution in LINQ?
-- A) Running LINQ queries on a background thread
-- B) The query is not executed when defined — it executes when iterated (e.g., `foreach`, `.ToList()`)
-- C) Caching query results for later use
-- D) Postponing compilation of LINQ expressions
-
-**✅ Answer: B) The query is not executed when defined — it executes when iterated (e.g., `foreach`, `.ToList()`)**
-
-> LINQ methods like `Where`, `Select`, `OrderBy` build an expression tree (or iterator chain) but don't execute. Execution is triggered by `ToList()`, `ToArray()`, `First()`, `foreach`, etc. Immediate methods: `Count()`, `Sum()`, `Any()`.
-
----
-
-**Q102.** What is the difference between `First()` and `FirstOrDefault()`?
-- A) `First()` returns null if no match; `FirstOrDefault()` throws an exception
-- B) `First()` throws `InvalidOperationException` if no match; `FirstOrDefault()` returns the default value
-- C) They are identical
-- D) `FirstOrDefault()` is slower than `First()`
-
-**✅ Answer: B) `First()` throws `InvalidOperationException` if no match; `FirstOrDefault()` returns the default value**
-
-> `First()` assumes at least one element exists. `FirstOrDefault()` safely returns `null` (for reference types) or `default(T)` if nothing matches. Use `FirstOrDefault()` when absence is expected.
-
----
-
-**Q103.** What does `SelectMany()` do?
-- A) Selects multiple properties from each element
-- B) Flattens a collection of collections into a single sequence
-- C) Selects elements matching multiple conditions
-- D) Selects the first and last elements
-
-**✅ Answer: B) Flattens a collection of collections into a single sequence**
-
-> `orders.SelectMany(o => o.Items)` returns all items across all orders as a flat `IEnumerable<Item>`. It's equivalent to a nested `foreach` that yields each inner element.
-
----
-
-**Q104.** What is the difference between `Any()` and `All()`?
-- A) `Any()` returns true if ALL elements match; `All()` if ANY match
-- B) `Any()` returns true if at least one element matches; `All()` returns true only if every element matches
-- C) They are identical
-- D) `Any()` counts elements; `All()` validates types
-
-**✅ Answer: B) `Any()` returns true if at least one element matches; `All()` returns true only if every element matches**
-
-> `Any(predicate)` short-circuits at the first match. `All(predicate)` short-circuits at the first non-match. `Any()` (no predicate) just checks if the sequence is non-empty.
-
----
-
-**Q105.** What does `GroupBy()` return?
-- A) A sorted sequence of elements
-- B) An `IEnumerable<IGrouping<TKey, TElement>>` — groups of elements sharing the same key
-- C) A Dictionary<TKey, List<T>>
-- D) A flat sequence with group indexes
-
-**✅ Answer: B) An `IEnumerable<IGrouping<TKey, TElement>>` — groups of elements sharing the same key**
-
-> `products.GroupBy(p => p.Category)` returns groups where each `IGrouping` has a `Key` (the category) and contains the matching products. Access via `group.Key` and iterating the group.
-
----
-
-**Q106.** What is the difference between `Join` and `GroupJoin` in LINQ?
-- A) `Join` is an inner join; `GroupJoin` is a left outer join equivalent
-- B) `Join` is a left join; `GroupJoin` is an inner join
-- C) They are identical
-- D) `GroupJoin` filters nulls; `Join` does not
-
-**✅ Answer: A) `Join` is an inner join; `GroupJoin` is a left outer join equivalent**
-
-> `Join` returns only matching pairs (inner join). `GroupJoin` correlates each left element with a (possibly empty) collection of right elements — enabling left outer join behavior when combined with `SelectMany` and `DefaultIfEmpty`.
-
----
-
-**Q107.** What does `Aggregate()` do?
-- A) Counts aggregate statistics like SUM and AVG
-- B) Applies an accumulator function over a sequence, building a single result
-- C) Groups elements for aggregation
-- D) Produces a Tuple of aggregated results
-
-**✅ Answer: B) Applies an accumulator function over a sequence, building a single result**
-
-> `Aggregate` is a fold/reduce operation. `numbers.Aggregate(0, (acc, n) => acc + n)` sums the numbers. It's the general form; `Sum()`, `Max()`, `Min()`, `Count()` are specialized aggregates.
-
----
-
-**Q108.** What does `Zip()` do in LINQ?
-- A) Compresses the sequence using ZIP compression
-- B) Merges two sequences element-by-element using a selector function
-- C) Removes duplicates from a sequence
-- D) Pairs each element with its index
-
-**✅ Answer: B) Merges two sequences element-by-element using a selector function**
-
-> `Zip(second, selector)` pairs elements at matching indices: `names.Zip(scores, (n, s) => $"{n}: {s}")`. Stops at the shorter sequence. Useful for combining parallel arrays.
-
----
-
-**Q109.** What is the difference between `Distinct()` and `DistinctBy()` in .NET 6+?
-- A) `Distinct()` uses `.Equals()`; `DistinctBy()` deduplicates by a key selector
-- B) `DistinctBy()` is case-insensitive; `Distinct()` is not
-- C) They are identical
-- D) `DistinctBy()` only works on strings
-
-**✅ Answer: A) `Distinct()` uses `.Equals()`; `DistinctBy()` deduplicates by a key selector**
-
-> `Distinct()` returns unique elements using equality. `DistinctBy(x => x.Id)` (added in .NET 6) deduplicates by a key — useful when you want the first occurrence of each unique key in a complex object sequence.
-
----
-
-**Q110.** What does `TakeWhile()` do?
-- A) Takes elements while a condition is true, stopping at the first false
-- B) Takes elements that match a condition (same as `Where`)
-- C) Takes a random subset of elements
-- D) Takes elements until the sequence ends
-
-**✅ Answer: A) Takes elements while a condition is true, stopping at the first false**
-
-> `TakeWhile(predicate)` returns elements from the start as long as the predicate is true — stops at the first false. Contrast with `Where()` which filters throughout the entire sequence.
-
----
-
-**Q111.** What is the difference between `IEnumerable.Count()` and `List.Count`?
-- A) They are identical in performance
-- B) `IEnumerable.Count()` iterates the entire sequence; `List.Count` is O(1) from a stored field
-- C) `List.Count` is slower due to locking
-- D) `IEnumerable.Count()` returns a cached count
-
-**✅ Answer: B) `IEnumerable.Count()` iterates the entire sequence; `List.Count` is O(1) from a stored field**
-
-> LINQ's `Count()` iterates the sequence (unless the underlying collection implements `ICollection<T>`, in which case it optimizes). `List<T>.Count` is a pre-computed property — always O(1).
-
----
-
-**Q112.** What does `let` keyword do in a LINQ query expression?
-- A) Declares a loop variable
-- B) Introduces an intermediate range variable storing a sub-expression result for reuse
-- C) Releases resources in the query
-- D) Defines a lambda in query syntax
-
-**✅ Answer: B) Introduces an intermediate range variable storing a sub-expression result for reuse**
-
-> In query syntax: `let total = item.Qty * item.Price` computes and names a value inside the query, avoiding repeated computation. In method syntax, this is done with a `Select` that produces an anonymous type.
-
----
-
-**Q113.** What does `AsParallel()` do?
-- A) Runs queries on multiple databases
-- B) Enables PLINQ (Parallel LINQ), processing elements concurrently using multiple threads
-- C) Caches query results for parallel access
-- D) Converts a query to async
-
-**✅ Answer: B) Enables PLINQ (Parallel LINQ), processing elements concurrently using multiple threads**
-
-> `data.AsParallel().Where(x => HeavyFilter(x))` runs the query on multiple CPU cores in parallel. Useful for CPU-bound operations on large datasets. Overhead makes it counterproductive for small collections.
-
----
-
-**Q114.** What is the output?
-```csharp
-var nums = new[] { 1, 2, 3, 4, 5 };
-var result = nums.Where(n => n > 2).Select(n => n * 2);
-```
-- A) `{ 3, 4, 5 }`
-- B) `{ 6, 8, 10 }`
-- C) `{ 2, 4, 6, 8, 10 }`
-- D) Query is not executed yet — it's deferred
-
-**✅ Answer: D) Query is not executed yet — it's deferred**
-
-> The LINQ chain builds an iterator but doesn't execute until iterated. Adding `.ToList()` or using `foreach` would produce `{ 6, 8, 10 }` due to deferred execution.
-
----
-
-**Q115.** What is `Lookup<TKey, TElement>` and how does it differ from `Dictionary`?
-- A) `Lookup` is identical to `Dictionary` with a different name
-- B) `Lookup` maps each key to multiple values (one-to-many); `Dictionary` maps each key to a single value
-- C) `Dictionary` supports multiple values; `Lookup` supports only one
-- D) `Lookup` is mutable; `Dictionary` is immutable
-
-**✅ Answer: B) `Lookup` maps each key to multiple values (one-to-many); `Dictionary` maps each key to a single value**
-
-> `ToLookup(x => x.Category)` creates a `Lookup` where each key has a collection of values — like a `Dictionary<TKey, IEnumerable<TElement>>` but returns empty collections for missing keys instead of throwing.
-
----
-
-## SECTION 6: ASYNC/AWAIT & THREADING (Q116–Q130)
-
----
-
-**Q116.** What does `async` and `await` do?
-- A) Creates a new thread for the operation
-- B) Transforms the method into a state machine, allowing non-blocking waiting on asynchronous operations
-- C) Runs the method on the thread pool
-- D) Creates a background task that runs independently
-
-**✅ Answer: B) Transforms the method into a state machine, allowing non-blocking waiting on asynchronous operations**
-
-> `await` suspends the method without blocking the thread, allowing the thread to process other work. The compiler generates a state machine that resumes the method when the awaited task completes.
-
----
-
-**Q117.** What is `Task.Run()` used for?
-- A) Running async code synchronously
-- B) Offloading CPU-bound work to a thread pool thread
-- C) Creating a canceled task
-- D) Scheduling a task for a specific time
-
-**✅ Answer: B) Offloading CPU-bound work to a thread pool thread**
-
-> `Task.Run(() => HeavyComputation())` queues work to the thread pool. Don't use it for I/O-bound work (use `async/await` directly); use it for CPU-bound work that would block the calling thread.
-
----
-
-**Q118.** What is the difference between `Task` and `ValueTask`?
-- A) `ValueTask` always allocates on the heap; `Task` does not
-- B) `ValueTask` avoids heap allocation when the result is synchronously available; `Task` always allocates
-- C) They are identical
-- D) `ValueTask` supports cancellation; `Task` does not
-
-**✅ Answer: B) `ValueTask` avoids heap allocation when the result is synchronously available; `Task` always allocates**
-
-> `ValueTask<T>` is a struct that avoids the heap allocation of `Task<T>` in hot paths where the value is often already available (e.g., cached results). Downside: can only be awaited once. Use for high-performance scenarios.
-
----
-
-**Q119.** What is `ConfigureAwait(false)` used for?
-- A) Canceling a task if it doesn't complete
-- B) Tells the awaiter not to resume on the original synchronization context (useful in library code to avoid deadlocks)
-- C) Configures the task to run on a specific thread
-- D) Makes the await fault-tolerant
-
-**✅ Answer: B) Tells the awaiter not to resume on the original synchronization context (useful in library code to avoid deadlocks)**
-
-> In ASP.NET Core (which has no synchronization context), `ConfigureAwait(false)` has no effect. But in WinForms/WPF or .NET Framework ASP.NET (which has sync contexts), it prevents deadlocks in library code and can improve performance.
-
----
-
-**Q120.** What is a deadlock in async C# code?
-- A) Two tasks waiting indefinitely for each other to complete
-- B) A task that never starts
-- C) A race condition between two threads
-- D) An exception that occurs in a finally block
-
-**✅ Answer: A) Two tasks waiting indefinitely for each other to complete**
-
-> Classic async deadlock: calling `.Result` or `.Wait()` on a Task in code with a synchronization context (ASP.NET, WinForms). The continuation needs the context to resume, but the context is blocked waiting for the task. Solution: use `async/await` throughout.
-
----
-
-**Q121.** What does `CancellationToken` do?
-- A) Cancels a database transaction
-- B) Provides a cooperative cancellation mechanism for async operations
-- C) Sets a timeout for async operations
-- D) Cancels a thread
-
-**✅ Answer: B) Provides a cooperative cancellation mechanism for async operations**
-
-> `CancellationToken` allows callers to signal cancellation. Methods check `token.IsCancellationRequested` or call `token.ThrowIfCancellationRequested()`. Long-running operations should accept and honor `CancellationToken`.
-
----
-
-**Q122.** What is `Parallel.ForEach`?
-- A) An async version of foreach
-- B) A parallel loop that distributes work across thread pool threads concurrently
-- C) A foreach that runs on the UI thread
-- D) A LINQ operator for parallel projection
-
-**✅ Answer: B) A parallel loop that distributes work across thread pool threads concurrently**
-
-> `Parallel.ForEach(list, item => Process(item))` processes items concurrently. Best for CPU-bound, independent workloads. Does not support `async` delegates natively — use `Task.WhenAll` + `Select` for async parallel execution.
-
----
-
-**Q123.** What is `SemaphoreSlim` used for?
-- A) Mutual exclusion for a single thread
-- B) Limiting the number of threads that can access a resource concurrently
-- C) Thread-local storage
-- D) Signaling between threads
-
-**✅ Answer: B) Limiting the number of threads that can access a resource concurrently**
-
-> `SemaphoreSlim(3)` allows up to 3 concurrent accesses. It has async support (`WaitAsync()`), unlike the heavier `Semaphore`. Used for rate limiting, connection pooling, or throttling parallel HTTP requests.
-
----
-
-**Q124.** What is `Interlocked.Increment()` used for?
-- A) Incrementing a loop counter safely
-- B) Performing an atomic increment on a variable, thread-safely, without a lock
-- C) Incrementing a Semaphore
-- D) Incrementing a concurrent collection
-
-**✅ Answer: B) Performing an atomic increment on a variable, thread-safely, without a lock**
-
-> `Interlocked.Increment(ref counter)` uses CPU-level atomic instructions to safely increment without a lock. Faster than `lock` for simple numeric operations. Part of `System.Threading`.
-
----
-
-**Q125.** What is `Task.WhenAll()` vs `Task.WhenAny()`?
-- A) `WhenAll` completes when any task finishes; `WhenAny` when all finish
-- B) `WhenAll` completes when all tasks complete; `WhenAny` completes when the first task completes
-- C) They are identical
-- D) `WhenAny` waits for all with a timeout
-
-**✅ Answer: B) `WhenAll` completes when all tasks complete; `WhenAny` completes when the first task completes**
-
-> `await Task.WhenAll(t1, t2, t3)` runs all tasks concurrently and waits for all to finish. `await Task.WhenAny(t1, t2, t3)` returns when the fastest task completes — useful for timeout racing.
-
----
-
-**Q126.** What is `ThreadLocal<T>`?
-- A) A thread-safe collection
-- B) A variable that has a separate value for each thread
-- C) A lock used for thread synchronization
-- D) A parameter passed across async calls
-
-**✅ Answer: B) A variable that has a separate value for each thread**
-
-> `ThreadLocal<T>` stores per-thread values — each thread sees its own instance. Useful for performance counters, parsers, or connection-like objects that shouldn't be shared. Contrast with `AsyncLocal<T>` which flows across async continuations.
-
----
-
-**Q127.** What is a `Monitor` in C#?
-- A) A class for monitoring CPU usage
-- B) A synchronization primitive that provides exclusive lock ownership, used internally by the `lock` keyword
-- C) A UI component for displaying thread status
-- D) A diagnostic tool for memory
-
-**✅ Answer: B) A synchronization primitive that provides exclusive lock ownership, used internally by the `lock` keyword**
-
-> `lock(obj) { }` compiles to `Monitor.Enter(obj)` / `Monitor.Exit(obj)`. `Monitor` also provides `Wait()`, `Pulse()`, `PulseAll()` for condition-variable-style synchronization.
-
----
-
-**Q128.** What is `async void` and why is it dangerous?
-- A) A valid pattern for async event handlers that doesn't propagate exceptions properly
-- B) A method that runs synchronously
-- C) An optimization for fire-and-forget tasks
-- D) Identical to `async Task`
-
-**✅ Answer: A) A valid pattern for async event handlers that doesn't propagate exceptions properly**
-
-> `async void` methods cannot be awaited, so exceptions are unobserved and crash the process. The only legitimate use is event handlers. Always prefer `async Task` — it allows awaiting, exception handling, and cancellation.
-
----
-
-**Q129.** What is `Channel<T>` in .NET?
-- A) A named pipe for inter-process communication
-- B) A high-performance, thread-safe producer-consumer data structure for async data pipelines
-- C) A network socket abstraction
-- D) A Pub/Sub event bus
-
-**✅ Answer: B) A high-performance, thread-safe producer-consumer data structure for async data pipelines**
-
-> `Channel<T>` (in `System.Threading.Channels`) provides bounded/unbounded async queues. Producers write to `channel.Writer`, consumers read from `channel.Reader`. Significantly more efficient than `BlockingCollection<T>`.
-
----
-
-**Q130.** What is the difference between `lock` and `Mutex`?
-- A) `lock` works across processes; `Mutex` is process-local
-- B) `lock` is process-local and uses Monitor; `Mutex` is cross-process and is slower
-- C) They are identical
-- D) `Mutex` is managed; `lock` uses unmanaged code
-
-**✅ Answer: B) `lock` is process-local and uses Monitor; `Mutex` is cross-process and is slower**
-
-> `lock` compiles to `Monitor.Enter/Exit` — fast, managed, in-process only. `Mutex` is a Windows kernel object usable across processes (e.g., single-instance app detection). `Mutex` is significantly slower due to kernel transitions.
-
----
-
-## SECTION 7: DEPENDENCY INJECTION (Q131–Q140)
-
----
-
-**Q131.** What is Dependency Injection (DI)?
-- A) Injecting JavaScript into HTML pages
-- B) A design pattern where dependencies are provided to a class externally rather than created internally
-- C) A way to inject SQL into database queries
-- D) A compile-time code generation technique
-
-**✅ Answer: B) A design pattern where dependencies are provided to a class externally rather than created internally**
-
-> DI decouples classes from their dependencies. Instead of `new EmailService()` inside a class, the service is injected via constructor. This enables testability, loose coupling, and swappable implementations.
-
----
-
-**Q132.** What is the Service Locator pattern and why is it considered an anti-pattern?
-- A) It's a pattern for locating physical servers
-- B) Resolving dependencies from a container inside classes — hides dependencies and makes testing harder
-- C) A caching pattern for services
-- D) An improved version of DI
-
-**✅ Answer: B) Resolving dependencies from a container inside classes — hides dependencies and makes testing harder**
-
-> Service Locator (`serviceProvider.GetService<T>()` inside business logic) hides dependencies from class signatures, making them invisible to consumers and hard to mock in tests. Prefer explicit constructor injection.
-
----
-
-**Q133.** What is the Captive Dependency problem in DI?
-- A) A dependency that cannot be released from memory
-- B) A longer-lived service (Singleton) holding a shorter-lived service (Scoped/Transient), causing the shorter-lived service to live too long
-- C) A circular dependency between two services
-- D) A service that requires authentication
-
-**✅ Answer: B) A longer-lived service (Singleton) holding a shorter-lived service (Scoped/Transient), causing the shorter-lived service to live too long**
-
-> If a Singleton captures a Scoped service, that Scoped instance won't be released per-request — it lives for the app lifetime. ASP.NET Core detects this and throws at startup in development. Solution: use `IServiceScopeFactory`.
-
----
-
-**Q134.** How do you register multiple implementations of the same interface?
-- A) It's not possible in .NET DI
-- B) Register multiple times with `AddTransient/Scoped/Singleton`; inject as `IEnumerable<IInterface>`
-- C) Only the last registration is used
-- D) Use `AddSingleton` with a factory function
-
-**✅ Answer: B) Register multiple implementations with `Add*`; inject as `IEnumerable<IInterface>`**
-
-> Registering the same interface multiple times with `.AddTransient<INotifier, EmailNotifier>()` and `.AddTransient<INotifier, SmsNotifier>()` allows injecting `IEnumerable<INotifier>` to get all implementations.
-
----
-
-**Q135.** What is `IServiceScope`?
-- A) A scope that limits service registration namespaces
-- B) A manually created DI scope — used when you need Scoped services outside of an HTTP request (e.g., in background services)
-- C) A scope for unit testing
-- D) An authentication scope
-
-**✅ Answer: B) A manually created DI scope — used when you need Scoped services outside of an HTTP request**
-
-> In `IHostedService`, there's no HTTP scope. Use `IServiceScopeFactory.CreateScope()` to create a scope, resolve Scoped services, use them, then dispose the scope to release resources.
-
----
-
-**Q136.** What is `IOptions<T>`, `IOptionsSnapshot<T>`, and `IOptionsMonitor<T>`?
-- A) They are identical
-- B) `IOptions<T>` is a static snapshot; `IOptionsSnapshot<T>` reloads per request; `IOptionsMonitor<T>` provides change notifications
-- C) `IOptionsMonitor` is obsolete; use `IOptions<T>`
-- D) `IOptionsSnapshot<T>` is for Singleton services only
-
-**✅ Answer: B) `IOptions<T>` is a static snapshot; `IOptionsSnapshot<T>` reloads per request; `IOptionsMonitor<T>` provides change notifications**
-
-> `IOptions<T>`: configured once at startup. `IOptionsSnapshot<T>`: reloaded from config per request (Scoped). `IOptionsMonitor<T>`: can push change notifications to running singletons when config changes.
-
----
-
-**Q137.** What is a Factory pattern in DI?
-- A) A design pattern where DI creates objects via factories instead of direct resolution
-- B) Registering a delegate that creates service instances, useful for runtime parameter injection
-- C) A pattern for creating unit tests
-- D) A way to create database connections
-
-**✅ Answer: B) Registering a delegate that creates service instances, useful for runtime parameter injection**
-
-> `services.AddTransient<IEmailService>(sp => new EmailService(sp.GetRequiredService<ILogger<EmailService>>(), "smtp.host"))` — factory registrations allow injecting parameters not available in DI (like connection strings or runtime config).
-
----
-
-**Q138.** What does `GetRequiredService<T>()` do differently from `GetService<T>()`?
-- A) `GetRequiredService` throws `InvalidOperationException` if the service isn't registered; `GetService` returns null
-- B) They are identical
-- C) `GetService` throws; `GetRequiredService` returns null
-- D) `GetRequiredService` only works with Singleton services
-
-**✅ Answer: A) `GetRequiredService` throws `InvalidOperationException` if the service isn't registered; `GetService` returns null**
-
-> `GetRequiredService<T>()` is preferred when the service is mandatory — it fails fast with a clear error rather than a `NullReferenceException` later. `GetService<T>()` is for optional dependencies.
-
----
-
-**Q139.** What is Property Injection vs Constructor Injection?
-- A) Constructor injection is optional; property injection is mandatory
-- B) Constructor injection provides dependencies via the constructor (preferred); property injection sets them via properties (less explicit)
-- C) They are identical
-- D) Property injection is faster than constructor injection
-
-**✅ Answer: B) Constructor injection is preferred; property injection sets them via properties**
-
-> Constructor injection is the standard pattern in .NET DI — it makes dependencies explicit and immutable. Property injection can be used for optional dependencies but hides them and makes the class harder to test.
-
----
-
-**Q140.** Can you inject `IServiceProvider` and resolve services from it?
-- A) No — it's not registered in DI
-- B) Yes, but it's generally an anti-pattern (Service Locator); use it only in infrastructure code or when the service type is known only at runtime
-- C) Yes, and it's the recommended approach
-- D) Only in Singleton services
-
-**✅ Answer: B) Yes, but it's generally an anti-pattern; use it only in infrastructure code or when the service type is known only at runtime**
-
-> `IServiceProvider` is registered and can be injected. But using it inside business logic is the Service Locator anti-pattern. Legitimate uses: plugin systems, generic factories, or when the type is dynamic.
-
----
-
-## SECTION 8: DESIGN PATTERNS (Q141–Q150)
-
----
-
-**Q141.** What is the Repository Pattern?
-- A) A pattern for storing code in version control
-- B) An abstraction layer between business logic and data access, providing a collection-like interface for domain objects
-- C) A factory for creating database connections
-- D) A design pattern for managing HTTP caches
-
-**✅ Answer: B) An abstraction layer between business logic and data access, providing a collection-like interface for domain objects**
-
-> The Repository pattern isolates data access logic. Business code calls `repository.GetById(id)` without knowing if data comes from SQL, MongoDB, or a cache. Enables unit testing by mocking the repository interface.
-
----
-
-**Q142.** What is the Unit of Work Pattern?
-- A) Measuring the effort required to complete a task
-- B) A pattern that maintains a list of objects affected by a business transaction and coordinates writing changes in a single operation
-- C) A time-boxing technique for sprints
-- D) A pattern for rate limiting API calls
-
-**✅ Answer: B) A pattern that coordinates writing changes in a single operation**
-
-> Unit of Work groups multiple repository operations into a single transaction. EF Core's `DbContext` is an implementation of the Unit of Work pattern — `SaveChanges()` commits all changes atomically.
-
----
-
-**Q143.** What is the Singleton Design Pattern (not DI lifetime)?
-- A) A class that can only be created in a single assembly
-- B) A pattern that restricts instantiation of a class to a single instance, providing a global access point
-- C) A class with only static members
-- D) A thread-safe lazy loader
-
-**✅ Answer: B) A pattern that restricts instantiation of a class to a single instance**
-
-> Classic Singleton uses a private constructor and a static `Instance` property. Thread-safe implementations use `Lazy<T>` or double-check locking. In modern .NET apps, DI singletons are preferred over manual Singletons.
-
----
-
-**Q144.** What is the Strategy Pattern?
-- A) Defining a family of algorithms, encapsulating each one, making them interchangeable at runtime
-- B) A business strategy planning tool
-- C) Selecting the fastest database query strategy
-- D) Configuring middleware pipeline strategies
-
-**✅ Answer: A) Defining a family of algorithms, encapsulating each one, making them interchangeable at runtime**
-
-> Strategy encapsulates algorithms behind an interface. Example: `ISortStrategy` with `BubbleSortStrategy`, `QuickSortStrategy`. The context holds a reference and delegates to whichever is injected/set. Eliminates switch statements.
-
----
-
-**Q145.** What is the Decorator Pattern?
-- A) Adding UI styling to classes
-- B) Wrapping an object to add behavior without modifying the original class
-- C) A pattern for logging decorative messages
-- D) Adding attributes to method signatures
-
-**✅ Answer: B) Wrapping an object to add behavior without modifying the original class**
-
-> The Decorator wraps an interface implementation to add cross-cutting behavior (logging, caching, validation). `CachingRepository` wraps `SqlRepository` — DI injects the decorator transparently. Follows the Open/Closed Principle.
-
----
-
-**Q146.** What is the Observer Pattern?
-- A) Monitoring application performance
-- B) A pattern where one object (subject) notifies multiple dependent objects (observers) when its state changes
-- C) Watching file system changes
-- D) Logging all method calls
-
-**✅ Answer: B) One object notifies multiple dependent objects when state changes**
-
-> C#'s `event` keyword is an implementation of the Observer pattern. Subjects fire events; observers subscribe. IObservable/IObserver (Rx.NET) provides a more powerful reactive version.
-
----
-
-**Q147.** What is CQRS (Command Query Responsibility Segregation)?
-- A) A database normalization technique
-- B) Separating read (query) and write (command) operations into distinct models
-- C) A REST API design pattern
-- D) A caching invalidation strategy
-
-**✅ Answer: B) Separating read and write operations into distinct models**
-
-> CQRS uses separate models (and sometimes separate databases) for reads and writes. Commands mutate state; queries return data. Enables optimizing each side independently. Often combined with Event Sourcing and MediatR.
-
----
-
-**Q148.** What is the Mediator Pattern (as used by MediatR)?
-- A) A third-party service broker for APIs
-- B) Reduces direct dependencies between components by having them communicate through a central mediator object
-- C) A load balancing pattern
-- D) A database query dispatcher
-
-**✅ Answer: B) Reduces direct dependencies between components by communicating through a central mediator**
-
-> MediatR implements this — controllers call `mediator.Send(command)` without knowing which handler processes it. This decouples controllers from application logic, enabling pipeline behaviors (logging, validation) via `IPipelineBehavior`.
-
----
-
-**Q149.** What is the Factory Method Pattern?
-- A) A factory class with a `Create()` method
-- B) Defines an interface for creating objects but lets subclasses decide which classes to instantiate
-- C) Creating objects using reflection
-- D) A static class with constructor methods
-
-**✅ Answer: B) Defines an interface for creating objects but lets subclasses decide which classes to instantiate**
-
-> Factory Method defers instantiation to subclasses. A `LoggerFactory.Create()` can return `FileLogger` or `ConsoleLogger` based on configuration. DI's service registrations with factory delegates are a modern implementation.
-
----
-
-**Q150.** What is the Command Pattern?
-- A) Running shell commands from .NET
-- B) Encapsulating a request as an object, enabling parameterization, queuing, logging, and undo operations
-- C) A design pattern for HTTP commands
-- D) Defining CLI arguments
-
-**✅ Answer: B) Encapsulating a request as an object**
-
-> The Command pattern turns method calls into objects. Each `ICommand` has an `Execute()` and optionally `Undo()`. Used in undo/redo systems, MediatR commands, transaction logs, and task queues.
-
----
-
-## SECTION 9: REST API & WEB (Q151–Q160)
-
----
-
-**Q151.** What is the difference between REST and SOAP?
-- A) SOAP is newer; REST is legacy
-- B) REST is an architectural style using HTTP natively; SOAP is a protocol with rigid XML messaging and WS-* standards
-- C) REST uses XML only; SOAP uses JSON
-- D) They are identical
-
-**✅ Answer: B) REST is an architectural style using HTTP natively; SOAP is a protocol with rigid XML messaging**
-
-> REST leverages HTTP verbs (GET/POST/PUT/DELETE), status codes, and URLs for resources. SOAP is protocol-based with WSDL contracts, XML envelopes, and built-in security/transactions. REST is simpler and dominant in modern web APIs.
-
----
-
-**Q152.** What HTTP status code represents a successful resource creation?
-- A) 200 OK
-- B) 204 No Content
-- C) 201 Created
-- D) 202 Accepted
-
-**✅ Answer: C) 201 Created**
-
-> 201 Created indicates a resource was successfully created. The response should include a `Location` header pointing to the new resource's URL. Use `CreatedAtAction()` in ASP.NET Core to return 201.
-
----
-
-**Q153.** What is idempotency in REST?
-- A) An API that returns the same response regardless of input
-- B) Multiple identical requests produce the same result as a single request — the side effects are the same
-- C) A security mechanism preventing duplicate requests
-- D) Caching API responses for idempotent results
-
-**✅ Answer: B) Multiple identical requests produce the same result as a single request**
-
-> GET, PUT, DELETE are idempotent — calling them multiple times has the same effect. POST is not idempotent — creating the same order twice creates two orders. PATCH can be idempotent depending on implementation.
-
----
-
-**Q154.** What is versioning in REST APIs and what are common strategies?
-- A) A git versioning system for APIs
-- B) Managing backward-incompatible changes — strategies include URL path (`/v1/`), query string (`?version=1`), header versioning
-- C) Semantic versioning of NuGet packages
-- D) Rotating API keys
-
-**✅ Answer: B) Managing backward-incompatible changes — URL, query string, or header versioning**
-
-> API versioning lets clients use older versions while new clients use newer ones. URL versioning (`/api/v1/products`) is most visible. Header versioning (`Api-Version: 1`) is cleaner. Use `Microsoft.AspNetCore.Mvc.Versioning` NuGet for implementation.
-
----
-
-**Q155.** What is the difference between PUT and PATCH?
-- A) PUT creates; PATCH updates
-- B) PUT replaces the entire resource; PATCH applies partial updates to the resource
-- C) PATCH replaces; PUT partially updates
-- D) They are identical
-
-**✅ Answer: B) PUT replaces the entire resource; PATCH applies partial updates**
-
-> PUT sends the complete representation — fields not included are set to null/default. PATCH sends only the fields that change (using JSON Patch or a partial DTO). Use PATCH for large resources where you only need to update a few fields.
-
----
-
-**Q156.** What is Swagger/OpenAPI in ASP.NET Core?
-- A) A testing framework for REST APIs
-- B) A specification and tooling for documenting REST APIs — generates interactive documentation from code
-- C) A mock server for API testing
-- D) A security scanner for APIs
-
-**✅ Answer: B) A specification and tooling for documenting REST APIs**
-
-> Swagger (OpenAPI) auto-generates interactive API documentation from controller annotations. Swashbuckle or NSwag integrate with ASP.NET Core to produce a UI (`/swagger`) and a machine-readable OpenAPI JSON spec.
-
----
-
-**Q157.** What is ProblemDetails (RFC 7807)?
-- A) A .NET exception type
-- B) A standardized JSON format for HTTP error responses
-- C) An HTTP status code for validation errors
-- D) A logging format for API errors
-
-**✅ Answer: B) A standardized JSON format for HTTP error responses**
-
-> RFC 7807 defines a JSON problem response with `type`, `title`, `status`, `detail`, and `instance` fields. ASP.NET Core returns `ProblemDetails` by default when `[ApiController]` is used, providing consistent error responses.
-
 ---
-
-**Q158.** What is `IHttpClientFactory`?
-- A) A factory for creating `HttpClient` instances that manages lifetimes and avoids socket exhaustion
-- B) A mock factory for testing HTTP calls
-- C) A factory for creating `HttpContext` objects
-- D) A factory for HTTP middleware
 
-**✅ Answer: A) A factory for creating `HttpClient` instances that manages lifetimes and avoids socket exhaustion**
+**Q179.** What's the difference between `ExecuteSqlRaw` and `ExecuteSqlInterpolated`?
+- A) Identical
+- B) `ExecuteSqlInterpolated($"... {value}")` parameterises interpolated values safely; `ExecuteSqlRaw` needs manual `SqlParameter`
+- C) Raw is safer
+- D) Interpolated runs LINQ
 
-> Creating `new HttpClient()` per request exhausts sockets (port exhaustion). `IHttpClientFactory` pools `HttpMessageHandler` instances, handles disposal, and supports named/typed clients. Register with `services.AddHttpClient()`.
-
 ---
-
-**Q159.** What is a Polly policy in .NET HTTP clients?
-- A) A privacy policy generator
-- B) A resilience and transient fault-handling library — provides retry, circuit breaker, timeout, and fallback policies
-- C) A certificate policy for HTTPS
-- D) A test isolation policy
-
-**✅ Answer: B) A resilience library providing retry, circuit breaker, timeout, and fallback policies**
 
-> Polly wraps `IHttpClientFactory` calls with retry logic, circuit breakers (stop calling a failing service), and timeouts. `services.AddHttpClient().AddTransientHttpErrorPolicy(p => p.RetryAsync(3))` is a typical setup.
+**Q180.** What is the issue with using EF Core `InMemory` provider for testing?
+- A) Nothing
+- B) Doesn't enforce relational constraints, transactions, or raw SQL — may behave differently from a real DB
+- C) Cannot be installed
+- D) Slower than SQL Server
 
 ---
 
-**Q160.** What is OData in ASP.NET Core?
-- A) A database schema definition language
-- B) An open protocol for RESTful APIs that enables $filter, $select, $expand, $orderby query options
-- C) An authentication protocol
-- D) A binary data transfer format
+## SECTION 8: DEPENDENCY INJECTION & PATTERNS (Q181–Q190)
 
-**✅ Answer: B) An open protocol enabling $filter, $select, $expand, $orderby query options**
-
-> OData adds a standard query language to REST APIs. Clients can request `GET /api/products?$filter=Price gt 100&$orderby=Name` without custom endpoint logic. Microsoft OData library integrates with EF Core for database-level filtering.
-
 ---
 
-## SECTION 10: AUTHENTICATION & AUTHORIZATION (Q161–Q170)
+**Q181.** What is Dependency Injection?
+- A) Injecting JS into HTML
+- B) A design pattern where dependencies are provided externally rather than created internally
+- C) Injecting SQL into queries
+- D) Compile-time code gen
 
 ---
-
-**Q161.** What is JWT (JSON Web Token)?
-- A) A JSON-based database query format
-- B) A compact, self-contained token format for transmitting claims between parties, signed with HMAC or RSA
-- C) A JavaScript testing framework
-- D) A compression format for JSON
 
-**✅ Answer: B) A compact, self-contained token for transmitting signed claims**
+**Q182.** What is the Captive Dependency problem?
+- A) Dependency can't be released from memory
+- B) A longer-lived service (Singleton) holding a shorter-lived (Scoped/Transient) service — keeps it alive too long
+- C) Circular dependency
+- D) Authentication-required service
 
-> JWT has three parts: Header (algorithm), Payload (claims), Signature. The server signs tokens with a secret key; clients include them in `Authorization: Bearer <token>`. The server validates the signature without a database lookup.
-
 ---
-
-**Q162.** What is the difference between Authentication and Authorization?
-- A) They are the same concept
-- B) Authentication verifies who you are (identity); Authorization verifies what you're allowed to do (permissions)
-- C) Authorization verifies identity; Authentication verifies permissions
-- D) Authentication is for APIs; Authorization is for web apps
 
-**✅ Answer: B) Authentication verifies identity; Authorization verifies permissions**
+**Q183.** What does `GetRequiredService<T>()` do differently from `GetService<T>()`?
+- A) GetRequiredService throws if not registered; GetService returns null
+- B) Identical
+- C) GetService throws
+- D) GetRequiredService is Singleton-only
 
-> Authentication: "Are you who you claim to be?" (login, JWT validation). Authorization: "Are you allowed to do this?" (role checks, policy evaluation). In ASP.NET Core: `UseAuthentication()` before `UseAuthorization()`.
-
 ---
-
-**Q163.** What is OAuth 2.0?
-- A) A password encryption standard
-- B) An authorization framework that enables third-party applications to obtain limited access on behalf of a user
-- C) An authentication protocol
-- D) A JWT signing algorithm
-
-**✅ Answer: B) An authorization framework for delegated access**
 
-> OAuth 2.0 allows users to grant third-party apps access to their resources without sharing credentials. Flows: Authorization Code (web apps), Client Credentials (machine-to-machine), PKCE (SPAs). Note: OAuth is authorization, not authentication — OIDC adds authentication.
+**Q184.** What is the Service Locator anti-pattern?
+- A) Locating physical servers
+- B) Resolving dependencies from a container inside classes — hides dependencies, harder to test
+- C) Caching services
+- D) Improved DI
 
 ---
 
-**Q164.** What is OpenID Connect (OIDC)?
-- A) An open-source database connection protocol
-- B) An authentication layer built on top of OAuth 2.0 that adds identity — provides an ID token (JWT) with user info
-- C) A certificate management protocol
-- D) A federated database protocol
+**Q185.** What is `IServiceScope` used for?
+- A) Limits service namespace
+- B) Manually created DI scope — needed in background workers / console apps to use scoped services
+- C) Unit testing only
+- D) Auth scope
 
-**✅ Answer: B) An authentication layer on top of OAuth 2.0**
-
-> OIDC adds an `id_token` (JWT containing user identity claims) to OAuth 2.0's access tokens. Used for SSO — "Login with Google/Microsoft" flows use OIDC. Libraries like IdentityServer, Azure AD, and Auth0 implement OIDC.
-
 ---
 
-**Q165.** What is `[Authorize]` attribute in ASP.NET Core?
-- A) Marks a controller/action as requiring authenticated users
-- B) Grants all users access to an endpoint
-- C) Validates the request body automatically
-- D) Enables CORS for the endpoint
+**Q186.** What is the Repository Pattern?
+- A) Version control storage
+- B) Abstraction between business logic and data access; collection-like interface for domain objects
+- C) Factory for DB connections
+- D) HTTP cache management
 
-**✅ Answer: A) Marks a controller/action as requiring authenticated users**
-
-> `[Authorize]` requires an authenticated user. `[Authorize(Roles = "Admin")]` requires a role. `[Authorize(Policy = "MustBeOver18")]` applies a named policy. `[AllowAnonymous]` overrides to allow unauthenticated access.
-
 ---
-
-**Q166.** What is Claims-based identity in ASP.NET Core?
-- A) Insurance claims processing
-- B) Identity represented as a collection of claims (key-value pairs) about the user — name, email, role, etc.
-- C) A database table of user permissions
-- D) An HTTP header format for identity
 
-**✅ Answer: B) Identity represented as a collection of claims about the user**
+**Q187.** What is the Unit of Work pattern?
+- A) Sprint effort estimation
+- B) Maintains a list of objects affected by a business transaction and writes them in a single coordinated operation
+- C) Time-boxing technique
+- D) Rate limiting
 
-> A `ClaimsPrincipal` contains `ClaimsIdentity` objects, each with a collection of `Claim` objects (`ClaimType`, `ClaimValue`). JWT payload claims are mapped to `ClaimsPrincipal` automatically after token validation.
-
 ---
-
-**Q167.** What is `IAuthorizationHandler` in ASP.NET Core?
-- A) The built-in cookie handler
-- B) A class that implements custom authorization requirements evaluation for policies
-- C) An HTTP filter for authentication
-- D) A JWT validator
 
-**✅ Answer: B) A class implementing custom authorization requirement evaluation**
+**Q188.** What is the Singleton pattern (not DI lifetime)?
+- A) Class in a single assembly
+- B) Restricts instantiation to one instance with a global access point
+- C) Static-members-only class
+- D) Lazy loader
 
-> Custom policies use `IAuthorizationRequirement` (data) + `IAuthorizationHandler` (logic). The handler's `HandleRequirementAsync` calls `context.Succeed(requirement)` or `Fail()`. Registered in DI as `IAuthorizationHandler`.
-
 ---
-
-**Q168.** What is Refresh Token?
-- A) A token that refreshes the UI
-- B) A long-lived token used to obtain a new access token when the current one expires, without requiring re-login
-- C) A token used to refresh cache
-- D) An extension of the access token lifetime
-
-**✅ Answer: B) A long-lived token for obtaining new access tokens**
 
-> Access tokens are short-lived (minutes). Refresh tokens are long-lived and stored securely (HTTP-only cookies or secure storage). When the access token expires, the client exchanges the refresh token for a new access token.
+**Q189.** What is the Decorator pattern?
+- A) UI styling
+- B) Wrapping an object to add behaviour without modifying the original class
+- C) Logging decorative messages
+- D) Adding attributes
 
 ---
 
-**Q169.** What is ASP.NET Core Identity?
-- A) A JWT library
-- B) A membership system providing user registration, login, password hashing, roles, and claims management
-- C) An authentication middleware for OAuth
-- D) A database-free identity provider
+**Q190.** What is the Mediator pattern (used by MediatR)?
+- A) Service broker for APIs
+- B) Decouples senders and handlers — components communicate through a central mediator
+- C) Load balancing
+- D) Query dispatcher
 
-**✅ Answer: B) A membership system providing user registration, login, password hashing, roles, and claims**
-
-> ASP.NET Core Identity handles user management: creating/storing users, hashing passwords (PBKDF2), role management, email confirmation, two-factor authentication. Built on EF Core for persistence.
-
 ---
-
-**Q170.** What is CSRF (Cross-Site Request Forgery)?
-- A) A SQL injection variant
-- B) An attack where a malicious site tricks a user's browser into making authenticated requests to another site
-- C) A cross-site scripting attack
-- D) A CORS misconfiguration exploit
 
-**✅ Answer: B) An attack tricking browsers into making authenticated requests to another site**
+## SECTION 9: TESTING (Q191–Q200)
 
-> CSRF exploits the fact that browsers automatically send cookies. Mitigations: Anti-forgery tokens (`[ValidateAntiForgeryToken]`), SameSite cookie attribute, and custom request headers (APIs). SPAs using JWT in Authorization headers are naturally immune.
-
 ---
 
-## SECTION 11: TESTING (Q171–Q180)
+**Q191.** What is the AAA pattern?
+- A) Authentication–Authorization–Audit
+- B) Arrange–Act–Assert — a structure for organising test code
+- C) Async–Await–Assert
+- D) Abstract–Abstract–Assert
 
 ---
-
-**Q171.** What is the difference between Unit, Integration, and E2E tests?
-- A) They differ only in the testing framework used
-- B) Unit tests test isolated units; Integration tests test multiple components together; E2E tests test complete user flows
-- C) E2E is fastest; Unit is slowest
-- D) Integration tests don't require a database
-
-**✅ Answer: B) Unit = isolated; Integration = multiple components; E2E = complete flows**
 
-> Unit tests are fast and isolated (no I/O). Integration tests verify components work together (with real DB, HTTP). E2E tests simulate real user behavior through the full stack. Follow the test pyramid: many units, fewer integration, minimal E2E.
+**Q192.** What is `[Fact]` vs `[Theory]` in xUnit?
+- A) Fact runs multiple times; Theory runs once
+- B) Fact runs once with no parameters; Theory runs multiple times with `[InlineData]` / `[MemberData]`
+- C) Identical
+- D) Theory is async-only
 
 ---
 
-**Q172.** What is Mocking in unit testing?
+**Q193.** What is Mocking?
 - A) Writing fake business logic
-- B) Creating controlled fake implementations of dependencies that simulate real behavior without side effects
-- C) Running tests against a mock database
-- D) Hiding implementation details from tests
-
-**✅ Answer: B) Creating controlled fake implementations of dependencies**
-
-> Mocking frameworks (Moq, NSubstitute) create fake objects that simulate dependencies. `mock.Setup(m => m.GetById(1)).Returns(product)` controls what the mock returns. Tests then verify the system-under-test behaves correctly.
+- B) Creating controlled fakes of dependencies that simulate real behaviour without side effects
+- C) Mock database
+- D) Hiding implementation
 
 ---
 
-**Q173.** What is the AAA pattern in unit testing?
-- A) Authentication-Authorization-Audit
-- B) Arrange-Act-Assert — a structure for organizing test code
-- C) Async-Await-Assert
-- D) Abstract-Abstract-Assert
-
-**✅ Answer: B) Arrange-Act-Assert**
-
-> AAA is the standard test structure: **Arrange** (set up test data/mocks), **Act** (call the method under test), **Assert** (verify the result). Clear separation makes tests readable and maintainable.
+**Q194.** What is the difference between Unit, Integration, and E2E tests?
+- A) Just different frameworks
+- B) Unit = isolated units; Integration = multiple components together; E2E = complete user flows
+- C) E2E is fastest
+- D) Integration doesn't need a DB
 
 ---
 
-**Q174.** What is `WebApplicationFactory<T>` in ASP.NET Core testing?
-- A) A factory for creating test databases
-- B) An in-memory test server that bootstraps the full ASP.NET Core pipeline for integration testing
-- C) A mock for `IWebHostEnvironment`
-- D) A factory for generating test data
-
-**✅ Answer: B) An in-memory test server for integration testing**
-
-> `WebApplicationFactory<Program>` spins up the full application (middleware, DI, routing) in memory. Tests use `CreateClient()` to send real HTTP requests. You can override services with `WithWebHostBuilder(builder => ...)`.
+**Q195.** What is `WebApplicationFactory<T>`?
+- A) Test DB factory
+- B) In-memory test server bootstrapping the full ASP.NET Core pipeline for integration tests
+- C) Mock for IWebHostEnvironment
+- D) Test data generator
 
 ---
 
-**Q175.** What is `[Theory]` vs `[Fact]` in xUnit?
-- A) `[Fact]` runs multiple test cases; `[Theory]` runs once
-- B) `[Fact]` runs once with no parameters; `[Theory]` runs multiple times with different data sets via `[InlineData]`
-- C) They are identical
-- D) `[Theory]` is for async tests
-
-**✅ Answer: B) `[Fact]` runs once; `[Theory]` runs with `[InlineData]` parameter sets**
-
-> `[Fact]` marks a simple test. `[Theory]` with `[InlineData(1, 2, 3)]` parameterizes the test — xUnit runs it once per data set. Also supports `[MemberData]` and `[ClassData]` for complex test data.
-
----
-
-**Q176.** What is Test Driven Development (TDD)?
-- A) Developing tests after the code is written
-- B) Writing failing tests first, then writing minimum code to pass, then refactoring (Red-Green-Refactor)
+**Q196.** What does Test-Driven Development (TDD) describe?
+- A) Writing tests after the code
+- B) Red–Green–Refactor: failing test → minimum code to pass → refactor
 - C) Automated integration testing
 - D) Code coverage analysis
 
-**✅ Answer: B) Writing failing tests first, then code to pass, then refactoring**
+---
 
-> TDD cycle: Write a failing test (Red) → Write minimal code to pass (Green) → Refactor without breaking tests (Refactor). Results in high test coverage, better API design, and confidence in changes.
+**Q197.** What is the output?
+```csharp
+var nums = new[] { 1, 2, 3, 4 };
+var sum = 0;
+foreach (var n in nums) sum += n;
+Console.Write(sum);
+```
+- A) 10
+- B) 4
+- C) 24
+- D) 0
 
 ---
 
-**Q177.** What is `FluentAssertions` used for?
-- A) Writing fluent builder patterns
-- B) Providing expressive, readable assertion syntax for unit tests with better failure messages
-- C) A mocking framework
-- D) A performance testing tool
-
-**✅ Answer: B) Providing expressive assertion syntax with better failure messages**
-
-> `result.Should().Be(42)` is more readable than `Assert.Equal(42, result)`. FluentAssertions provides rich assertions for collections, exceptions, dates, and objects, with detailed failure descriptions.
-
----
-
-**Q178.** What is an In-Memory database provider in EF Core used for?
-- A) Storing production data when no SQL server is available
-- B) Fast, ephemeral database for unit/integration testing without a real database connection
-- C) Caching EF queries in memory
-- D) Running SQL queries without a database engine
-
-**✅ Answer: B) Fast, ephemeral database for unit/integration testing**
-
-> `UseInMemoryDatabase("TestDb")` provides an in-memory EF Core store for tests. Warning: It doesn't enforce database constraints or mimic SQL behavior. For more realistic integration tests, use Testcontainers with a real Docker database.
+**Q198.** What is the output?
+```csharp
+var nums = new List<int> { 1, 2, 3 };
+nums.Insert(1, 99);
+Console.Write(string.Join(",", nums));
+```
+- A) 1,99,2,3
+- B) 99,1,2,3
+- C) 1,2,99,3
+- D) 1,2,3,99
 
 ---
 
-**Q179.** What is Testcontainers in .NET?
-- A) A Docker container management library
-- B) A library that spins up real Docker containers (SQL Server, Redis, RabbitMQ) for integration tests
-- C) A test isolation tool
-- D) A test data generator
-
-**✅ Answer: B) A library spinning up Docker containers for integration tests**
-
-> `Testcontainers.MsSql` starts a real SQL Server Docker container for integration tests, giving you a real database engine. Tests run against the actual database behavior, not an in-memory approximation.
+**Q199.** What is Code Coverage?
+- A) Percentage of code that is commented
+- B) Percentage of production code executed by tests
+- C) Number of tests per file
+- D) Linting metric
 
 ---
 
-**Q180.** What is Code Coverage?
-- A) The percentage of code that is commented
-- B) The percentage of production code executed by tests
-- C) The number of test files per production file
-- D) A metric for code quality linting
-
-**✅ Answer: B) The percentage of production code executed by tests**
-
-> Code coverage measures which code lines/branches tests exercise. High coverage (80%+) reduces regression risk but doesn't guarantee quality — tests must assert meaningful things. Tools: Coverlet, Visual Studio Coverage.
-
----
-
-## SECTION 12: SQL & DATABASES (Q181–Q190)
+**Q200.** What is the output?
+```csharp
+var dict = new Dictionary<string, int>();
+dict.TryAdd("a", 1);
+dict.TryAdd("a", 2);
+Console.Write(dict["a"]);
+```
+- A) 1
+- B) 2
+- C) 3
+- D) Throws
 
 ---
 
-**Q181.** What is the difference between `INNER JOIN` and `LEFT JOIN`?
-- A) `INNER JOIN` returns all rows; `LEFT JOIN` returns matching rows
-- B) `INNER JOIN` returns only matching rows from both tables; `LEFT JOIN` returns all rows from the left table and matching rows from the right (null if no match)
-- C) They are identical
-- D) `LEFT JOIN` is faster than `INNER JOIN`
+# 🎯 ANSWER KEY (Q1 – Q200)
 
-**✅ Answer: B) INNER JOIN returns matching rows only; LEFT JOIN returns all left rows**
-
-> `INNER JOIN` excludes unmatched rows from both sides. `LEFT JOIN` includes all rows from the left table — null columns for unmatched right rows. Use `LEFT JOIN` when right-side data is optional.
+> Correct option + brief explanation.
 
 ---
 
-**Q182.** What is a database index and when should you add one?
-- A) A sorted copy of entire table data
-- B) A data structure that speeds up data retrieval on specific columns at the cost of write performance and storage
-- C) A database backup mechanism
-- D) A unique constraint on columns
+## Section 1: C# Basics & Output Prediction
 
-**✅ Answer: B) A data structure speeding up reads at the cost of write performance**
+**Q1. ✅ A) 5 7** — `x++` uses 5 then increments to 6; `++x` increments to 7 and uses 7.
 
-> Indexes (B-tree by default) allow O(log n) lookups vs O(n) full table scans. Add indexes on: frequently filtered columns (WHERE), JOIN columns, ORDER BY columns. Avoid indexing rarely-queried columns — each index slows INSERTs/UPDATEs.
+**Q2. ✅ B) 3 1** — Integer division: `10/3 = 3`. Modulo: `10%3 = 1`.
 
----
+**Q3. ✅ B) 8** — i: 1 → 2 → 4 → 8. Loop ends (8 not < 5).
 
-**Q183.** What is a transaction in SQL?
-- A) A single SQL statement execution
-- B) A unit of work that either all succeeds or all fails, guaranteeing ACID properties
-- C) A stored procedure call
-- D) A database migration
+**Q4. ✅ B) 6** — Concatenation yields `"abcdef"` (length 6).
 
-**✅ Answer: B) A unit of work with ACID guarantees**
+**Q5. ✅ B) 4 4** — Length is 4 and `arr[3]` is the last element (4).
 
-> ACID: Atomicity (all or nothing), Consistency (valid state), Isolation (concurrent transactions don't interfere), Durability (committed changes persist). `BEGIN TRANSACTION`, `COMMIT`, `ROLLBACK`.
+**Q6. ✅ C) internal** — Restricts access to current assembly.
 
----
+**Q7. ✅ A) True** — `!true = false`; `false || true = true`.
 
-**Q184.** What is the N+1 problem in SQL?
-- A) Querying N+1 tables in a single query
-- B) Running 1 query to get a list, then N separate queries to get related data for each item
-- C) A SQL syntax error
-- D) A constraint violation
+**Q8. ✅ B) 5 10** — `int` is a value type — `y = x` copies value; changing y doesn't affect x.
 
-**✅ Answer: B) 1 query + N queries for related data**
+**Q9. ✅ B) True** — String literals are interned by the compiler; same reference.
 
-> Example: Fetching 100 orders then querying each order's customer separately = 101 queries. Solution: JOINs or eager loading in ORMs. See EF Core Q85.
+**Q10. ✅ B) Returns left operand if not null, else right.** Null-coalescing.
 
----
+**Q11. ✅ C) 99** — `null ?? 99` returns 99.
 
-**Q185.** What is a stored procedure?
-- A) A compiled, parameterized SQL script stored in the database and executed on demand
-- B) A SQL query stored in application code
-- C) A database trigger
-- D) A view with parameters
+**Q12. ✅ B) null** — Nullable arithmetic with null yields null; `null?.ToString() ?? "null"` returns "null".
 
-**✅ Answer: A) A compiled SQL script stored in the database**
+**Q13. ✅ B) Prevents the class from being inherited.**
 
-> Stored procedures are pre-compiled, reducing parse overhead. They support parameters, transactions, and complex logic. Call from EF Core: `dbContext.Database.ExecuteSqlRaw("EXEC GetOrders @customerId", param)`.
+**Q14. ✅ A) `ref` requires initialization; `out` does not.**
 
----
+**Q15. ✅ A) 5** — Value type passed by value; method-local change doesn't affect caller.
 
-**Q186.** What is database normalization?
-- A) Encrypting database columns
-- B) Organizing data to reduce redundancy and improve integrity — typically into Normal Forms (1NF, 2NF, 3NF)
-- C) Indexing all columns for performance
-- D) Converting all tables to lowercase names
+**Q16. ✅ B) 6** — `ref` passes by reference; caller's variable changes.
 
-**✅ Answer: B) Organizing data to reduce redundancy and improve integrity**
+**Q17. ✅ A) -1 1 10** — Switch expression: -5 < 0 → -1; 5 is `>0 and <10` → 1; 50 falls to `_` → 10.
 
-> 1NF: Atomic columns. 2NF: No partial dependencies. 3NF: No transitive dependencies. Denormalization trades integrity for read performance (common in read-heavy reporting databases or NoSQL).
+**Q18. ✅ A) Converting a value type to a reference type.**
 
----
+**Q19. ✅ C) struct** — value type. The others are reference types.
 
-**Q187.** What is a CTE (Common Table Expression)?
-- A) A client-side table expression in LINQ
-- B) A named temporary result set defined with `WITH` that can be referenced in a SELECT/INSERT/UPDATE
-- C) A cross-table expression for joining multiple databases
-- D) A type of view
+**Q20. ✅ B) "myVar"** — Compile-time string of the identifier.
 
-**✅ Answer: B) A named temporary result set defined with `WITH`**
+**Q21. ✅ A) 1F** — Return value is computed (1), `finally` runs (prints F), then 1 is returned and printed by caller. Net: `F1`. **Correct: B) F1.**
 
-> CTEs improve query readability and enable recursive queries: `WITH cte AS (SELECT ...) SELECT * FROM cte`. Recursive CTEs (using `UNION ALL`) traverse hierarchical data like org charts or category trees.
+**Q22. ✅ B) The finally exception replaces the original.** Avoid throwing from finally.
 
----
+**Q23. ✅ B) `throw` preserves stack trace; `throw ex` resets it.**
 
-**Q188.** What are Window Functions in SQL?
-- A) Functions specific to Windows Server databases
-- B) Functions that perform calculations across a set of related rows (window) without collapsing them, using `OVER()`
-- C) SQL functions for UI rendering
-- D) Functions applied to a single row
+**Q24. ✅ B) ABC** — Try prints A, throws, catch prints B, finally prints C.
 
-**✅ Answer: B) Calculations across related rows using `OVER()`**
+**Q25. ✅ B) B** — Inner `else` binds to the nearest `if` (the `x > 20` one).
 
-> `ROW_NUMBER() OVER(PARTITION BY category ORDER BY price)` assigns row numbers within each category partition. Other window functions: `RANK()`, `DENSE_RANK()`, `LAG()`, `LEAD()`, `SUM() OVER()`. Powerful for analytics without GROUP BY collapsing.
+**Q26. ✅ B) 02** — `continue` skips the `i==1` iteration.
+
+**Q27. ✅ B) 3** — 1 + 2 then break at i=3.
+
+**Q28. ✅ B) -1** — `s?.Length` is null; `?? -1` returns -1.
+
+**Q29. ✅ B) 333** — Classic capture bug: all lambdas share the same `i`; after loop `i` is 3.
+
+**Q30. ✅ A) 012** — `local` is a new variable per iteration; each lambda captures its own.
+
+**Q31. ✅ B) Compile-time inferred static type.**
+
+**Q32. ✅ A) 10** — Box (int → object), unbox back to int.
+
+**Q33. ✅ A) True** — `OrdinalIgnoreCase` ignores case.
+
+**Q34. ✅ B) For strings, both compare content (== is overloaded for string).**
+
+**Q35. ✅ B) 65** — ASCII code for 'A'.
 
 ---
 
-**Q189.** What is a deadlock in SQL?
-- A) A table that can't be updated
-- B) A situation where two transactions wait for each other's locked resources, causing both to be blocked indefinitely
-- C) A query that runs forever
-- D) A constraint that prevents deletion
+## Section 2: OOP, Generics & C# Features
 
-**✅ Answer: B) Two transactions waiting for each other's locks indefinitely**
+**Q36. ✅ B) virtual**
 
-> SQL Server detects deadlocks and kills one transaction (the deadlock victim), which receives error 1205. Prevent with: consistent lock ordering, short transactions, appropriate isolation levels, and indexing.
+**Q37. ✅ B) B** — Virtual + override → polymorphism: calls overridden method at runtime.
 
----
+**Q38. ✅ A) A** — `new` hides; method bound by the static (compile-time) type of `obj` (A).
 
-**Q190.** What is the difference between `TRUNCATE` and `DELETE`?
-- A) `DELETE` removes all rows; `TRUNCATE` removes specific rows
-- B) `TRUNCATE` removes all rows faster (no logging, resets identity) and cannot be rolled back in some DBs; `DELETE` is logged, can be WHERE-filtered, and can be rolled back
-- C) They are identical
-- D) `TRUNCATE` supports WHERE clause; `DELETE` does not
+**Q39. ✅ B) Yes — called by derived classes' constructors.**
 
-**✅ Answer: B) `TRUNCATE` is faster, unfiltered, resets identity; `DELETE` is logged, filterable, rollback-safe**
+**Q40. ✅ D) Both B and C.**
 
-> `TRUNCATE` removes all rows as a minimal-log operation. `DELETE` logs each row deletion, supports `WHERE`, fires triggers, and is fully transactional. `TRUNCATE` resets the identity counter; `DELETE` does not.
+**Q41. ✅ A) Circle** — Polymorphism through the interface.
 
----
+**Q42. ✅ B) Two ints → bool.** Last generic param is the return type.
 
-## SECTION 13: MICROSERVICES, CLOUD & MISCELLANEOUS (Q191–Q200)
+**Q43. ✅ B) Variable number of arguments as an array.**
 
----
+**Q44. ✅ A) 10** — 1+2+3+4 = 10.
 
-**Q191.** What is the difference between a Monolith and Microservices architecture?
-- A) Monolith uses multiple databases; Microservices uses one
-- B) Monolith is a single deployable unit; Microservices decompose functionality into small, independently deployable services
-- C) Microservices are always faster
-- D) Monolith is for small apps; Microservices is for large apps only
+**Q45. ✅ B) True** — `int` is an alias for `System.Int32`.
 
-**✅ Answer: B) Monolith = single unit; Microservices = independently deployable services**
+**Q46. ✅ A) 42** — Generic class with `T = int`.
 
-> Monoliths are simpler but scale as a whole. Microservices scale individually, deploy independently, and use different tech stacks — but add complexity (distributed tracing, network latency, data consistency). Not always better; start with a monolith unless scale demands otherwise.
+**Q47. ✅ B) Compile-time string name of a variable/type/member.**
 
----
+**Q48. ✅ B) A class definition split across multiple files.**
 
-**Q192.** What is an API Gateway in Microservices?
-- A) A database router
-- B) A single entry point for all clients that routes requests, handles cross-cutting concerns (auth, rate limiting, logging), and aggregates APIs
-- C) A load balancer for databases
-- D) A caching layer for APIs
+**Q49. ✅ A) True** — Records implement value-based equality (and override `==`).
 
-**✅ Answer: B) A single entry point handling routing and cross-cutting concerns**
+**Q50. ✅ A) 1 3** — `with` creates a copy with Y changed; original p1 unchanged.
 
-> API Gateways (AWS API Gateway, Kong, Azure APIM, YARP) route client requests to backend services, handle auth, rate limiting, SSL termination, and can aggregate multiple service responses into one.
+**Q51. ✅ B) Set only during construction / initializer.**
+
+**Q52. ✅ B) A value type wrapped with `Nullable<T>` that can hold null.**
+
+**Q53. ✅ B) False** — `a` is null; `HasValue` is false.
+
+**Q54. ✅ B) Read-only reference parameter.**
+
+**Q55. ✅ C) 3** — Enum starts at 1 (Red); Green=2, Blue=3.
 
 ---
 
-**Q193.** What is Event-Driven Architecture?
-- A) Logging every application event
-- B) An architectural pattern where services communicate through events (messages) rather than direct synchronous calls
-- C) A design pattern for UI event handlers
-- D) An event-sourced database pattern
+## Section 3: Collections & LINQ
 
-**✅ Answer: B) Services communicate through events/messages**
+**Q56. ✅ C) Dictionary<TKey, TValue>** — Average O(1) lookup.
 
-> Services publish events (e.g., `OrderPlaced`) to a message broker (RabbitMQ, Azure Service Bus, Kafka). Other services subscribe and react. Decouples services, enables resilience, but adds eventual consistency complexity.
+**Q57. ✅ B) 1,3,4** — After add/remove sequence.
 
----
+**Q58. ✅ B) 10** — Indexer assignment replaces existing value.
 
-**Q194.** What is the Saga pattern?
-- A) A long-running SQL stored procedure
-- B) A pattern for managing distributed transactions across multiple services using a sequence of local transactions with compensating actions on failure
-- C) A story-driven development methodology
-- D) A read model pattern in CQRS
+**Q59. ✅ A) 3** — HashSet ignores duplicates.
 
-**✅ Answer: B) Distributed transaction management with compensating actions**
+**Q60. ✅ A) 1** — FIFO.
 
-> Sagas handle long-running business processes across services. Choreography: services react to events. Orchestration: a central coordinator (Saga Orchestrator) directs steps. On failure, compensating transactions undo completed steps.
+**Q61. ✅ C) 3** — LIFO.
 
----
+**Q62. ✅ B) Throws InvalidOperationException** — Modifying List during iteration invalidates the enumerator.
 
-**Q195.** What is Docker and why is it relevant for .NET developers?
-- A) A Windows-only deployment tool
-- B) A containerization platform that packages applications with their dependencies, ensuring consistent environments across dev/test/prod
-- C) A .NET code minification tool
-- D) A virtual machine manager
+**Q63. ✅ B) Query is not executed until iterated.**
 
-**✅ Answer: B) Containerization for consistent environments**
+**Q64. ✅ B) 3,4,5** — `string.Join` iterates, executing the deferred query.
 
-> Docker containers package the .NET runtime + app + dependencies into a portable image. Same image runs on dev laptop, CI pipeline, and production. .NET has official Docker images. `Dockerfile` defines the build steps.
+**Q65. ✅ B) 6,8,10** — Filter then double.
 
----
+**Q66. ✅ B) 1|123** — `First()` short-circuits after first; then `ToList()` re-enumerates everything.
 
-**Q196.** What is Kubernetes (K8s)?
-- A) A .NET deployment framework
-- B) An open-source container orchestration platform that automates deployment, scaling, and management of containerized applications
-- C) A Docker image registry
-- D) A CI/CD pipeline tool
+**Q67. ✅ B) `First()` throws if no match; `FirstOrDefault()` returns default.**
 
-**✅ Answer: B) Container orchestration platform**
+**Q68. ✅ A) 10 2.5** — Sum 10, Average 2.5.
 
-> Kubernetes manages Docker containers at scale: auto-scaling, load balancing, rolling updates, self-healing (restarts crashed containers), service discovery, and secrets management. Essential for production microservices.
+**Q69. ✅ B) Returns true if at least one matches (or sequence is non-empty).**
 
----
+**Q70. ✅ A) True only if every element matches.**
 
-**Q197.** What is Application Insights?
-- A) An IDE code analysis tool
-- B) A Microsoft Azure APM (Application Performance Management) service for monitoring, logging, and diagnostics of .NET applications
-- C) A SQL query analyzer
-- D) A code coverage tool
+**Q71. ✅ A) True False** — All > 0 → True; Any > 5 → False.
 
-**✅ Answer: B) Azure APM service for monitoring and diagnostics**
+**Q72. ✅ B) Flattens a collection of collections.**
 
-> Application Insights collects telemetry (requests, dependencies, exceptions, custom events), enables distributed tracing, alerting, and dashboards. Integrate via `services.AddApplicationInsightsTelemetry()`.
+**Q73. ✅ A) 1,2,3,4** — Flattened.
 
----
+**Q74. ✅ B) 1,2,3,4,5** — OrderBy ascending.
 
-**Q198.** What is the Outbox Pattern?
-- A) A design pattern for email outboxes
-- B) A pattern ensuring that database changes and message publishing happen atomically by storing messages in an "outbox" table within the same transaction
-- C) An email queue for notification services
-- D) A retry pattern for failed HTTP requests
+**Q75. ✅ B) IEnumerable<IGrouping<TKey, TElement>>**
 
-**✅ Answer: B) Atomic database changes + message publishing via an outbox table**
+**Q76. ✅ B) 2** — Groups by first char: 'a' (apple, avocado), 'b' (banana). Count = 2.
 
-> Problem: saving to DB and publishing to a message bus aren't atomic — you can save but fail to publish. The Outbox pattern saves the message to a table in the same DB transaction. A background process reads and publishes outbox messages, ensuring delivery.
+**Q77. ✅ A) 3 12** — Take(2) → 1+2=3; Skip(2) → 3+4+5=12.
 
----
+**Q78. ✅ B) Returns unique elements based on default equality.**
 
-**Q199.** What is gRPC and when would you use it over REST?
-- A) A Google REST API standard
-- B) A high-performance RPC framework using HTTP/2 and Protocol Buffers — better for internal service-to-service communication where speed and contract strictness matter
-- C) A GraphQL variant
-- D) A REST API versioning tool
+**Q79. ✅ B) 3** — {1, 2, 3} unique values.
 
-**✅ Answer: B) High-performance RPC using HTTP/2 and Protocol Buffers**
+**Q80. ✅ B) IEnumerable.Count() may iterate; List.Count is O(1).**
 
-> gRPC offers: binary serialization (smaller payloads than JSON), bidirectional streaming, HTTP/2 multiplexing, and strongly typed contracts via `.proto` files. Prefer gRPC for internal microservice communication; REST for public APIs.
+**Q81. ✅ B) 15** — Folds with sum (1+2+3+4+5).
+
+**Q82. ✅ A) Takes while condition true, stops at first false.**
+
+**Q83. ✅ A) 1,2** — Stops at 3 (first not < 3).
+
+**Q84. ✅ A) 11,22,33** — Pairs and sums element-by-element.
+
+**Q85. ✅ B) 1,2,3,4,5** — Range(1, count=5).
+
+**Q86. ✅ A) ToList materialises; AsEnumerable just changes the static type.**
+
+**Q87. ✅ B) 3,2,1** — Reversed.
+
+**Q88. ✅ A) IEnumerable in memory; IQueryable allows expression tree translation (e.g., SQL).**
+
+**Q89. ✅ B) Throws if zero OR more than one match.**
+
+**Q90. ✅ B) 10 30** — Min and Max.
 
 ---
 
-**Q200.** What is SignalR in ASP.NET Core?
-- A) A digital signing library
-- B) A library for adding real-time, bidirectional communication between server and clients using WebSockets (with fallbacks)
-- C) A signal processing library
-- D) A serverless function framework
+## Section 4: Async/Await & Threading
 
-**✅ Answer: B) Real-time bidirectional communication library**
+**Q91. ✅ A) 42**
 
-> SignalR abstracts WebSockets (with Long Polling and Server-Sent Events as fallbacks). The server can push updates to connected clients. Use cases: live dashboards, chat applications, collaborative tools, real-time notifications. Supports Azure SignalR Service for scaling.
+**Q92. ✅ B) State machine for non-blocking waiting.**
+
+**Q93. ✅ B) Offloads CPU-bound work to a thread pool thread.**
+
+**Q94. ✅ A) 6** — `A()` returns Task<int>=3; awaiting it twice yields 3+3=6 (task result is cached).
+
+**Q95. ✅ B) Less than 100000** — `x++` is non-atomic; race condition.
+
+**Q96. ✅ A) 1000** — `Interlocked.Increment` is atomic.
+
+**Q97. ✅ B) WhenAll = all complete; WhenAny = first completes.**
+
+**Q98. ✅ B) 2** — Cancelled after 100 ms; catch returns 2.
+
+**Q99. ✅ B) Cannot be awaited; exceptions escape and may crash the process.**
+
+**Q100. ✅ B) ValueTask avoids heap allocation when result is synchronously available.**
+
+**Q101. ✅ B) Cooperative cancellation of async ops.**
+
+**Q102. ✅ B) 5** — Atomic increments.
+
+**Q103. ✅ B) External code can lock the same object → deadlocks/starvation.**
+
+**Q104. ✅ B) Limits the number of concurrent accessors (with async wait support).**
+
+**Q105. ✅ B) Atomic increment, thread-safe, lock-free.**
+
+**Q106. ✅ B) Don't capture / resume on the original synchronization context.**
+
+**Q107. ✅ B) Two operations waiting indefinitely for each other's resources.**
+
+**Q108. ✅ B) Blocks the sync-context thread the continuation needs → deadlock.**
+
+**Q109. ✅ B) `lock` is process-local; Mutex is cross-process (slower).**
+
+**Q110. ✅ B) ThreadLocal = per OS thread; AsyncLocal flows across async continuations.**
+
+**Q111. ✅ B) Parallel loop on thread-pool threads.**
+
+**Q112. ✅ B) High-performance, thread-safe producer-consumer for async pipelines.**
+
+**Q113. ✅ A) 10** — 3 + 7 = 10.
+
+**Q114. ✅ B) Acquire-fence read preventing reordering after the read.**
+
+**Q115. ✅ B) Underlying primitive of the `lock` keyword.**
 
 ---
 
-## Summary of Topics Covered
+## Section 5: .NET / CLR Fundamentals
 
-| Section | Topics | Questions |
+**Q116. ✅ A) Common Language Runtime.**
+
+**Q117. ✅ B) CPU-independent bytecode JIT-compiled at runtime.**
+
+**Q118. ✅ B) IL → native at runtime, just-in-time.**
+
+**Q119. ✅ B) .NET (Core) is cross-platform, modern; .NET Framework is Windows-only, legacy.**
+
+**Q120. ✅ B) Generational GC reclaims unreachable objects periodically.**
+
+**Q121. ✅ A) Heap for objects > 85,000 bytes; not compacted by default.**
+
+**Q122. ✅ B) Stack stores value types/frames (LIFO); Heap stores reference type instances.**
+
+**Q123. ✅ A) Compiled .exe or .dll — deployment/versioning unit.**
+
+**Q124. ✅ B) Skip the finalizer (Dispose already cleaned up).**
+
+**Q125. ✅ B) Deterministic cleanup of unmanaged resources.**
+
+**Q126. ✅ C) Both directives (`using System;`) and disposal (`using var x = ...`).**
+
+**Q127. ✅ B) Inspecting/manipulating types/members at runtime.**
+
+**Q128. ✅ B) Creates an instance dynamically via reflection.**
+
+**Q129. ✅ B) Doesn't prevent GC from collecting the target.**
+
+**Q130. ✅ B) Ensures reads/writes hit main memory; prevents some reordering. Doesn't make compound ops atomic.**
+
+**Q131. ✅ B) Terminates the process immediately.**
+
+**Q132. ✅ B) 5 10** — Struct is a value type; `p2 = p1` copies.
+
+**Q133. ✅ A) 10 10** — Class is a reference type; both variables point to the same instance.
+
+**Q134. ✅ B) Marks compatibility with binary serialization (legacy BinaryFormatter).**
+
+**Q135. ✅ B) Type/memory-safe slice of contiguous memory; no heap allocation.**
+
+---
+
+## Section 6: ASP.NET Core
+
+**Q136. ✅ B) After UseRouting, before endpoints; Authentication before Authorization.**
+
+**Q137. ✅ B) Use can call next; Run is terminal.**
+
+**Q138. ✅ B) Auto validation (400 ProblemDetails), [FromBody] inference, required binding sources.**
+
+**Q139. ✅ B) ActionResult<T> is typed — OpenAPI infers response shape; allows implicit conversion.**
+
+**Q140. ✅ B) Scoped — one per HTTP request.**
+
+**Q141. ✅ B) Singleton per app lifetime; Scoped per request; Transient new every time.**
+
+**Q142. ✅ B) Hierarchical app configuration.**
+
+**Q143. ✅ B) `services.Configure<T>(config.GetSection("X"))`.**
+
+**Q144. ✅ A) Restricts the action to a specific HTTP method.**
+
+**Q145. ✅ B) Maps HTTP data (route/query/body) to action parameters.**
+
+**Q146. ✅ B) Read from request body (typically JSON).**
+
+**Q147. ✅ B) Auto-redirects HTTP to HTTPS.**
+
+**Q148. ✅ B) Components in the HTTP pipeline that can process / short-circuit requests.**
+
+**Q149. ✅ B) Controls which browser origins can call your API.**
+
+**Q150. ✅ B) Interface for background services in ASP.NET Core.**
+
+**Q151. ✅ B) Selects response format (JSON/XML) based on `Accept` header.**
+
+**Q152. ✅ B) Catches unhandled exceptions and re-executes a request to the error path.**
+
+**Q153. ✅ B) Lightweight HTTP endpoint definitions without controllers.**
+
+**Q154. ✅ B) Pools HttpMessageHandler so manual `new HttpClient()` doesn't exhaust sockets.**
+
+**Q155. ✅ B) Access to HttpContext outside controllers (be careful with lifetime).**
+
+**Q156. ✅ B) Entry point configuring DI and the middleware pipeline (minimal hosting model).**
+
+**Q157. ✅ B) Defines URL patterns for controller actions.**
+
+**Q158. ✅ B) Authorization → Resource → Action → Result; Exception only on error.**
+
+**Q159. ✅ B) Throttling incoming requests.**
+
+**Q160. ✅ B) Resolves the parameter from DI rather than the request.**
+
+---
+
+## Section 7: Entity Framework Core
+
+**Q161. ✅ B) Primary class for DB operations / session with the database.**
+
+**Q162. ✅ B) Generates and executes SQL for tracked changes in a transaction.**
+
+**Q163. ✅ A) Add = new (INSERT); Attach = existing (tracked, no immediate SQL).**
+
+**Q164. ✅ B) Loading related entities via `.Include()` in the initial query (JOIN).**
+
+**Q165. ✅ B) Auto-loading related entities on first access to a navigation property.**
+
+**Q166. ✅ B) 1 query + N additional queries for related data per item.**
+
+**Q167. ✅ B) Disables change tracking for read-only performance.**
+
+**Q168. ✅ B) Code-generated file describing incremental schema changes.**
+
+**Q169. ✅ A) Find checks the change tracker cache first; FirstOrDefault always hits the DB.**
+
+**Q170. ✅ B) Configures entity mappings via method chaining in `OnModelCreating`.**
+
+**Q171. ✅ B) Bulk UPDATE SQL without loading entities into the ChangeTracker.**
+
+**Q172. ✅ B) Adds an implicit WHERE clause to all queries for an entity (soft delete, multi-tenancy).**
+
+**Q173. ✅ B) Eager loading via JOIN.**
+
+**Q174. ✅ B) Splits queries with multiple includes to avoid cartesian explosion.**
+
+**Q175. ✅ A) DB auto-increments the column on INSERT.**
+
+**Q176. ✅ B) Auto retry for transient DB failures.**
+
+**Q177. ✅ B) Value-object-like entity tied to an owner — mapped into the owner's table by default.**
+
+**Q178. ✅ B) Property in the model but not in the entity class.**
+
+**Q179. ✅ B) `ExecuteSqlInterpolated` parameterises automatically — safer from SQL injection.**
+
+**Q180. ✅ B) Doesn't enforce relational constraints / transactions; behaviour can differ from a real DB.**
+
+---
+
+## Section 8: Dependency Injection & Patterns
+
+**Q181. ✅ B) Dependencies provided externally instead of created internally.**
+
+**Q182. ✅ B) Singleton holding Scoped/Transient → keeps the shorter-lived service alive too long.**
+
+**Q183. ✅ A) GetRequiredService throws if missing; GetService returns null.**
+
+**Q184. ✅ B) Resolving from a container inside classes — hides dependencies, hurts testability.**
+
+**Q185. ✅ B) Manually created DI scope — needed in background workers / console apps.**
+
+**Q186. ✅ B) Abstraction between business logic and data access; collection-like interface.**
+
+**Q187. ✅ B) Coordinates writing all changes in a single transaction.**
+
+**Q188. ✅ B) One instance per type with a global access point.**
+
+**Q189. ✅ B) Wraps an object to add behaviour without modifying it.**
+
+**Q190. ✅ B) Senders and handlers communicate via a central mediator (e.g., MediatR).**
+
+---
+
+## Section 9: Testing & Misc
+
+**Q191. ✅ B) Arrange–Act–Assert.**
+
+**Q192. ✅ B) Fact runs once; Theory runs many times with data sets.**
+
+**Q193. ✅ B) Controlled fakes simulating real behaviour without side effects.**
+
+**Q194. ✅ B) Unit (isolated) → Integration (multiple components) → E2E (user flows).**
+
+**Q195. ✅ B) In-memory test server running the full ASP.NET Core pipeline.**
+
+**Q196. ✅ B) Red–Green–Refactor.**
+
+**Q197. ✅ A) 10** — 1+2+3+4.
+
+**Q198. ✅ A) 1,99,2,3** — Insert at index 1.
+
+**Q199. ✅ B) Percentage of production code executed by tests.**
+
+**Q200. ✅ A) 1** — `TryAdd` returns false on duplicate keys without overwriting.
+
+---
+
+## Summary of Topics
+
+| Section | Topic | Questions |
 |---|---|---|
-| 1 | C# Fundamentals & Advanced | Q1–Q35 |
-| 2 | .NET Fundamentals & CLR | Q36–Q55 |
-| 3 | ASP.NET Core | Q56–Q80 |
-| 4 | Entity Framework Core | Q81–Q100 |
-| 5 | LINQ | Q101–Q115 |
-| 6 | Async/Await & Threading | Q116–Q130 |
-| 7 | Dependency Injection | Q131–Q140 |
-| 8 | Design Patterns | Q141–Q150 |
-| 9 | REST API & Web | Q151–Q160 |
-| 10 | Authentication & Authorization | Q161–Q170 |
-| 11 | Testing | Q171–Q180 |
-| 12 | SQL & Databases | Q181–Q190 |
-| 13 | Microservices, Cloud & Misc | Q191–Q200 |
+| 1 | C# Basics & Output Prediction | Q1–Q35 |
+| 2 | OOP, Generics & C# Features | Q36–Q55 |
+| 3 | Collections & LINQ | Q56–Q90 |
+| 4 | Async/Await & Threading | Q91–Q115 |
+| 5 | .NET / CLR Fundamentals | Q116–Q135 |
+| 6 | ASP.NET Core | Q136–Q160 |
+| 7 | Entity Framework Core | Q161–Q180 |
+| 8 | Dependency Injection & Patterns | Q181–Q190 |
+| 9 | Testing & Misc | Q191–Q200 |
 
 ---
-*Exam prepared for .NET Developer (3 Years Experience) — June 2026*
+
