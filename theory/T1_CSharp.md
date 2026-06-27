@@ -987,16 +987,38 @@ Always prefer generic collections.
 
 ---
 
-**Q54. `IEnumerable` vs `ICollection` vs `IList` vs `IQueryable`?**
+**Q54. `IEnumerable` vs `IReadOnlyCollection` vs `IReadOnlyList` vs `ICollection` vs `IList` vs `IQueryable`?**
 
-| Interface | Can enumerate | Count | Add/Remove | Index | Query on DB |
-|--|--|--|--|--|--|
-| `IEnumerable<T>` | ✅ | ❌ | ❌ | ❌ | ❌ |
-| `ICollection<T>` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `IList<T>` | ✅ | ✅ | ✅ | ✅ | ❌ |
-| `IQueryable<T>` | ✅ | ✅ | ❌ | ❌ | ✅ |
-
-`IQueryable` translates queries to SQL. `IEnumerable` evaluates in-memory.
+> Each interface below **adds more capability** than the previous one
+ 
+| Interface | Count | Add/Remove | Index | Read Only | DB Query | Use When |
+|---|---|---|---|---|---|---|
+| `IEnumerable<T>`        | ❌ | ❌ | ❌ | ✅ | ❌ | Just loop / read-only |
+| `IReadOnlyCollection<T>`| ✅ | ❌ | ❌ | ✅ | ❌ | Count, no modify |
+| `IReadOnlyList<T>`      | ✅ | ❌ | ✅ | ✅ | ❌ | Count + index, no modify |
+| `ICollection<T>`        | ✅ | ✅ | ❌ | ❌ | ❌ | Count + add/remove |
+| `IList<T>`              | ✅ | ✅ | ✅ | ❌ | ❌ | Full control + index |
+| `IQueryable<T>`         | ✅ | ❌ | ❌ | ✅ | ✅ | Filter on DB before loading |
+ 
+```csharp
+// All are interfaces — assign List<T> to them, never new() directly
+var list = new List<User> { new User { Name = "Alice" }, new User { Name = "Bob" } };
+ 
+IEnumerable<User>         e  = list; // just loop
+IReadOnlyCollection<User> rc = list; // count, no modify
+IReadOnlyList<User>       rl = list; // count + index, no modify
+ICollection<User>         c  = list; // count + add/remove
+IList<User>               l  = list; // full control
+ 
+c.Add(new User());   // ✅
+rc.Add(new User());  // ❌ compile error — read only
+ 
+// IQueryable — only from DB context, not from List
+IQueryable<User> q = db.Users;
+q.Where(u => u.Age > 18); // SELECT * WHERE Age > 18 ✅
+```
+ 
+ **Rule:** All are just references to a `List<T>` — the interface controls **what the caller is allowed to do** with it.
 
 ---
 
@@ -1016,14 +1038,39 @@ while (e.MoveNext()) Console.WriteLine(e.Current);
 
 ---
 
-**Q56. `List<T>` vs `LinkedList<T>` vs `Array`?**
+**Q56. `Array` vs `ArrayList` vs `List<T>` vs `LinkedList<T>`**
 
-| | Array | List<T> | LinkedList<T> |
-|--|--|--|--|
-| Size | Fixed | Dynamic | Dynamic |
-| Access by index | O(1) | O(1) | O(n) |
-| Insert/Delete (middle) | O(n) | O(n) | O(1) |
-| Memory | Compact | Compact | Node overhead |
+| | Array | ArrayList | List\<T\> | LinkedList\<T\> |
+|---|---|---|---|---|
+| Generic | ✅ | ❌ | ✅ | ✅ |
+| Type Safe | ✅ | ❌ (boxing) | ✅ | ✅ |
+| Size | Fixed | Dynamic | Dynamic | Dynamic |
+| Index Access | O(1) | O(1) | O(1) | O(n) |
+| Insert/Delete (middle) | O(n) | O(n) | O(n) | O(1) |
+| Use When | Size known | Legacy only | General purpose | Frequent insert/delete |
+ 
+```csharp
+// Array — fixed size
+int[] arr = new int[3] { 1, 2, 3 };
+var x = arr[0]; // O(1) ✅
+ 
+// ArrayList — non-generic, needs casting (avoid in modern code)
+ArrayList al = new ArrayList();
+al.Add(1);
+al.Add("oops"); // ❌ no type safety — mixes int and string
+int n = (int)al[0]; // needs cast, boxing overhead
+ 
+// List<T> — generic, type-safe, dynamic (prefer this always)
+var list = new List<int> { 1, 2, 3 };
+list.Add(4);       // ✅
+list.Insert(1, 9); // O(n) — shifts elements
+ 
+// LinkedList — fast insert/delete in middle
+var linked = new LinkedList<int>(new[] { 1, 2, 3 });
+linked.AddAfter(linked.First, 9); // O(1) ✅ no shifting
+```
+ 
+**Rule:** `ArrayList` → legacy, avoid. `List<T>` → always prefer. `LinkedList<T>` → only when frequent middle inserts/deletes.
 
 ---
 
