@@ -357,38 +357,37 @@ services.AddSingleton<PaymentGatewayFactory>();
 
 ---
 
-**Q17. What is the Decorator Pattern with DI?**
+**Q17. What is Singleton Design Pattern ?**
 
-Wraps an existing service to add behavior (logging, caching, retry) **without modifying** the original.
+Only **one instance** of a class exists throughout the app lifetime.
+
+1. **Private constructor** — no one can do `new DatabaseSingleton()`
+2. **Static instance** — holds the single instance
+3. **One access point** — `GetInstance()` returns the same object always
 
 ```csharp
-public interface IOrderService { Task<Order> GetOrderAsync(int id); }
+public class DatabaseSingleton
+{
+    private static DatabaseSingleton _instance;
 
-public class OrderService : IOrderService {
-    public async Task<Order> GetOrderAsync(int id) => await db.Orders.FindAsync(id);
-}
+    private DatabaseSingleton() { }              // 1. Private constructor
 
-public class CachedOrderService : IOrderService {
-    private readonly IOrderService _inner;
-    private readonly IMemoryCache _cache;
-
-    public CachedOrderService(IOrderService inner, IMemoryCache cache) {
-        _inner = inner; _cache = cache;
-    }
-
-    public async Task<Order> GetOrderAsync(int id) {
-        return await _cache.GetOrCreateAsync($"order_{id}",
-            _ => _inner.GetOrderAsync(id));
+    public static DatabaseSingleton GetInstance()
+    {
+        if (_instance == null)
+            _instance = new DatabaseSingleton(); // 2. Static instance
+        return _instance;                        // 3. One access point
     }
 }
 
-services.AddScoped<OrderService>();
-services.AddScoped<IOrderService>(sp =>
-    new CachedOrderService(sp.GetRequiredService<OrderService>(),
-                           sp.GetRequiredService<IMemoryCache>()));
+// Both variables point to the SAME object
+var a = DatabaseSingleton.GetInstance();
+var b = DatabaseSingleton.GetInstance();
+// a == b ✅
 ```
+ **In ASP.NET Core:** `services.AddSingleton<Database>()` does the same thing — one instance for the entire app lifetime.
 
----
+ ---
 
 **Q18. What is the Mediator Pattern? (MediatR)**
 
@@ -465,24 +464,55 @@ Implemented with tools like **MassTransit**, **NServiceBus**, or **Dapr**.
 
 **Q21. What is the Repository Pattern? Should you use it with EF Core?**
 
-Repository abstracts data access behind an interface — your service doesn't know or care if it's SQL, Mongo, or a mock.
+ Abstracts data access behind an interface — swap EF Core, Dapper, or Mock without changing business logic.
 
 ```csharp
-public interface IProductRepository {
-    Task<Product> GetByIdAsync(int id);
-    Task AddAsync(Product product);
+// 1. CONTRACT
+public interface IUserRepository {
+    Task<User> GetByIdAsync(int id);
+    Task SaveAsync(User user);
 }
 
-public class EfProductRepository : IProductRepository {
+// 2. EF Core implementation
+public class EfUserRepository : IUserRepository {
     private readonly AppDbContext _db;
-    public EfProductRepository(AppDbContext db) => _db = db;
+    public EfUserRepository(AppDbContext db) => _db = db;
+    public async Task<User> GetByIdAsync(int id) => await _db.Users.FindAsync(id);
+    public async Task SaveAsync(User user) { _db.Users.Add(user); await _db.SaveChangesAsync(); }
+}
 
-    public Task<Product> GetByIdAsync(int id) => _db.Products.FindAsync(id).AsTask();
-    public async Task AddAsync(Product p) { _db.Products.Add(p); await _db.SaveChangesAsync(); }
+// 3. Dapper implementation — faster for complex queries
+public class DapperUserRepository : IUserRepository {
+    private readonly IDbConnection _db;
+    public DapperUserRepository(IDbConnection db) => _db = db;
+    public async Task<User> GetByIdAsync(int id) =>
+        await _db.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @id", new { id });
+    public async Task SaveAsync(User user) =>
+        await _db.ExecuteAsync("INSERT INTO Users (Name) VALUES (@Name)", user);
+}
+
+// 4. Fake — for unit tests, no DB needed
+public class FakeUserRepository : IUserRepository {
+    private readonly List<User> _users = new();
+    public Task<User> GetByIdAsync(int id) => Task.FromResult(_users.First(u => u.Id == id));
+    public Task SaveAsync(User user) { _users.Add(user); return Task.CompletedTask; }
 }
 ```
 
-**Should you use it with EF Core?** EF Core's `DbSet` already acts as a repository, and `DbContext` acts as Unit of Work. For simple apps, skip the extra layer. Add it when you want to **swap data sources** or **improve testability**.
+```csharp
+// 5. SERVICE — depends on interface, not EF or Dapper
+public class UserService {
+    private readonly IUserRepository _repo;
+    public UserService(IUserRepository repo) => _repo = repo;
+    public async Task<User> Get(int id) => await _repo.GetByIdAsync(id);
+}
+
+// Swap freely — UserService never changes
+services.AddScoped<IUserRepository, EfUserRepository>();    // use EF Core
+services.AddScoped<IUserRepository, DapperUserRepository>(); // switch to Dapper ✅
+```
+
+ **Why wrap EF Core?** Swap to Dapper for performance, mock in tests, or switch to an API — `UserService` never changes.
 
 ---
 
