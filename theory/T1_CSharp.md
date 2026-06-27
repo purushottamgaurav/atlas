@@ -24,13 +24,23 @@ C# Code → [C# Compiler] → IL (.dll/.exe) → [JIT at runtime] → Native Mac
 
 ---
 
-**Q3. What are the types of JIT compilation?**
+**Q3. How does Garbage Collector work in C#?**
 
-| Type | Description |
-|------|-------------|
-| **Normal JIT** | Compiles methods on first call, caches result |
-| **Econo JIT** | Compiles method, discards after use (low memory) |
-| **Pre-JIT (NGEN/AOT)** | Compiles entire assembly before execution (faster startup) |
+- Uses **.NET CLR GC** — automatic, generational
+- **3 Generations:**
+  - **Gen 0** → new objects, collected most often
+  - **Gen 1** → short-lived survivors
+  - **Gen 2** → long-lived objects, collected rarely
+- **LOH (Large Object Heap)** → objects > 85KB, collected with Gen 2
+- Internally runs **Mark → Compact → Update references**
+- GC handles **managed memory only** — use `IDisposable` + `using` for unmanaged resources
+
+```csharp
+using (var conn = new SqlConnection(connStr))
+{
+    // auto-disposed at end of block
+}
+```
 
 ---
 
@@ -695,14 +705,23 @@ A delegate is a **type-safe function pointer** — it holds a reference to a met
 - **Multicast:** Points to multiple methods (using `+=`).
 
 ```csharp
+// 1. DECLARE — define the signature blueprint
 delegate void Notify(string msg);
-
-void Email(string msg) => Console.WriteLine($"Email: {msg}");
-void SMS(string msg) => Console.WriteLine($"SMS: {msg}");
-
-Notify n = Email;   // singlecast
-n += SMS;           // multicast
-n("Alert!");        // calls both
+ 
+// 2. METHODS — must match delegate signature
+static void Email(string msg) => Console.WriteLine($"Email: {msg}");
+static void SMS(string msg)   => Console.WriteLine($"SMS: {msg}");
+ 
+// 3. INITIALIZE — assign a method
+Notify n = Email;
+ 
+// 4. CHAIN — add more methods
+n += SMS;
+ 
+// 5. CALL — fires all methods in order
+n("Alert!");
+// Email: Alert!
+// SMS: Alert!
 ```
 
 ---
@@ -860,20 +879,33 @@ using var fw = new FileWrapper("data.txt"); // auto-disposed
 Generics let you write type-safe code that works with any type, avoiding boxing and casting.
 
 ```csharp
-// Generic method
-T Max<T>(T a, T b) where T : IComparable<T> => a.CompareTo(b) > 0 ? a : b;
+// 1. INTERFACE — generic contract
+public interface IRepository<T>
+{
+    T GetById(int id);
+    void Add(T entity);
+    void Delete(T entity);
+}
 
-Max(3, 5);       // int
-Max("a", "b");   // string
+// 2. IMPLEMENTATION — one class for any entity
+public class Repository<T> : IRepository<T> where T : class
+{
+    private readonly DbContext _db;
 
-// Constraints
-void Print<T>(T item) where T : class, new() { }
-// where T : struct       — value type only
-// where T : class        — reference type only
-// where T : new()        — has parameterless constructor
-// where T : SomeClass    — must inherit SomeClass
-// where T : ISomeInterface — must implement interface
+    public T GetById(int id) => _db.Set<T>().Find(id);
+    public void Add(T entity)    => _db.Set<T>().Add(entity);
+    public void Delete(T entity) => _db.Set<T>().Remove(entity);
+}
+
+// 3. USAGE — same repo, any entity
+var userRepo    = new Repository<User>();
+var productRepo = new Repository<Product>();
+
+userRepo.GetById(1);
+productRepo.GetById(5);
 ```
+
+> **Benefit:** One repository class, works for **any entity** — no duplicate code per table.
 
 ---
 
@@ -1233,17 +1265,31 @@ if (done == timeout) throw new TimeoutException();
 
 **Q70. `Task.FromResult`, `Task.FromException`, `Task.FromCanceled`?**
 
-Create already-completed tasks without async overhead.
+
+ Create **already-completed tasks** — no async work, no thread used.
 
 ```csharp
-// Cached value — no async needed
-Task<int> GetCount() => Task.FromResult(42);
+Task<int> GetCount() => Task.FromResult(42);                              // ✅ value ready
+Task Fail()          => Task.FromException(new InvalidOperationException()); // ❌ error ready
+Task Cancel(CancellationToken ct) => Task.FromCanceled(ct);               // 🚫 cancelled
+```
 
-// Already failed
-Task Fail() => Task.FromException(new InvalidOperationException("Oops"));
+Interface forces `Task` return but answer is already in memory:
 
-// Already canceled
-Task Cancel(CancellationToken ct) => Task.FromCanceled(ct);
+```csharp
+public interface ICache { Task<int> GetCount(); }
+
+// DB — real async
+public class DbCache : ICache
+{
+    public async Task<int> GetCount() => await _db.Items.CountAsync();
+}
+
+// Memory — no async needed
+public class MemoryCache : ICache
+{
+    public Task<int> GetCount() => Task.FromResult(42); // ✅ skip async overhead
+}
 ```
 
 ---
@@ -1281,23 +1327,30 @@ t.Join(); // main thread waits here until t finishes
 
 **Q73. Race condition vs Deadlock?**
 
-- **Race condition:** Two threads access shared data simultaneously — result depends on timing.
-- **Deadlock:** Two threads each wait for a lock the other holds — both stuck forever.
-
+**Race Condition** : Two threads modify shared data simultaneously → wrong result
+ 
 ```csharp
-// Race condition — unsynchronized counter
-int count = 0;
-Parallel.For(0, 1000, _ => count++); // wrong result!
-
-// Fixed with Interlocked
-Parallel.For(0, 1000, _ => Interlocked.Increment(ref count));
-
-// Deadlock scenario
-lock(A) { lock(B) {} }  // Thread 1
-lock(B) { lock(A) {} }  // Thread 2 — deadlock!
+// ❌ Two people withdraw from same account at once — balance goes negative
+Parallel.Invoke(() => balance -= 80, () => balance -= 80);
+ 
+// ✅ Fix
+Parallel.Invoke(() => Interlocked.Add(ref balance, -80), () => Interlocked.Add(ref balance, -80));
 ```
-
-**Avoid with:** consistent lock ordering, `SemaphoreSlim`, `Monitor.TryEnter` with timeout.
+ 
+**Deadlock** : Two threads wait for each other's lock → both stuck forever
+ 
+```csharp
+lock(Pen) { lock(Paper) { } }  // Thread 1 — holds Pen, waits for Paper
+lock(Paper) { lock(Pen) { } }  // Thread 2 — holds Paper, waits for Pen ❌
+ 
+// ✅ Fix — always lock in same order
+lock(Pen) { lock(Paper) { } }  // Both threads
+```
+ 
+| | Race Condition | Deadlock |
+|---|---|---|
+| Problem | Threads overlap | Threads wait for each other |
+| Fix | `Interlocked` / `lock` | Consistent lock order |
 
 ---
 
@@ -1412,7 +1465,7 @@ public static async void FireAndForget(this Task task, Action<Exception> onError
 
 ---
 
-**Q79. SOLID Principles?**
+**Q79. Explain SOLID Principles?**
 
 | Letter | Principle | Meaning |
 |--|--|--|
@@ -1422,16 +1475,63 @@ public static async void FireAndForget(this Task task, Action<Exception> onError
 | I | Interface Segregation | Don't force clients to depend on methods they don't use |
 | D | Dependency Inversion | Depend on abstractions, not concretions |
 
+**S — Single Responsibility** : One class, one job
 ```csharp
-// D — DI example
 // ❌ Bad
-class OrderService { var db = new SqlDatabase(); }
-
-// ✅ Good — depend on interface
-class OrderService {
-    private readonly IDatabase _db;
-    public OrderService(IDatabase db) { _db = db; }
+class OrderService { void Save() {} void SendEmail() {} }
+ 
+// ✅ Good
+class OrderRepository     { void Save(Order o) {} }
+class NotificationService { void Send(Order o) {} }
+```
+ 
+**O — Open/Closed** : Extend via new class, never modify old
+```csharp
+interface INotifier { void Send(Order o); }
+ 
+class EmailNotifier : INotifier { public void Send(Order o) => Console.WriteLine("Email"); }
+class SmsNotifier   : INotifier { public void Send(Order o) => Console.WriteLine("SMS");   }
+// ✅ Add PushNotifier without touching EmailNotifier or SmsNotifier
+class PushNotifier  : INotifier { public void Send(Order o) => Console.WriteLine("Push");  }
+```
+ 
+**L — Liskov Substitution** : Swap child for parent, nothing breaks
+```csharp
+// ✅ Every INotifier child honours Send() — swap freely
+INotifier n = new SmsNotifier();
+n.Send(order); // always works ✅
+ 
+// ❌ Bad — breaks promise
+class BrokenNotifier : INotifier {
+    public void Send(Order o) => throw new NotImplementedException(); // caller crashes!
 }
+```
+ 
+**I — Interface Segregation** : Don't implement what you don't need
+```csharp
+// ❌ Bad — SmsNotifier forced to implement SendEmail it doesn't support
+interface INotifier { void SendEmail(Order o); void SendSms(Order o); }
+ 
+// ✅ Good — split
+interface IEmailNotifier { void SendEmail(Order o); }
+interface ISmsNotifier   { void SendSms(Order o);   }
+ 
+class SmsNotifier : ISmsNotifier { public void SendSms(Order o) => Console.WriteLine("SMS"); } // ✅ no junk
+```
+ 
+**D — Dependency Inversion** : Depend on interface, not concrete class
+```csharp
+// ❌ Bad
+class OrderProcessor { private SmsNotifier _n = new SmsNotifier(); }
+ 
+// ✅ Good — inject INotifier, swap freely
+class OrderProcessor {
+    private readonly ISmsNotifier _notifier;
+    public OrderProcessor(ISmsNotifier notifier) { _notifier = notifier; }
+    public void Process(Order o) => _notifier.SendSms(o);
+}
+ 
+new OrderProcessor(new SmsNotifier()); // ✅
 ```
 
 ---
@@ -1457,42 +1557,87 @@ Console.WriteLine(r.Width * r.Height); // Expected 15, got 9!
 
 **Q81. Singleton Pattern?**
 
-Ensures only one instance of a class exists.
+ Only **one instance** of a class exists throughout the app lifetime.
+
+1. **Private constructor** — no one can do `new DatabaseSingleton()`
+2. **Static instance** — holds the single instance
+3. **One access point** — `GetInstance()` returns the same object always
 
 ```csharp
-public sealed class AppConfig {
-    private static readonly Lazy<AppConfig> _instance =
-        new Lazy<AppConfig>(() => new AppConfig());
+public class DatabaseSingleton
+{
+    private static DatabaseSingleton _instance;
 
-    private AppConfig() {}
+    private DatabaseSingleton() { }              // 1. Private constructor
 
-    public static AppConfig Instance => _instance.Value;
-    public string Theme { get; set; } = "Dark";
+    public static DatabaseSingleton GetInstance()
+    {
+        if (_instance == null)
+            _instance = new DatabaseSingleton(); // 2. Static instance
+        return _instance;                        // 3. One access point
+    }
 }
 
-// Usage
-AppConfig.Instance.Theme = "Light";
+// Both variables point to the SAME object
+var a = DatabaseSingleton.GetInstance();
+var b = DatabaseSingleton.GetInstance();
+// a == b ✅
 ```
+ **In ASP.NET Core:** `services.AddSingleton<Database>()` does the same thing — one instance for the entire app lifetime.
 
 ---
 
 **Q82. Repository Pattern?**
 
-Abstracts data access behind an interface — swappable implementations (DB, memory, API).
+ Abstracts data access behind an interface — swap EF Core, Dapper, or Mock without changing business logic.
 
 ```csharp
+// 1. CONTRACT
 public interface IUserRepository {
     Task<User> GetByIdAsync(int id);
     Task SaveAsync(User user);
 }
 
-public class SqlUserRepository : IUserRepository {
+// 2. EF Core implementation
+public class EfUserRepository : IUserRepository {
     private readonly AppDbContext _db;
-    public SqlUserRepository(AppDbContext db) => _db = db;
+    public EfUserRepository(AppDbContext db) => _db = db;
     public async Task<User> GetByIdAsync(int id) => await _db.Users.FindAsync(id);
     public async Task SaveAsync(User user) { _db.Users.Add(user); await _db.SaveChangesAsync(); }
 }
+
+// 3. Dapper implementation — faster for complex queries
+public class DapperUserRepository : IUserRepository {
+    private readonly IDbConnection _db;
+    public DapperUserRepository(IDbConnection db) => _db = db;
+    public async Task<User> GetByIdAsync(int id) =>
+        await _db.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @id", new { id });
+    public async Task SaveAsync(User user) =>
+        await _db.ExecuteAsync("INSERT INTO Users (Name) VALUES (@Name)", user);
+}
+
+// 4. Fake — for unit tests, no DB needed
+public class FakeUserRepository : IUserRepository {
+    private readonly List<User> _users = new();
+    public Task<User> GetByIdAsync(int id) => Task.FromResult(_users.First(u => u.Id == id));
+    public Task SaveAsync(User user) { _users.Add(user); return Task.CompletedTask; }
+}
 ```
+
+```csharp
+// 5. SERVICE — depends on interface, not EF or Dapper
+public class UserService {
+    private readonly IUserRepository _repo;
+    public UserService(IUserRepository repo) => _repo = repo;
+    public async Task<User> Get(int id) => await _repo.GetByIdAsync(id);
+}
+
+// Swap freely — UserService never changes
+services.AddScoped<IUserRepository, EfUserRepository>();    // use EF Core
+services.AddScoped<IUserRepository, DapperUserRepository>(); // switch to Dapper ✅
+```
+
+ **Why wrap EF Core?** Swap to Dapper for performance, mock in tests, or switch to an API — `UserService` never changes.
 
 ---
 
@@ -1818,5 +1963,3 @@ async Task ProcessAsync() {
 ```
 
 ---
-
-*End of 100 C# Interview Questions — 5 Years Experience*
