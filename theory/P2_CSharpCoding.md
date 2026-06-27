@@ -5,7 +5,7 @@
 
 ---
 
-## SECTION 1: STRING QUESTIONS (Q1–Q30, Q101–Q120)
+## SECTION 1: STRING QUESTIONS (Q1–Q50)
 
 ---
 
@@ -490,7 +490,7 @@ bool IsValidEmail(string s) {
 
 ---
 
-### Q101. Count the Number of Sentences in a Paragraph
+### Q31. Count the Number of Sentences in a Paragraph
 
 **Problem:** Count sentences by counting `.`, `!`, and `?` characters.
 
@@ -502,7 +502,7 @@ int CountSentences(string s) => s.Count(c => c == '.' || c == '!' || c == '?');
 
 ---
 
-### Q102. Check if a String is a Pangram
+### Q32. Check if a String is a Pangram
 
 **Problem:** A pangram contains every letter of the alphabet at least once.
 
@@ -517,7 +517,7 @@ bool IsPangram(string s) {
 
 ---
 
-### Q103. Toggle Case of Each Character
+### Q33. Toggle Case of Each Character
 
 **Problem:** Convert uppercase to lowercase and vice versa for every character.
 
@@ -530,7 +530,7 @@ string ToggleCase(string s) =>
 
 ---
 
-### Q104. Find the Shortest Word in a Sentence
+### Q34. Find the Shortest Word in a Sentence
 
 **Problem:** Return the word with the fewest characters.
 
@@ -542,7 +542,7 @@ string ShortestWord(string s) => s.Split(' ').OrderBy(w => w.Length).First();
 
 ---
 
-### Q105. Remove All Non-Alphanumeric Characters
+### Q35. Remove All Non-Alphanumeric Characters
 
 **Problem:** Strip out everything that is not a letter or digit.
 
@@ -555,7 +555,7 @@ string RemoveNonAlphanumeric(string s) =>
 
 ---
 
-### Q106. Check if One String is a Prefix of Another
+### Q36. Check if One String is a Prefix of Another
 
 **Problem:** Return true if string A starts with string B.
 
@@ -568,7 +568,7 @@ bool IsPrefix(string s, string prefix) =>
 
 ---
 
-### Q107. Check if One String is a Suffix of Another
+### Q37. Check if One String is a Suffix of Another
 
 **Problem:** Return true if string A ends with string B.
 
@@ -581,7 +581,7 @@ bool IsSuffix(string s, string suffix) =>
 
 ---
 
-### Q108. Repeat a String N Times
+### Q38. Repeat a String N Times
 
 **Problem:** Return the string repeated N times.
 
@@ -593,7 +593,7 @@ string RepeatString(string s, int n) => string.Concat(Enumerable.Repeat(s, n));
 
 ---
 
-### Q109. Capitalize the First Letter Only
+### Q39. Capitalize the First Letter Only
 
 **Problem:** Make the first character uppercase and the rest lowercase.
 
@@ -606,7 +606,7 @@ string CapitalizeFirst(string s) =>
 
 ---
 
-### Q110. Find All Words That Appear More Than Once
+### Q40. Find All Words That Appear More Than Once
 
 **Problem:** Return a list of words that repeat in a sentence (case-insensitive).
 
@@ -623,7 +623,7 @@ List<string> RepeatedWords(string s) =>
 
 ---
 
-### Q111. Left Pad a String to a Fixed Width
+### Q41. Left Pad a String to a Fixed Width
 
 **Problem:** Pad the string on the left with spaces (or a character) until it reaches length N.
 
@@ -635,7 +635,7 @@ string LeftPad(string s, int n, char padChar = ' ') => s.PadLeft(n, padChar);
 
 ---
 
-### Q112. Right Pad a String to a Fixed Width
+### Q42. Right Pad a String to a Fixed Width
 
 **Problem:** Pad the string on the right with a character until it reaches length N.
 
@@ -647,7 +647,7 @@ string RightPad(string s, int n, char padChar = ' ') => s.PadRight(n, padChar);
 
 ---
 
-### Q113. Extract All Numbers from a String
+### Q43. Extract All Numbers from a String
 
 **Problem:** Pull out all numeric substrings from a mixed string.
 
@@ -662,7 +662,7 @@ List<int> ExtractNumbers(string s) =>
 
 ---
 
-### Q114. Find the Middle Character(s) of a String
+### Q44. Find the Middle Character(s) of a String
 
 **Problem:** Return the middle character if odd length, or middle two if even length.
 
@@ -677,7 +677,7 @@ string MiddleChar(string s) {
 
 ---
 
-### Q115. Convert a Sentence to Camel Case
+### Q45. Convert a Sentence to Camel Case
 
 **Problem:** Convert words to camelCase (first word lowercase, rest capitalized).
 
@@ -693,7 +693,7 @@ string ToCamelCase(string s) {
 
 ---
 
-### Q116. Count Matching Characters Between Two Strings (Same Position)
+### Q46. Count Matching Characters Between Two Strings (Same Position)
 
 **Problem:** Count positions where both strings have the same character.
 
@@ -706,7 +706,7 @@ int CountMatchingChars(string a, string b) =>
 
 ---
 
-### Q117. Remove All Occurrences of a Given Character
+### Q47. Remove All Occurrences of a Given Character
 
 **Problem:** Remove every occurrence of a specific character.
 
@@ -718,7 +718,7 @@ string RemoveChar(string s, char c) => new string(s.Where(x => x != c).ToArray()
 
 ---
 
-### Q118. Check if String Contains Only Alphabets
+### Q48. Check if String Contains Only Alphabets
 
 **Problem:** Return true if the string has only letters (no digits or symbols).
 
@@ -730,7 +730,7 @@ bool IsAlphaOnly(string s) => s.All(char.IsLetter);
 
 ---
 
-### Q119. Split a String by Multiple Delimiters
+### Q49. Split a String by Multiple Delimiters
 
 **Problem:** Split a string by comma, semicolon, and pipe.
 
@@ -743,7 +743,7 @@ string[] SplitMultiple(string s) =>
 
 ---
 
-### Q120. Count How Many Times a Substring Appears
+### Q50. Count How Many Times a Substring Appears
 
 **Problem:** Count occurrences of a substring inside another string.
 
@@ -759,11 +759,11 @@ int CountSubstring(string s, string sub) {
 
 ---
 
-## SECTION 2: ARRAY QUESTIONS (Q31–Q60, Q121–Q140)
+## SECTION 2: ARRAY QUESTIONS (Q51–Q110)
 
 ---
 
-### Q31. Find the Maximum Element in an Array
+### Q51. Find the Maximum Element in an Array
 
 **Problem:** Return the largest number in the array.
 
@@ -782,7 +782,7 @@ int FindMaxManual(int[] arr) {
 
 ---
 
-### Q32. Find the Minimum Element in an Array
+### Q52. Find the Minimum Element in an Array
 
 **Problem:** Return the smallest number in the array.
 
@@ -794,7 +794,7 @@ int FindMin(int[] arr) => arr.Min();
 
 ---
 
-### Q33. Calculate the Sum of All Array Elements
+### Q53. Calculate the Sum of All Array Elements
 
 **Problem:** Return the total sum.
 
@@ -806,7 +806,7 @@ int Sum(int[] arr) => arr.Sum();
 
 ---
 
-### Q34. Find the Average of an Array
+### Q54. Find the Average of an Array
 
 **Problem:** Return the average of all elements.
 
@@ -818,7 +818,7 @@ double Average(int[] arr) => arr.Average();
 
 ---
 
-### Q35. Reverse an Array
+### Q55. Reverse an Array
 
 **Problem:** Reverse the array in-place.
 
@@ -833,7 +833,7 @@ void ReverseArray(int[] arr) {
 
 ---
 
-### Q36. Remove Duplicates from an Array
+### Q56. Remove Duplicates from an Array
 
 **Problem:** Return the array with duplicate values removed.
 
@@ -845,7 +845,7 @@ int[] RemoveDuplicates(int[] arr) => arr.Distinct().ToArray();
 
 ---
 
-### Q37. Find the Second Largest Element
+### Q57. Find the Second Largest Element
 
 **Problem:** Return the second largest number (not a duplicate of max).
 
@@ -857,7 +857,7 @@ int SecondLargest(int[] arr) => arr.Distinct().OrderByDescending(x => x).Skip(1)
 
 ---
 
-### Q38. Check if an Array is Sorted (Ascending)
+### Q58. Check if an Array is Sorted (Ascending)
 
 **Problem:** Return true if array is in non-decreasing order.
 
@@ -873,7 +873,7 @@ bool IsSorted(int[] arr) {
 
 ---
 
-### Q39. Count Even and Odd Numbers
+### Q59. Count Even and Odd Numbers
 
 **Problem:** Count how many numbers are even and how many are odd.
 
@@ -888,7 +888,7 @@ void CountEvenOdd(int[] arr) {
 
 ---
 
-### Q40. Find the Two Numbers That Add Up to a Target (Two Sum)
+### Q60. Find the Two Numbers That Add Up to a Target (Two Sum)
 
 **Problem:** Return the indices of two numbers that sum to the target.
 
@@ -908,7 +908,7 @@ int[] TwoSum(int[] nums, int target) {
 
 ---
 
-### Q41. Rotate an Array to the Right by K Steps
+### Q61. Rotate an Array to the Right by K Steps
 
 **Problem:** Shift all elements to the right by K positions. Elements that fall off the end wrap to the front.
 
@@ -923,7 +923,7 @@ int[] RotateRight(int[] arr, int k) {
 
 ---
 
-### Q42. Find the Missing Number in a Sequence
+### Q62. Find the Missing Number in a Sequence
 
 **Problem:** Array contains numbers 1 to N with one missing. Find it.
 
@@ -939,7 +939,7 @@ int MissingNumber(int[] arr) {
 
 ---
 
-### Q43. Find All Duplicate Numbers in an Array
+### Q63. Find All Duplicate Numbers in an Array
 
 **Problem:** Return numbers that appear more than once.
 
@@ -952,7 +952,7 @@ int[] FindDuplicates(int[] arr) =>
 
 ---
 
-### Q44. Merge Two Sorted Arrays
+### Q64. Merge Two Sorted Arrays
 
 **Problem:** Merge two sorted arrays into a single sorted array.
 
@@ -975,7 +975,7 @@ int[] MergeSortedManual(int[] a, int[] b) {
 
 ---
 
-### Q45. Move All Zeros to the End
+### Q65. Move All Zeros to the End
 
 **Problem:** Move all zeros to the end while keeping the order of non-zero elements.
 
@@ -988,7 +988,7 @@ int[] MoveZeros(int[] arr) =>
 
 ---
 
-### Q46. Find the Majority Element (appears more than n/2 times)
+### Q66. Find the Majority Element (appears more than n/2 times)
 
 **Problem:** Return the element that appears more than half the time.
 
@@ -1007,7 +1007,7 @@ int MajorityElement(int[] nums) {
 
 ---
 
-### Q47. Find the Intersection of Two Arrays
+### Q67. Find the Intersection of Two Arrays
 
 **Problem:** Return elements that exist in both arrays.
 
@@ -1019,7 +1019,7 @@ int[] Intersection(int[] a, int[] b) => a.Intersect(b).ToArray();
 
 ---
 
-### Q48. Find the Union of Two Arrays
+### Q68. Find the Union of Two Arrays
 
 **Problem:** Return all unique elements from both arrays combined.
 
@@ -1031,7 +1031,7 @@ int[] Union(int[] a, int[] b) => a.Union(b).ToArray();
 
 ---
 
-### Q49. Check if Array Contains a Specific Value
+### Q69. Check if Array Contains a Specific Value
 
 **Problem:** Return true if the value exists in the array.
 
@@ -1043,7 +1043,7 @@ bool Contains(int[] arr, int val) => arr.Contains(val);
 
 ---
 
-### Q50. Sort an Array in Ascending and Descending Order
+### Q70. Sort an Array in Ascending and Descending Order
 
 **Problem:** Sort the array both ways.
 
@@ -1056,7 +1056,7 @@ int[] SortDesc(int[] arr) => arr.OrderByDescending(x => x).ToArray();
 
 ---
 
-### Q51. Find the Maximum Consecutive Ones
+### Q71. Find the Maximum Consecutive Ones
 
 **Problem:** Return the maximum number of consecutive 1s in a binary array.
 
@@ -1075,7 +1075,7 @@ int MaxConsecutiveOnes(int[] nums) {
 
 ---
 
-### Q52. Find the Subarray with the Maximum Sum (Kadane's Algorithm)
+### Q72. Find the Subarray with the Maximum Sum (Kadane's Algorithm)
 
 **Problem:** Return the largest possible sum of any contiguous subarray.
 
@@ -1094,7 +1094,7 @@ int MaxSubarraySum(int[] nums) {
 
 ---
 
-### Q53. Count Frequency of Each Element in an Array
+### Q73. Count Frequency of Each Element in an Array
 
 **Problem:** Print each element and how many times it appears.
 
@@ -1111,7 +1111,7 @@ void CountFrequency(int[] arr) {
 
 ---
 
-### Q54. Find the Product of All Elements Except Self
+### Q74. Find the Product of All Elements Except Self
 
 **Problem:** Return an array where each index holds the product of all other elements. No division.
 
@@ -1131,7 +1131,7 @@ int[] ProductExceptSelf(int[] nums) {
 
 ---
 
-### Q55. Print All Pairs with a Given Sum
+### Q75. Print All Pairs with a Given Sum
 
 **Problem:** Print all pairs of numbers from the array that add up to the target.
 
@@ -1151,7 +1151,7 @@ void PrintPairsWithSum(int[] arr, int target) {
 
 ---
 
-### Q56. Check if Array is a Subset of Another
+### Q76. Check if Array is a Subset of Another
 
 **Problem:** Return true if all elements of array A exist in array B.
 
@@ -1163,7 +1163,7 @@ bool IsSubset(int[] a, int[] b) => a.All(x => b.Contains(x));
 
 ---
 
-### Q57. Flatten a 2D Array into 1D
+### Q77. Flatten a 2D Array into 1D
 
 **Problem:** Convert a jagged/2D array into a single flat array.
 
@@ -1175,7 +1175,7 @@ int[] Flatten(int[][] arr) => arr.SelectMany(x => x).ToArray();
 
 ---
 
-### Q58. Find the Smallest and Largest in One Pass
+### Q78. Find the Smallest and Largest in One Pass
 
 **Problem:** Find both min and max in a single loop.
 
@@ -1191,7 +1191,7 @@ void MinMax(int[] arr) {
 
 ---
 
-### Q59. Remove a Specific Element from an Array
+### Q79. Remove a Specific Element from an Array
 
 **Problem:** Remove all occurrences of a given value.
 
@@ -1203,7 +1203,7 @@ int[] RemoveElement(int[] arr, int val) => arr.Where(x => x != val).ToArray();
 
 ---
 
-### Q60. Find the Index of the First Occurrence of a Value
+### Q80. Find the Index of the First Occurrence of a Value
 
 **Problem:** Return the index where the value first appears, or -1 if not found.
 
@@ -1215,7 +1215,7 @@ int FirstIndex(int[] arr, int val) => Array.IndexOf(arr, val);
 
 ---
 
-### Q121. Find the Kth Smallest Element
+### Q81. Find the Kth Smallest Element
 
 **Problem:** Return the Kth smallest value in an unsorted array.
 
@@ -1228,7 +1228,7 @@ int KthSmallest(int[] arr, int k) =>
 
 ---
 
-### Q122. Find the Kth Largest Element
+### Q82. Find the Kth Largest Element
 
 **Problem:** Return the Kth largest value.
 
@@ -1241,7 +1241,7 @@ int KthLargest(int[] arr, int k) =>
 
 ---
 
-### Q123. Find the Longest Increasing Subarray
+### Q83. Find the Longest Increasing Subarray
 
 **Problem:** Return the length of the longest contiguous subarray that is strictly increasing.
 
@@ -1260,7 +1260,7 @@ int LongestIncreasing(int[] arr) {
 
 ---
 
-### Q124. Separate Even and Odd Numbers
+### Q84. Separate Even and Odd Numbers
 
 **Problem:** Rearrange so all even numbers come before all odd numbers.
 
@@ -1273,7 +1273,7 @@ int[] SeparateEvenOdd(int[] arr) =>
 
 ---
 
-### Q125. Find the Smallest Positive Missing Number
+### Q85. Find the Smallest Positive Missing Number
 
 **Problem:** Return the smallest positive integer not in the array.
 
@@ -1288,7 +1288,7 @@ int SmallestMissingPositive(int[] arr) {
 
 ---
 
-### Q126. Chunk an Array into Groups of N
+### Q86. Chunk an Array into Groups of N
 
 **Problem:** Split an array into sub-arrays of size N.
 
@@ -1305,7 +1305,7 @@ List<int[]> Chunk(int[] arr, int n) {
 
 ---
 
-### Q127. Find the Index of the Maximum Element
+### Q87. Find the Index of the Maximum Element
 
 **Problem:** Return the index of the largest value in the array.
 
@@ -1317,7 +1317,7 @@ int IndexOfMax(int[] arr) => Array.IndexOf(arr, arr.Max());
 
 ---
 
-### Q128. Count Elements Greater Than Average
+### Q88. Count Elements Greater Than Average
 
 **Problem:** Return how many elements are above the array's average value.
 
@@ -1332,7 +1332,7 @@ int CountAboveAverage(int[] arr) {
 
 ---
 
-### Q129. Find All Elements That Appear Exactly Once
+### Q89. Find All Elements That Appear Exactly Once
 
 **Problem:** Return elements that have no duplicates.
 
@@ -1345,7 +1345,7 @@ int[] UniqueElements(int[] arr) =>
 
 ---
 
-### Q130. Shift All Negative Numbers to the Front
+### Q90. Shift All Negative Numbers to the Front
 
 **Problem:** Move negatives to the front, positives to the back (order within each group doesn't matter).
 
@@ -1358,7 +1358,7 @@ int[] NegativesFirst(int[] arr) =>
 
 ---
 
-### Q131. Find the Range of an Array (Max - Min)
+### Q91. Find the Range of an Array (Max - Min)
 
 **Problem:** Return the difference between the largest and smallest values.
 
@@ -1370,7 +1370,7 @@ int Range(int[] arr) => arr.Max() - arr.Min();
 
 ---
 
-### Q132. Check if Two Arrays Are Equal
+### Q92. Check if Two Arrays Are Equal
 
 **Problem:** Return true if both arrays have the same elements in the same order.
 
@@ -1382,7 +1382,7 @@ bool AreEqual(int[] a, int[] b) => a.SequenceEqual(b);
 
 ---
 
-### Q133. Zip Two Arrays Together
+### Q93. Zip Two Arrays Together
 
 **Problem:** Combine corresponding elements of two arrays into pairs.
 
@@ -1394,7 +1394,7 @@ var pairs = nums.Zip(letters, (n, l) => $"({n},{l})").ToList();
 
 ---
 
-### Q134. Find the Pair with the Maximum Sum
+### Q94. Find the Pair with the Maximum Sum
 
 **Problem:** Return the two numbers from the array that produce the highest sum.
 
@@ -1409,7 +1409,7 @@ var pairs = nums.Zip(letters, (n, l) => $"({n},{l})").ToList();
 
 ---
 
-### Q135. Remove All Elements Below a Threshold
+### Q95. Remove All Elements Below a Threshold
 
 **Problem:** Return only elements greater than or equal to the threshold.
 
@@ -1422,7 +1422,7 @@ int[] FilterBelowThreshold(int[] arr, int threshold) =>
 
 ---
 
-### Q136. Find the Cumulative Sum Array
+### Q96. Find the Cumulative Sum Array
 
 **Problem:** Return an array where each index holds the running total up to that point.
 
@@ -1439,7 +1439,7 @@ int[] CumulativeSum(int[] arr) {
 
 ---
 
-### Q137. Transpose a 2D Matrix
+### Q97. Transpose a 2D Matrix
 
 **Problem:** Swap rows and columns of a square matrix.
 
@@ -1457,7 +1457,7 @@ int[,] Transpose(int[,] m) {
 
 ---
 
-### Q138. Find All Numbers in Array Divisible by K
+### Q98. Find All Numbers in Array Divisible by K
 
 **Problem:** Return all elements divisible by K.
 
@@ -1469,7 +1469,7 @@ int[] DivisibleByK(int[] arr, int k) => arr.Where(x => x % k == 0).ToArray();
 
 ---
 
-### Q139. Swap the First and Last Elements of an Array
+### Q99. Swap the First and Last Elements of an Array
 
 **Problem:** Exchange the element at index 0 with the element at the last index.
 
@@ -1482,7 +1482,7 @@ void SwapFirstLast(int[] arr) =>
 
 ---
 
-### Q140. Replace Every Element with the Next Greater Element
+### Q100. Replace Every Element with the Next Greater Element
 
 **Problem:** For each element, replace it with the next larger element to its right. Use -1 if none exists.
 
@@ -1504,11 +1504,11 @@ int[] NextGreaterElement(int[] arr) {
 
 ---
 
-## SECTION 3: NUMBER & MATH QUESTIONS (Q61–Q75, Q141–Q155)
+## SECTION 3: NUMBER & MATH QUESTIONS (Q101–Q140)
 
 ---
 
-### Q61. Check if a Number is Prime
+### Q101. Check if a Number is Prime
 
 **Problem:** Return true if the number has no divisors other than 1 and itself.
 
@@ -1525,7 +1525,7 @@ bool IsPrime(int n) {
 
 ---
 
-### Q62. Find the Factorial of a Number
+### Q102. Find the Factorial of a Number
 
 **Problem:** Return N! (product of all integers from 1 to N).
 
@@ -1544,7 +1544,7 @@ long FactorialLoop(int n) {
 
 ---
 
-### Q63. Find the Fibonacci Number at Position N
+### Q103. Find the Fibonacci Number at Position N
 
 **Problem:** Return the Nth number in the Fibonacci sequence (0,1,1,2,3,5,8...).
 
@@ -1561,7 +1561,7 @@ int Fibonacci(int n) {
 
 ---
 
-### Q64. Check if a Number is Armstrong
+### Q104. Check if a Number is Armstrong
 
 **Problem:** A number is Armstrong if the sum of its digits each raised to the power of the digit count equals the number.
 
@@ -1577,7 +1577,7 @@ bool IsArmstrong(int n) {
 
 ---
 
-### Q65. Reverse a Number
+### Q105. Reverse a Number
 
 **Problem:** Reverse the digits of an integer.
 
@@ -1593,7 +1593,7 @@ int ReverseNumber(int n) {
 
 ---
 
-### Q66. Check if a Number is a Palindrome
+### Q106. Check if a Number is a Palindrome
 
 **Problem:** Return true if the number reads the same forwards and backwards.
 
@@ -1609,7 +1609,7 @@ bool IsNumberPalindrome(int n) {
 
 ---
 
-### Q67. Find GCD (Greatest Common Divisor) of Two Numbers
+### Q107. Find GCD (Greatest Common Divisor) of Two Numbers
 
 **Problem:** Return the largest number that divides both.
 
@@ -1621,7 +1621,7 @@ int GCD(int a, int b) => b == 0 ? a : GCD(b, a % b);
 
 ---
 
-### Q68. Find LCM (Least Common Multiple) of Two Numbers
+### Q108. Find LCM (Least Common Multiple) of Two Numbers
 
 **Problem:** Return the smallest number divisible by both.
 
@@ -1634,7 +1634,7 @@ int GCD(int a, int b) => b == 0 ? a : GCD(b, a % b);
 
 ---
 
-### Q69. Find the Sum of Digits of a Number
+### Q109. Find the Sum of Digits of a Number
 
 **Problem:** Add up all the individual digits.
 
@@ -1646,7 +1646,7 @@ int SumOfDigits(int n) => Math.Abs(n).ToString().Sum(c => c - '0');
 
 ---
 
-### Q70. Check if a Number is Even or Odd Without Using %
+### Q110. Check if a Number is Even or Odd Without Using %
 
 **Problem:** Check even/odd using bitwise AND.
 
@@ -1658,7 +1658,7 @@ string EvenOrOdd(int n) => (n & 1) == 0 ? "Even" : "Odd";
 
 ---
 
-### Q71. Print the Multiplication Table of a Number
+### Q111. Print the Multiplication Table of a Number
 
 **Problem:** Print the table up to 10.
 
@@ -1673,7 +1673,7 @@ void MultiplicationTable(int n) {
 
 ---
 
-### Q72. Count the Number of Digits in an Integer
+### Q112. Count the Number of Digits in an Integer
 
 **Problem:** Return how many digits the number has.
 
@@ -1685,7 +1685,7 @@ int CountDigits(int n) => Math.Abs(n).ToString().Length;
 
 ---
 
-### Q73. Find All Prime Numbers up to N (Sieve of Eratosthenes)
+### Q113. Find All Prime Numbers up to N (Sieve of Eratosthenes)
 
 **Problem:** Print all prime numbers from 2 to N.
 
@@ -1704,7 +1704,7 @@ void PrintPrimesUpTo(int n) {
 
 ---
 
-### Q74. Power of a Number (x raised to n)
+### Q114. Power of a Number (x raised to n)
 
 **Problem:** Calculate x to the power of n without using `Math.Pow`.
 
@@ -1726,7 +1726,7 @@ double Power(double x, int n) {
 
 ---
 
-### Q75. Convert Decimal to Binary
+### Q115. Convert Decimal to Binary
 
 **Problem:** Convert a decimal integer to its binary string representation.
 
@@ -1746,7 +1746,7 @@ string DecimalToBinaryManual(int n) {
 
 ---
 
-### Q141. Find All Factors (Divisors) of a Number
+### Q116. Find All Factors (Divisors) of a Number
 
 **Problem:** Return all numbers that divide evenly into N.
 
@@ -1759,7 +1759,7 @@ List<int> Factors(int n) =>
 
 ---
 
-### Q142. Check if a Number is a Perfect Square
+### Q117. Check if a Number is a Perfect Square
 
 **Problem:** Return true if the square root of N is a whole number.
 
@@ -1774,7 +1774,7 @@ bool IsPerfectSquare(int n) {
 
 ---
 
-### Q143. Find the Nth Triangular Number
+### Q118. Find the Nth Triangular Number
 
 **Problem:** The Nth triangular number is the sum of 1 to N.
 
@@ -1786,7 +1786,7 @@ int TriangularNumber(int n) => n * (n + 1) / 2;
 
 ---
 
-### Q144. Convert Binary to Decimal
+### Q119. Convert Binary to Decimal
 
 **Problem:** Convert a binary string to its decimal value.
 
@@ -1806,7 +1806,7 @@ int BinaryToDecimalManual(string binary) {
 
 ---
 
-### Q145. Check if a Number is a Power of 2
+### Q120. Check if a Number is a Power of 2
 
 **Problem:** Return true if N is a power of 2 (1, 2, 4, 8, 16...).
 
@@ -1818,7 +1818,7 @@ bool IsPowerOfTwo(int n) => n > 0 && (n & (n - 1)) == 0;
 
 ---
 
-### Q146. Find the Absolute Difference Between Two Numbers
+### Q121. Find the Absolute Difference Between Two Numbers
 
 **Problem:** Return |a - b|.
 
@@ -1830,7 +1830,7 @@ int AbsDiff(int a, int b) => Math.Abs(a - b);
 
 ---
 
-### Q147. Print a Number in Words (Units to Thousands)
+### Q122. Print a Number in Words (Units to Thousands)
 
 **Problem:** Convert numbers 1-19 to their English word.
 
@@ -1847,7 +1847,7 @@ string NumberToWord(int n) {
 
 ---
 
-### Q148. Check if a Year is a Leap Year
+### Q123. Check if a Year is a Leap Year
 
 **Problem:** A year is a leap year if divisible by 4, except centuries which must be divisible by 400.
 
@@ -1860,7 +1860,7 @@ bool IsLeapYear(int year) =>
 
 ---
 
-### Q149. Find the Sum of All Even Numbers Between 1 and N
+### Q124. Find the Sum of All Even Numbers Between 1 and N
 
 **Problem:** Sum all even numbers from 1 to N inclusive.
 
@@ -1872,7 +1872,7 @@ int SumOfEvens(int n) => Enumerable.Range(1, n).Where(x => x % 2 == 0).Sum();
 
 ---
 
-### Q150. Find the Largest of Three Numbers
+### Q125. Find the Largest of Three Numbers
 
 **Problem:** Return the maximum among three integers.
 
@@ -1884,7 +1884,7 @@ int MaxOfThree(int a, int b, int c) => Math.Max(a, Math.Max(b, c));
 
 ---
 
-### Q151. Check if a Number is Positive, Negative, or Zero
+### Q126. Check if a Number is Positive, Negative, or Zero
 
 **Problem:** Return a string describing the sign.
 
@@ -1896,7 +1896,7 @@ string Sign(int n) => n > 0 ? "Positive" : n < 0 ? "Negative" : "Zero";
 
 ---
 
-### Q152. Calculate Simple Interest
+### Q127. Calculate Simple Interest
 
 **Problem:** SI = (P × R × T) / 100.
 
@@ -1908,7 +1908,7 @@ double SimpleInterest(double p, double r, double t) => (p * r * t) / 100;
 
 ---
 
-### Q153. Calculate Compound Interest
+### Q128. Calculate Compound Interest
 
 **Problem:** CI = P × (1 + R/100)^T - P.
 
@@ -1921,7 +1921,7 @@ double CompoundInterest(double p, double r, double t) =>
 
 ---
 
-### Q154. Find the Number of Trailing Zeros in N Factorial
+### Q129. Find the Number of Trailing Zeros in N Factorial
 
 **Problem:** Count zeros at the end of N!. Each zero comes from a factor of 10 = 2×5. Count 5s.
 
@@ -1937,7 +1937,7 @@ int TrailingZeros(int n) {
 
 ---
 
-### Q155. Check if a Number is a Kaprekar Number
+### Q130. Check if a Number is a Kaprekar Number
 
 **Problem:** A number is Kaprekar if squaring it and splitting the result sums back to the original.
 
@@ -1958,142 +1958,48 @@ bool IsKaprekar(int n) {
 
 ---
 
-## SECTION 4: PATTERN & LOGIC QUESTIONS (Q76–Q85)
+### Q131. Print All Prime Numbers in a Range
 
----
+**Problem:** Print all prime numbers between A and B (inclusive).
 
-### Q76. Print a Right Triangle Star Pattern
-
-**Problem:** Print a right-angled triangle of stars with N rows.
-
-**Example:** N=4:
-```
-*
-* *
-* * *
-* * * *
-```
+**Example:** A=10, B=20 → `11, 13, 17, 19`
 
 ```csharp
-void RightTriangle(int n) {
-    for (int i = 1; i <= n; i++)
-        Console.WriteLine(string.Join(" ", Enumerable.Repeat("*", i)));
-}
-```
-
----
-
-### Q77. Print a Pyramid Star Pattern
-
-**Problem:** Print a centered pyramid of stars.
-
-**Example:** N=4:
-```
-   *
-  ***
- *****
-*******
-```
-
-```csharp
-void Pyramid(int n) {
-    for (int i = 1; i <= n; i++) {
-        Console.Write(new string(' ', n - i));
-        Console.WriteLine(new string('*', 2 * i - 1));
+void PrimesInRange(int a, int b) {
+    bool IsPrime(int n) {
+        if (n < 2) return false;
+        for (int i = 2; i <= Math.Sqrt(n); i++) if (n % i == 0) return false;
+        return true;
     }
+    var primes = Enumerable.Range(a, b - a + 1).Where(IsPrime);
+    Console.WriteLine(string.Join(", ", primes));
 }
 ```
 
 ---
 
-### Q78. Print a Number Pattern (Floyd's Triangle)
+### Q132. Find if a Number Can Be Expressed as Sum of Two Primes
 
-**Problem:** Print a triangle filled with consecutive numbers.
+**Problem:** Return true if the number can be written as the sum of exactly two prime numbers.
 
-**Example:** N=4:
-```
-1
-2 3
-4 5 6
-7 8 9 10
-```
+**Example:** `10` → true (3+7 or 5+5)
 
 ```csharp
-void FloydsTriangle(int n) {
-    int num = 1;
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= i; j++) Console.Write(num++ + " ");
-        Console.WriteLine();
+bool SumOfTwoPrimes(int n) {
+    bool IsPrime(int x) {
+        if (x < 2) return false;
+        for (int i = 2; i <= Math.Sqrt(x); i++) if (x % i == 0) return false;
+        return true;
     }
+    for (int i = 2; i <= n / 2; i++)
+        if (IsPrime(i) && IsPrime(n - i)) return true;
+    return false;
 }
 ```
 
 ---
 
-### Q79. FizzBuzz (Classic)
-
-**Problem:** Print 1 to N. For multiples of 3 print "Fizz", multiples of 5 print "Buzz", multiples of both print "FizzBuzz".
-
-**Example:** N=15 → `1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz`
-
-```csharp
-void FizzBuzz(int n) {
-    for (int i = 1; i <= n; i++) {
-        if (i % 15 == 0) Console.Write("FizzBuzz ");
-        else if (i % 3 == 0) Console.Write("Fizz ");
-        else if (i % 5 == 0) Console.Write("Buzz ");
-        else Console.Write(i + " ");
-    }
-}
-```
-
----
-
-### Q80. Find All Numbers Divisible by 3 and 5 in a Range
-
-**Problem:** Print all numbers from 1 to N divisible by both 3 and 5.
-
-**Example:** N=30 → `15, 30`
-
-```csharp
-void DivisibleBy3And5(int n) {
-    var result = Enumerable.Range(1, n).Where(x => x % 3 == 0 && x % 5 == 0);
-    Console.WriteLine(string.Join(", ", result));
-}
-```
-
----
-
-### Q81. Swap Two Numbers Without a Temporary Variable
-
-**Problem:** Swap two integers without using a third variable.
-
-**Example:** `a=5, b=10` → `a=10, b=5`
-
-```csharp
-void Swap(ref int a, ref int b) {
-    a = a + b;
-    b = a - b;
-    a = a - b;
-    // Or with XOR: a ^= b; b ^= a; a ^= b;
-}
-```
-
----
-
-### Q82. Find the N-th Term of an Arithmetic Sequence
-
-**Problem:** Given first term `a`, common difference `d`, find the N-th term.
-
-**Example:** a=2, d=3, N=5 → `14`
-
-```csharp
-int NthArithmeticTerm(int a, int d, int n) => a + (n - 1) * d;
-```
-
----
-
-### Q83. Check if a Number is Perfect
+### Q133. Check if a Number is Perfect
 
 **Problem:** A perfect number equals the sum of its proper divisors.
 
@@ -2109,7 +2015,19 @@ bool IsPerfect(int n) {
 
 ---
 
-### Q84. Find the Number of Ways to Climb N Stairs (1 or 2 steps)
+### Q134. Find the N-th Term of an Arithmetic Sequence
+
+**Problem:** Given first term `a`, common difference `d`, find the N-th term.
+
+**Example:** a=2, d=3, N=5 → `14`
+
+```csharp
+int NthArithmeticTerm(int a, int d, int n) => a + (n - 1) * d;
+```
+
+---
+
+### Q135. Find the Number of Ways to Climb N Stairs (1 or 2 steps)
 
 **Problem:** You can take 1 or 2 steps. How many distinct ways are there to reach step N?
 
@@ -2126,7 +2044,47 @@ int ClimbStairs(int n) {
 
 ---
 
-### Q85. Generate Pascal's Triangle up to N Rows
+### Q136. Calculate Simple Interest
+
+**Problem:** SI = (P × R × T) / 100.
+
+> See Q127.
+
+---
+
+### Q137. Find All Numbers Divisible by 3 and 5 in a Range
+
+**Problem:** Print all numbers from 1 to N divisible by both 3 and 5.
+
+**Example:** N=30 → `15, 30`
+
+```csharp
+void DivisibleBy3And5(int n) {
+    var result = Enumerable.Range(1, n).Where(x => x % 3 == 0 && x % 5 == 0);
+    Console.WriteLine(string.Join(", ", result));
+}
+```
+
+---
+
+### Q138. Swap Two Numbers Without a Temporary Variable
+
+**Problem:** Swap two integers without using a third variable.
+
+**Example:** `a=5, b=10` → `a=10, b=5`
+
+```csharp
+void Swap(ref int a, ref int b) {
+    a = a + b;
+    b = a - b;
+    a = a - b;
+    // Or with XOR: a ^= b; b ^= a; a ^= b;
+}
+```
+
+---
+
+### Q139. Generate Pascal's Triangle up to N Rows
 
 **Problem:** Print Pascal's triangle.
 
@@ -2153,176 +2111,118 @@ void PascalsTriangle(int n) {
 
 ---
 
-## SECTION 5: COLLECTIONS & LINQ (Q86–Q95)
+### Q140. Word Frequency Counter
 
----
+**Problem:** Given a paragraph, count the frequency of each word (case-insensitive), and return the top 3 most frequent words.
 
-### Q86. Find the Top 3 Highest Salaries from a List
-
-**Problem:** Given a list of employee objects, return the top 3 distinct salaries.
+**Example:** `"the cat sat on the mat the cat"` → `the:3, cat:2, sat:1`
 
 ```csharp
-var top3 = employees
-    .Select(e => e.Salary)
-    .Distinct()
-    .OrderByDescending(s => s)
-    .Take(3)
-    .ToList();
-```
-
----
-
-### Q87. Group Employees by Department
-
-**Problem:** Group a list of employees by their department name.
-
-```csharp
-var grouped = employees
-    .GroupBy(e => e.Department)
-    .Select(g => new { Dept = g.Key, Count = g.Count(), Employees = g.ToList() });
-```
-
----
-
-### Q88. Find Employees Whose Name Starts with a Letter
-
-**Problem:** Filter employees whose name starts with 'A'.
-
-```csharp
-var result = employees
-    .Where(e => e.Name.StartsWith("A", StringComparison.OrdinalIgnoreCase))
-    .OrderBy(e => e.Name)
-    .ToList();
-```
-
----
-
-### Q89. Calculate Total Salary by Department
-
-**Problem:** Return the sum of salaries for each department.
-
-```csharp
-var deptTotals = employees
-    .GroupBy(e => e.Department)
-    .Select(g => new { Department = g.Key, TotalSalary = g.Sum(e => e.Salary) })
-    .OrderByDescending(x => x.TotalSalary);
-```
-
----
-
-### Q90. Find Duplicates in a List of Strings
-
-**Problem:** Return all strings that appear more than once.
-
-```csharp
-var duplicates = list
-    .GroupBy(s => s)
-    .Where(g => g.Count() > 1)
-    .Select(g => g.Key)
-    .ToList();
-```
-
----
-
-### Q91. Convert a List of Strings to Uppercase
-
-**Problem:** Return a new list with all strings in uppercase.
-
-```csharp
-var upper = list.Select(s => s.ToUpper()).ToList();
-```
-
----
-
-### Q92. Find the Average Age of Employees Over 30
-
-**Problem:** Filter employees older than 30 and calculate their average age.
-
-```csharp
-double avgAge = employees
-    .Where(e => e.Age > 30)
-    .Average(e => e.Age);
-```
-
----
-
-### Q93. Check if Any Employee Earns More Than 100,000
-
-**Problem:** Return true if at least one employee has a salary above 100k.
-
-```csharp
-bool highEarner = employees.Any(e => e.Salary > 100_000);
-```
-
----
-
-### Q94. Remove Null and Empty Strings from a List
-
-**Problem:** Filter out all null, empty, or whitespace strings.
-
-```csharp
-var clean = list.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-```
-
----
-
-### Q95. Sort a Dictionary by Value
-
-**Problem:** Given a `Dictionary<string, int>`, sort it by value descending.
-
-```csharp
-var sorted = dict.OrderByDescending(kv => kv.Value)
-                 .ToDictionary(kv => kv.Key, kv => kv.Value);
-```
-
----
-
-## SECTION 6: CLASSIC MNC INTERVIEW QUESTIONS (Q96–Q100)
-
----
-
-### Q96. Print All Prime Numbers in a Range
-
-**Problem:** Print all prime numbers between A and B (inclusive).
-
-**Example:** A=10, B=20 → `11, 13, 17, 19`
-
-```csharp
-void PrimesInRange(int a, int b) {
-    bool IsPrime(int n) {
-        if (n < 2) return false;
-        for (int i = 2; i <= Math.Sqrt(n); i++) if (n % i == 0) return false;
-        return true;
-    }
-    var primes = Enumerable.Range(a, b - a + 1).Where(IsPrime);
-    Console.WriteLine(string.Join(", ", primes));
+List<(string Word, int Count)> TopNWords(string text, int n) {
+    return text.ToLower()
+        .Split(new char[]{' ', '.', ',', '!', '?'}, StringSplitOptions.RemoveEmptyEntries)
+        .GroupBy(w => w)
+        .OrderByDescending(g => g.Count())
+        .Take(n)
+        .Select(g => (g.Key, g.Count()))
+        .ToList();
 }
 ```
 
 ---
 
-### Q97. Find if a Number Can Be Expressed as Sum of Two Primes
+## SECTION 4: PATTERN & LOGIC QUESTIONS (Q141–Q150)
 
-**Problem:** Return true if the number can be written as the sum of exactly two prime numbers.
+---
 
-**Example:** `10` → true (3+7 or 5+5)
+### Q141. Print a Right Triangle Star Pattern
+
+**Problem:** Print a right-angled triangle of stars with N rows.
+
+**Example:** N=4:
+```
+*
+* *
+* * *
+* * * *
+```
 
 ```csharp
-bool SumOfTwoPrimes(int n) {
-    bool IsPrime(int x) {
-        if (x < 2) return false;
-        for (int i = 2; i <= Math.Sqrt(x); i++) if (x % i == 0) return false;
-        return true;
-    }
-    for (int i = 2; i <= n / 2; i++)
-        if (IsPrime(i) && IsPrime(n - i)) return true;
-    return false;
+void RightTriangle(int n) {
+    for (int i = 1; i <= n; i++)
+        Console.WriteLine(string.Join(" ", Enumerable.Repeat("*", i)));
 }
 ```
 
 ---
 
-### Q98. Find the Longest Substring Without Repeating Characters
+### Q142. Print a Pyramid Star Pattern
+
+**Problem:** Print a centered pyramid of stars.
+
+**Example:** N=4:
+```
+   *
+  ***
+ *****
+*******
+```
+
+```csharp
+void Pyramid(int n) {
+    for (int i = 1; i <= n; i++) {
+        Console.Write(new string(' ', n - i));
+        Console.WriteLine(new string('*', 2 * i - 1));
+    }
+}
+```
+
+---
+
+### Q143. Print a Number Pattern (Floyd's Triangle)
+
+**Problem:** Print a triangle filled with consecutive numbers.
+
+**Example:** N=4:
+```
+1
+2 3
+4 5 6
+7 8 9 10
+```
+
+```csharp
+void FloydsTriangle(int n) {
+    int num = 1;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= i; j++) Console.Write(num++ + " ");
+        Console.WriteLine();
+    }
+}
+```
+
+---
+
+### Q144. FizzBuzz (Classic)
+
+**Problem:** Print 1 to N. For multiples of 3 print "Fizz", multiples of 5 print "Buzz", multiples of both print "FizzBuzz".
+
+**Example:** N=15 → `1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz`
+
+```csharp
+void FizzBuzz(int n) {
+    for (int i = 1; i <= n; i++) {
+        if (i % 15 == 0) Console.Write("FizzBuzz ");
+        else if (i % 3 == 0) Console.Write("Fizz ");
+        else if (i % 5 == 0) Console.Write("Buzz ");
+        else Console.Write(i + " ");
+    }
+}
+```
+
+---
+
+### Q145. Find the Longest Substring Without Repeating Characters
 
 **Problem:** Return the length of the longest substring where no character repeats.
 
@@ -2344,7 +2244,309 @@ int LongestUniqueSubstring(string s) {
 
 ---
 
-### Q99. Implement a Basic Stack Using an Array
+### Q146. Find the Missing Letter in an Alphabetical Sequence
+
+**Problem:** A string contains all letters in order except one. Find the missing letter.
+
+**Example:** `"abcdefghijklmnopqrstuvwxyz".Remove(7, 1)` missing `'h'`
+
+```csharp
+char FindMissingLetter(string s) {
+    for (int i = 0; i < s.Length - 1; i++)
+        if (s[i + 1] - s[i] > 1) return (char)(s[i] + 1);
+    return '\0';
+}
+```
+
+---
+
+### Q147. Find the Longest Chain of Characters
+
+**Problem:** Return the maximum number of times any single character appears consecutively anywhere in the string.
+
+**Example:** `"aabbbccddddee"` → `4` (dddd)
+
+```csharp
+int LongestChain(string s) {
+    int max = 1, cur = 1;
+    for (int i = 1; i < s.Length; i++) {
+        cur = s[i] == s[i - 1] ? cur + 1 : 1;
+        max = Math.Max(max, cur);
+    }
+    return max;
+}
+```
+
+---
+
+### Q148. Calculate the Hamming Distance Between Two Strings
+
+**Problem:** Count positions where the characters differ (same length strings).
+
+**Example:** `"karolin"`, `"kathrin"` → `3`
+
+```csharp
+int HammingDistance(string a, string b) =>
+    a.Zip(b, (x, y) => x != y).Count(diff => diff);
+```
+
+---
+
+### Q149. Find the First Repeated Word in a Sentence
+
+**Problem:** Return the first word that appears more than once.
+
+**Example:** `"the cat sat on the mat"` → `"the"`
+
+```csharp
+string FirstRepeatedWord(string s) {
+    var seen = new HashSet<string>();
+    foreach (var word in s.ToLower().Split(' '))
+        if (!seen.Add(word)) return word;
+    return "";
+}
+```
+
+---
+
+### Q150. Validate a Password Strength
+
+**Problem:** A strong password must be 8+ characters, contain at least one uppercase, one lowercase, one digit, and one special character.
+
+**Example:** `"Pass@123"` → `true`, `"password"` → `false`
+
+```csharp
+bool IsStrongPassword(string p) =>
+    p.Length >= 8 &&
+    p.Any(char.IsUpper) &&
+    p.Any(char.IsLower) &&
+    p.Any(char.IsDigit) &&
+    p.Any(c => "!@#$%^&*".Contains(c));
+```
+
+---
+
+## SECTION 5: COLLECTIONS & LINQ (Q151–Q165)
+
+---
+
+### Q151. Find the Top 3 Highest Salaries from a List
+
+**Problem:** Given a list of employee objects, return the top 3 distinct salaries.
+
+```csharp
+var top3 = employees
+    .Select(e => e.Salary)
+    .Distinct()
+    .OrderByDescending(s => s)
+    .Take(3)
+    .ToList();
+```
+
+---
+
+### Q152. Group Employees by Department
+
+**Problem:** Group a list of employees by their department name.
+
+```csharp
+var grouped = employees
+    .GroupBy(e => e.Department)
+    .Select(g => new { Dept = g.Key, Count = g.Count(), Employees = g.ToList() });
+```
+
+---
+
+### Q153. Find Employees Whose Name Starts with a Letter
+
+**Problem:** Filter employees whose name starts with 'A'.
+
+```csharp
+var result = employees
+    .Where(e => e.Name.StartsWith("A", StringComparison.OrdinalIgnoreCase))
+    .OrderBy(e => e.Name)
+    .ToList();
+```
+
+---
+
+### Q154. Calculate Total Salary by Department
+
+**Problem:** Return the sum of salaries for each department.
+
+```csharp
+var deptTotals = employees
+    .GroupBy(e => e.Department)
+    .Select(g => new { Department = g.Key, TotalSalary = g.Sum(e => e.Salary) })
+    .OrderByDescending(x => x.TotalSalary);
+```
+
+---
+
+### Q155. Find Duplicates in a List of Strings
+
+**Problem:** Return all strings that appear more than once.
+
+```csharp
+var duplicates = list
+    .GroupBy(s => s)
+    .Where(g => g.Count() > 1)
+    .Select(g => g.Key)
+    .ToList();
+```
+
+---
+
+### Q156. Convert a List of Strings to Uppercase
+
+**Problem:** Return a new list with all strings in uppercase.
+
+```csharp
+var upper = list.Select(s => s.ToUpper()).ToList();
+```
+
+---
+
+### Q157. Find the Average Age of Employees Over 30
+
+**Problem:** Filter employees older than 30 and calculate their average age.
+
+```csharp
+double avgAge = employees
+    .Where(e => e.Age > 30)
+    .Average(e => e.Age);
+```
+
+---
+
+### Q158. Check if Any Employee Earns More Than 100,000
+
+**Problem:** Return true if at least one employee has a salary above 100k.
+
+```csharp
+bool highEarner = employees.Any(e => e.Salary > 100_000);
+```
+
+---
+
+### Q159. Remove Null and Empty Strings from a List
+
+**Problem:** Filter out all null, empty, or whitespace strings.
+
+```csharp
+var clean = list.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+```
+
+---
+
+### Q160. Sort a Dictionary by Value
+
+**Problem:** Given a `Dictionary<string, int>`, sort it by value descending.
+
+```csharp
+var sorted = dict.OrderByDescending(kv => kv.Value)
+                 .ToDictionary(kv => kv.Key, kv => kv.Value);
+```
+
+---
+
+### Q161. Group Words by Their Length
+
+**Problem:** Group a list of words into a dictionary where the key is the word length.
+
+**Example:** `["cat", "dog", "elephant", "ant"]` → `{3: [cat, dog, ant], 8: [elephant]}`
+
+```csharp
+Dictionary<int, List<string>> GroupByLength(string[] words) =>
+    words.GroupBy(w => w.Length)
+         .ToDictionary(g => g.Key, g => g.ToList());
+```
+
+---
+
+### Q162. Flatten Nested Strings to a Flat List
+
+**Problem:** Given a `List<List<string>>`, flatten it into a single `List<string>`.
+
+**Example:** `[["a","b"],["c"],["d","e"]]` → `["a","b","c","d","e"]`
+
+```csharp
+List<string> Flatten(List<List<string>> nested) => nested.SelectMany(x => x).ToList();
+```
+
+---
+
+### Q163. Parse a CSV Line into a List of Values
+
+**Problem:** Split a CSV-formatted string into its fields, handling quoted fields.
+
+**Example:** `"John,25,\"New York\",Engineer"` → `["John", "25", "New York", "Engineer"]`
+
+```csharp
+List<string> ParseCsvLine(string line) {
+    var result = new List<string>();
+    bool inQuotes = false;
+    var current = new StringBuilder();
+    foreach (char c in line) {
+        if (c == '"') { inQuotes = !inQuotes; continue; }
+        if (c == ',' && !inQuotes) { result.Add(current.ToString()); current.Clear(); continue; }
+        current.Append(c);
+    }
+    result.Add(current.ToString());
+    return result;
+}
+```
+
+---
+
+### Q164. Demonstrate LINQ with a Custom Class
+
+**Problem:** Use LINQ to filter, sort, and project a list of `Product` objects.
+
+```csharp
+class Product { public string Name = ""; public decimal Price; public string Category = ""; }
+
+var products = new List<Product> {
+    new() { Name = "Laptop", Price = 999, Category = "Electronics" },
+    new() { Name = "Phone", Price = 499, Category = "Electronics" },
+    new() { Name = "Desk", Price = 299, Category = "Furniture" }
+};
+
+var result = products
+    .Where(p => p.Price > 300)
+    .OrderBy(p => p.Price)
+    .Select(p => new { p.Name, p.Price });
+```
+
+---
+
+### Q165. Rotate a Matrix 90 Degrees Clockwise
+
+**Problem:** Rotate an N×N matrix in-place by 90 degrees clockwise.
+
+**Example:** `[[1,2],[3,4]]` → `[[3,1],[4,2]]`
+
+```csharp
+void RotateMatrix(int[,] m) {
+    int n = m.GetLength(0);
+    // Transpose
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+            (m[i, j], m[j, i]) = (m[j, i], m[i, j]);
+    // Reverse each row
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n / 2; j++)
+            (m[i, j], m[i, n - 1 - j]) = (m[i, n - 1 - j], m[i, j]);
+}
+```
+
+---
+
+## SECTION 6: DATA STRUCTURES (Q166–Q185)
+
+---
+
+### Q166. Implement a Basic Stack Using an Array
 
 **Problem:** Implement push, pop, peek, and isEmpty without using the built-in Stack class.
 
@@ -2362,31 +2564,7 @@ class MyStack {
 
 ---
 
-### Q100. Word Frequency Counter
-
-**Problem:** Given a paragraph, count the frequency of each word (case-insensitive), and return the top 3 most frequent words.
-
-**Example:** `"the cat sat on the mat the cat"` → `the:3, cat:2, sat:1`
-
-```csharp
-List<(string Word, int Count)> TopNWords(string text, int n) {
-    return text.ToLower()
-        .Split(new char[]{' ', '.', ',', '!', '?'}, StringSplitOptions.RemoveEmptyEntries)
-        .GroupBy(w => w)
-        .OrderByDescending(g => g.Count())
-        .Take(n)
-        .Select(g => (g.Key, g.Count()))
-        .ToList();
-}
-```
-
----
-
-## SECTION 7: DATA STRUCTURES (Q156–Q170)
-
----
-
-### Q156. Implement a Queue Using Two Stacks
+### Q167. Implement a Queue Using Two Stacks
 
 **Problem:** Build a Queue (FIFO) using only Stack (LIFO) operations.
 
@@ -2412,7 +2590,7 @@ class MyQueue {
 
 ---
 
-### Q157. Implement a Min Stack (Stack with getMin in O(1))
+### Q168. Implement a Min Stack (Stack with getMin in O(1))
 
 **Problem:** Design a stack that supports `push`, `pop`, `peek`, and `getMin` all in O(1).
 
@@ -2437,7 +2615,7 @@ class MinStack {
 
 ---
 
-### Q158. Reverse a Linked List
+### Q169. Reverse a Linked List
 
 **Problem:** Reverse a singly linked list iteratively.
 
@@ -2458,7 +2636,7 @@ Node? ReverseList(Node? head) {
 
 ---
 
-### Q159. Detect a Cycle in a Linked List
+### Q170. Detect a Cycle in a Linked List
 
 **Problem:** Return true if the linked list has a cycle (loop).
 
@@ -2477,7 +2655,7 @@ bool HasCycle(Node head) {
 
 ---
 
-### Q160. Find the Middle Node of a Linked List
+### Q171. Find the Middle Node of a Linked List
 
 **Problem:** Return the middle node. If even length, return the second middle.
 
@@ -2492,7 +2670,31 @@ Node? FindMiddle(Node head) {
 
 ---
 
-### Q161. Implement a Simple HashMap Without Built-in Dictionary
+### Q172. Flatten a Linked List (Convert to Array and Back)
+
+**Problem:** Convert linked list values to an array, and convert an array back to a linked list.
+
+```csharp
+// To array
+int[] ToArray(Node? head) {
+    var list = new List<int>();
+    while (head != null) { list.Add(head.Val); head = head.Next; }
+    return list.ToArray();
+}
+
+// From array
+Node? FromArray(int[] arr) {
+    if (arr.Length == 0) return null;
+    var head = new Node { Val = arr[0] };
+    var cur = head;
+    for (int i = 1; i < arr.Length; i++) { cur.Next = new Node { Val = arr[i] }; cur = cur.Next; }
+    return head;
+}
+```
+
+---
+
+### Q173. Implement a Simple HashMap Without Built-in Dictionary
 
 **Problem:** Build a key-value store using an array of buckets (basic hash map).
 
@@ -2519,7 +2721,7 @@ class SimpleHashMap {
 
 ---
 
-### Q162. Check if a Binary Tree is Balanced
+### Q174. Check if a Binary Tree is Balanced
 
 **Problem:** A balanced tree has no subtree whose left and right height differ by more than 1.
 
@@ -2539,7 +2741,7 @@ bool IsBalanced(TreeNode? root) {
 
 ---
 
-### Q163. Level-Order Traversal of a Binary Tree (BFS)
+### Q175. Level-Order Traversal of a Binary Tree (BFS)
 
 **Problem:** Print nodes level by level, left to right.
 
@@ -2568,7 +2770,34 @@ List<List<int>> LevelOrder(TreeNode? root) {
 
 ---
 
-### Q164. Binary Search on a Sorted Array
+### Q176. Find the Maximum Depth of a Binary Tree
+
+**Problem:** Return the number of nodes on the longest path from root to leaf.
+
+**Example:** Tree of height 3 → `3`
+
+```csharp
+int MaxDepth(TreeNode? root) =>
+    root == null ? 0 : 1 + Math.Max(MaxDepth(root.Left), MaxDepth(root.Right));
+```
+
+---
+
+### Q177. Check if a Binary Search Tree is Valid
+
+**Problem:** Return true if the tree satisfies the BST property (left < root < right at every node).
+
+```csharp
+bool IsValidBST(TreeNode? node, long min = long.MinValue, long max = long.MaxValue) {
+    if (node == null) return true;
+    if (node.Val <= min || node.Val >= max) return false;
+    return IsValidBST(node.Left, min, node.Val) && IsValidBST(node.Right, node.Val, max);
+}
+```
+
+---
+
+### Q178. Binary Search on a Sorted Array
 
 **Problem:** Return the index of the target in a sorted array, or -1 if not found.
 
@@ -2589,7 +2818,7 @@ int BinarySearch(int[] arr, int target) {
 
 ---
 
-### Q165. Implement Bubble Sort
+### Q179. Implement Bubble Sort
 
 **Problem:** Sort an array using the bubble sort algorithm.
 
@@ -2605,7 +2834,7 @@ void BubbleSort(int[] arr) {
 
 ---
 
-### Q166. Implement Selection Sort
+### Q180. Implement Selection Sort
 
 **Problem:** Sort by finding the minimum each time and placing it at the front.
 
@@ -2622,7 +2851,7 @@ void SelectionSort(int[] arr) {
 
 ---
 
-### Q167. Implement Insertion Sort
+### Q181. Implement Insertion Sort
 
 **Problem:** Build the sorted list one element at a time by inserting into the correct position.
 
@@ -2638,557 +2867,72 @@ void InsertionSort(int[] arr) {
 
 ---
 
-### Q168. Find the Maximum Depth of a Binary Tree
+### Q182. Count Islands in a Grid (DFS)
 
-**Problem:** Return the number of nodes on the longest path from root to leaf.
+**Problem:** A grid of '1' (land) and '0' (water). Count the number of islands (connected land regions).
 
-**Example:** Tree of height 3 → `3`
-
-```csharp
-int MaxDepth(TreeNode? root) =>
-    root == null ? 0 : 1 + Math.Max(MaxDepth(root.Left), MaxDepth(root.Right));
-```
-
----
-
-### Q169. Check if a Binary Search Tree is Valid
-
-**Problem:** Return true if the tree satisfies the BST property (left < root < right at every node).
+**Example:** Grid with two separate land masses → `2`
 
 ```csharp
-bool IsValidBST(TreeNode? node, long min = long.MinValue, long max = long.MaxValue) {
-    if (node == null) return true;
-    if (node.Val <= min || node.Val >= max) return false;
-    return IsValidBST(node.Left, min, node.Val) && IsValidBST(node.Right, node.Val, max);
-}
-```
-
----
-
-### Q170. Flatten a Linked List (Convert to Array and Back)
-
-**Problem:** Convert linked list values to an array, and convert an array back to a linked list.
-
-```csharp
-// To array
-int[] ToArray(Node? head) {
-    var list = new List<int>();
-    while (head != null) { list.Add(head.Val); head = head.Next; }
-    return list.ToArray();
-}
-
-// From array
-Node? FromArray(int[] arr) {
-    if (arr.Length == 0) return null;
-    var head = new Node { Val = arr[0] };
-    var cur = head;
-    for (int i = 1; i < arr.Length; i++) { cur.Next = new Node { Val = arr[i] }; cur = cur.Next; }
-    return head;
-}
-```
-
----
-
-## SECTION 8: OOP & C# SPECIFIC (Q171–Q185)
-
----
-
-### Q171. Implement a Generic Swap Method
-
-**Problem:** Write a generic method that swaps two values of any type.
-
-```csharp
-void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
-
-// Usage
-int x = 5, y = 10;
-Swap(ref x, ref y); // x=10, y=5
-
-string s1 = "hello", s2 = "world";
-Swap(ref s1, ref s2);
-```
-
----
-
-### Q172. Implement the Singleton Pattern
-
-**Problem:** Ensure a class has only one instance throughout the application.
-
-```csharp
-public sealed class AppConfig {
-    private static AppConfig? _instance;
-    private static readonly object _lock = new();
-
-    private AppConfig() { }
-
-    public static AppConfig Instance {
-        get {
-            if (_instance == null)
-                lock (_lock) { _instance ??= new AppConfig(); }
-            return _instance;
-        }
+int CountIslands(char[,] grid) {
+    int rows = grid.GetLength(0), cols = grid.GetLength(1), count = 0;
+    void DFS(int r, int c) {
+        if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r, c] != '1') return;
+        grid[r, c] = '0';
+        DFS(r+1, c); DFS(r-1, c); DFS(r, c+1); DFS(r, c-1);
     }
-
-    public string ConnectionString { get; set; } = "";
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            if (grid[i, j] == '1') { DFS(i, j); count++; }
+    return count;
 }
 ```
 
 ---
 
-### Q173. Implement the Factory Pattern
+### Q183. Generate All Subsets of an Array
 
-**Problem:** Create objects without specifying the exact class to instantiate.
+**Problem:** Return all possible subsets (the power set) of an array.
 
-```csharp
-interface IShape { double Area(); }
-class Circle : IShape { double r; public Circle(double r) => this.r = r; public double Area() => Math.PI * r * r; }
-class Square : IShape { double s; public Square(double s) => this.s = s; public double Area() => s * s; }
-
-static IShape CreateShape(string type, double size) => type switch {
-    "circle" => new Circle(size),
-    "square" => new Square(size),
-    _ => throw new ArgumentException("Unknown shape")
-};
-```
-
----
-
-### Q174. Implement the Observer Pattern
-
-**Problem:** Allow multiple objects to subscribe to and receive notifications from a subject.
+**Example:** `[1,2,3]` → `[[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]`
 
 ```csharp
-interface IObserver { void Update(string message); }
-
-class EventPublisher {
-    private List<IObserver> _subscribers = new();
-    public void Subscribe(IObserver o) => _subscribers.Add(o);
-    public void Notify(string msg) => _subscribers.ForEach(o => o.Update(msg));
-}
-
-class Logger : IObserver {
-    public void Update(string message) => Console.WriteLine($"LOG: {message}");
-}
-```
-
----
-
-### Q175. Demonstrate Method Overloading
-
-**Problem:** Write a class with three `Add` methods — for int, double, and string concatenation.
-
-```csharp
-class Calculator {
-    public int Add(int a, int b) => a + b;
-    public double Add(double a, double b) => a + b;
-    public string Add(string a, string b) => a + b;
-}
-```
-
----
-
-### Q176. Demonstrate Method Overriding with Virtual and Override
-
-**Problem:** Show how a derived class can override a base class method.
-
-```csharp
-class Animal {
-    public virtual string Speak() => "...";
-}
-
-class Dog : Animal {
-    public override string Speak() => "Woof!";
-}
-
-class Cat : Animal {
-    public override string Speak() => "Meow!";
-}
-
-// Usage
-Animal a = new Dog();
-Console.WriteLine(a.Speak()); // "Woof!" — runtime polymorphism
-```
-
----
-
-### Q177. Implement an Interface with Multiple Classes
-
-**Problem:** Define an `IPayment` interface and implement it with two different classes.
-
-```csharp
-interface IPayment {
-    bool ProcessPayment(decimal amount);
-    string GetMethod();
-}
-
-class CreditCard : IPayment {
-    public bool ProcessPayment(decimal amount) { Console.WriteLine($"Credit: {amount}"); return true; }
-    public string GetMethod() => "Credit Card";
-}
-
-class PayPal : IPayment {
-    public bool ProcessPayment(decimal amount) { Console.WriteLine($"PayPal: {amount}"); return true; }
-    public string GetMethod() => "PayPal";
-}
-```
-
----
-
-### Q178. Demonstrate Abstract Class vs Interface
-
-**Problem:** Show when to use abstract class (shared state/behavior) vs interface (contract only).
-
-```csharp
-// Abstract class — has shared logic and state
-abstract class Vehicle {
-    public string Brand { get; set; } = "";
-    public abstract int GetSpeed(); // must override
-    public string Describe() => $"{Brand} goes {GetSpeed()} km/h"; // shared logic
-}
-
-// Interface — pure contract, no state
-interface IFuelable {
-    void Refuel(int liters);
-    int FuelLevel { get; }
-}
-
-class Car : Vehicle, IFuelable {
-    private int _fuel = 0;
-    public override int GetSpeed() => 120;
-    public void Refuel(int liters) => _fuel += liters;
-    public int FuelLevel => _fuel;
-}
-```
-
----
-
-### Q179. Write a Generic Stack Class
-
-**Problem:** Build a type-safe Stack from scratch using generics.
-
-```csharp
-class Stack<T> {
-    private List<T> _items = new();
-
-    public void Push(T item) => _items.Add(item);
-
-    public T Pop() {
-        if (_items.Count == 0) throw new InvalidOperationException("Stack is empty");
-        T item = _items[^1];
-        _items.RemoveAt(_items.Count - 1);
-        return item;
+List<List<int>> Subsets(int[] nums) {
+    var result = new List<List<int>> { new() };
+    foreach (int n in nums) {
+        var newSubsets = result.Select(s => new List<int>(s) { n }).ToList();
+        result.AddRange(newSubsets);
     }
-
-    public T Peek() => _items.Count == 0
-        ? throw new InvalidOperationException("Stack is empty")
-        : _items[^1];
-
-    public bool IsEmpty => _items.Count == 0;
-    public int Count => _items.Count;
-}
-```
-
----
-
-### Q180. Implement IComparable to Sort Custom Objects
-
-**Problem:** Allow a list of `Employee` objects to be sorted by salary using `List.Sort()`.
-
-```csharp
-class Employee : IComparable<Employee> {
-    public string Name { get; set; } = "";
-    public int Salary { get; set; }
-
-    public int CompareTo(Employee? other) => Salary.CompareTo(other?.Salary);
-}
-
-// Usage
-var employees = new List<Employee> {
-    new() { Name = "Alice", Salary = 80000 },
-    new() { Name = "Bob", Salary = 60000 }
-};
-employees.Sort(); // sorts by salary ascending
-```
-
----
-
-### Q181. Use Extension Methods to Add Functionality to String
-
-**Problem:** Add an `IsNullOrEmpty` and `ToTitleCase` extension method to `string`.
-
-```csharp
-static class StringExtensions {
-    public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
-
-    public static string ToTitleCase(this string s) =>
-        string.Join(" ", s.Split(' ')
-            .Select(w => w.Length > 0
-                ? char.ToUpper(w[0]) + w.Substring(1).ToLower()
-                : w));
-}
-
-// Usage
-"hello world".ToTitleCase(); // "Hello World"
-```
-
----
-
-### Q182. Demonstrate LINQ with a Custom Class
-
-**Problem:** Use LINQ to filter, sort, and project a list of `Product` objects.
-
-```csharp
-class Product { public string Name = ""; public decimal Price; public string Category = ""; }
-
-var products = new List<Product> {
-    new() { Name = "Laptop", Price = 999, Category = "Electronics" },
-    new() { Name = "Phone", Price = 499, Category = "Electronics" },
-    new() { Name = "Desk", Price = 299, Category = "Furniture" }
-};
-
-var result = products
-    .Where(p => p.Price > 300)
-    .OrderBy(p => p.Price)
-    .Select(p => new { p.Name, p.Price });
-```
-
----
-
-### Q183. Demonstrate `async/await` with Task
-
-**Problem:** Write an async method that simulates fetching data with a delay.
-
-```csharp
-async Task<string> FetchDataAsync(int id) {
-    await Task.Delay(1000); // simulate network call
-    return $"Data for id {id}";
-}
-
-async Task RunAsync() {
-    Console.WriteLine("Fetching...");
-    string data = await FetchDataAsync(42);
-    Console.WriteLine(data);
-}
-```
-
----
-
-### Q184. Write a Custom Exception Class
-
-**Problem:** Create a domain-specific exception with a custom message and error code.
-
-```csharp
-public class ValidationException : Exception {
-    public int ErrorCode { get; }
-
-    public ValidationException(string message, int errorCode)
-        : base(message) {
-        ErrorCode = errorCode;
-    }
-}
-
-// Usage
-throw new ValidationException("Email is required", 1001);
-
-try { /* ... */ }
-catch (ValidationException ex) {
-    Console.WriteLine($"[{ex.ErrorCode}] {ex.Message}");
-}
-```
-
----
-
-### Q185. Implement the Builder Pattern
-
-**Problem:** Build a complex `Request` object step by step using a fluent builder.
-
-```csharp
-class HttpRequest {
-    public string Url { get; set; } = "";
-    public string Method { get; set; } = "GET";
-    public Dictionary<string, string> Headers { get; set; } = new();
-    public string? Body { get; set; }
-}
-
-class HttpRequestBuilder {
-    private HttpRequest _req = new();
-
-    public HttpRequestBuilder WithUrl(string url) { _req.Url = url; return this; }
-    public HttpRequestBuilder WithMethod(string method) { _req.Method = method; return this; }
-    public HttpRequestBuilder WithHeader(string key, string val) { _req.Headers[key] = val; return this; }
-    public HttpRequestBuilder WithBody(string body) { _req.Body = body; return this; }
-    public HttpRequest Build() => _req;
-}
-
-// Usage
-var request = new HttpRequestBuilder()
-    .WithUrl("https://api.example.com/data")
-    .WithMethod("POST")
-    .WithHeader("Authorization", "Bearer token")
-    .WithBody("{\"key\":\"value\"}")
-    .Build();
-```
-
----
-
-## SECTION 9: MIXED SCENARIO QUESTIONS (Q186–Q200)
-
----
-
-### Q186. Validate a Password Strength
-
-**Problem:** A strong password must be 8+ characters, contain at least one uppercase, one lowercase, one digit, and one special character.
-
-**Example:** `"Pass@123"` → `true`, `"password"` → `false`
-
-```csharp
-bool IsStrongPassword(string p) =>
-    p.Length >= 8 &&
-    p.Any(char.IsUpper) &&
-    p.Any(char.IsLower) &&
-    p.Any(char.IsDigit) &&
-    p.Any(c => "!@#$%^&*".Contains(c));
-```
-
----
-
-### Q187. Find the Missing Letter in an Alphabetical Sequence
-
-**Problem:** A string contains all letters in order except one. Find the missing letter.
-
-**Example:** `"abcdefghijklmnopqrstuvwxyz".Remove(7, 1)` = `"abcdefghijklmnopqrstuvwxyz"` missing `'h'`
-
-```csharp
-char FindMissingLetter(string s) {
-    for (int i = 0; i < s.Length - 1; i++)
-        if (s[i + 1] - s[i] > 1) return (char)(s[i] + 1);
-    return '\0';
-}
-```
-
----
-
-### Q188. Group Words by Their Length
-
-**Problem:** Group a list of words into a dictionary where the key is the word length.
-
-**Example:** `["cat", "dog", "elephant", "ant"]` → `{3: [cat, dog, ant], 8: [elephant]}`
-
-```csharp
-Dictionary<int, List<string>> GroupByLength(string[] words) =>
-    words.GroupBy(w => w.Length)
-         .ToDictionary(g => g.Key, g => g.ToList());
-```
-
----
-
-### Q189. Flatten Nested Strings to a Flat List
-
-**Problem:** Given a `List<List<string>>`, flatten it into a single `List<string>`.
-
-**Example:** `[["a","b"],["c"],["d","e"]]` → `["a","b","c","d","e"]`
-
-```csharp
-List<string> Flatten(List<List<string>> nested) => nested.SelectMany(x => x).ToList();
-```
-
----
-
-### Q190. Find the Longest Chain of Characters
-
-**Problem:** Return the maximum number of times any single character appears consecutively anywhere in the string.
-
-**Example:** `"aabbbccddddee"` → `4` (dddd)
-
-```csharp
-int LongestChain(string s) {
-    int max = 1, cur = 1;
-    for (int i = 1; i < s.Length; i++) {
-        cur = s[i] == s[i - 1] ? cur + 1 : 1;
-        max = Math.Max(max, cur);
-    }
-    return max;
-}
-```
-
----
-
-### Q191. Parse a CSV Line into a List of Values
-
-**Problem:** Split a CSV-formatted string into its fields, handling quoted fields.
-
-**Example:** `"John,25,\"New York\",Engineer"` → `["John", "25", "New York", "Engineer"]`
-
-```csharp
-List<string> ParseCsvLine(string line) {
-    var result = new List<string>();
-    bool inQuotes = false;
-    var current = new StringBuilder();
-    foreach (char c in line) {
-        if (c == '"') { inQuotes = !inQuotes; continue; }
-        if (c == ',' && !inQuotes) { result.Add(current.ToString()); current.Clear(); continue; }
-        current.Append(c);
-    }
-    result.Add(current.ToString());
     return result;
 }
 ```
 
 ---
 
-### Q192. Calculate the Hamming Distance Between Two Strings
+### Q184. Decode a Run-Length Encoded String
 
-**Problem:** Count positions where the characters differ (same length strings).
+**Problem:** Expand a run-length encoded string back to its original form.
 
-**Example:** `"karolin"`, `"kathrin"` → `3`
-
-```csharp
-int HammingDistance(string a, string b) =>
-    a.Zip(b, (x, y) => x != y).Count(diff => diff);
-```
-
----
-
-### Q193. Find the First Repeated Word in a Sentence
-
-**Problem:** Return the first word that appears more than once.
-
-**Example:** `"the cat sat on the mat"` → `"the"`
+**Example:** `"a3b2c4"` → `"aaabbcccc"`
 
 ```csharp
-string FirstRepeatedWord(string s) {
-    var seen = new HashSet<string>();
-    foreach (var word in s.ToLower().Split(' '))
-        if (!seen.Add(word)) return word;
-    return "";
+string Decode(string s) {
+    var sb = new StringBuilder();
+    int i = 0;
+    while (i < s.Length) {
+        char c = s[i++];
+        var numStr = new StringBuilder();
+        while (i < s.Length && char.IsDigit(s[i])) numStr.Append(s[i++]);
+        int count = numStr.Length > 0 ? int.Parse(numStr.ToString()) : 1;
+        sb.Append(new string(c, count));
+    }
+    return sb.ToString();
 }
 ```
 
 ---
 
-### Q194. Rotate a Matrix 90 Degrees Clockwise
-
-**Problem:** Rotate an N×N matrix in-place by 90 degrees clockwise.
-
-**Example:** `[[1,2],[3,4]]` → `[[3,1],[4,2]]`
-
-```csharp
-void RotateMatrix(int[,] m) {
-    int n = m.GetLength(0);
-    // Transpose
-    for (int i = 0; i < n; i++)
-        for (int j = i + 1; j < n; j++)
-            (m[i, j], m[j, i]) = (m[j, i], m[i, j]);
-    // Reverse each row
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n / 2; j++)
-            (m[i, j], m[i, n - 1 - j]) = (m[i, n - 1 - j], m[i, j]);
-}
-```
-
----
-
-### Q195. Implement a Simple LRU Cache (Least Recently Used)
+### Q185. Implement a Simple LRU Cache (Least Recently Used)
 
 **Problem:** Design a cache with a fixed capacity. When full, evict the least recently used item.
 
@@ -3221,92 +2965,323 @@ class LRUCache {
 
 ---
 
-### Q196. Count Islands in a Grid (DFS)
+## SECTION 7: OOP & C# SPECIFIC (Q186–Q200)
 
-**Problem:** A grid of '1' (land) and '0' (water). Count the number of islands (connected land regions).
+---
 
-**Example:** Grid with two separate land masses → `2`
+### Q186. Implement a Generic Swap Method
+
+**Problem:** Write a generic method that swaps two values of any type.
 
 ```csharp
-int CountIslands(char[,] grid) {
-    int rows = grid.GetLength(0), cols = grid.GetLength(1), count = 0;
-    void DFS(int r, int c) {
-        if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r, c] != '1') return;
-        grid[r, c] = '0';
-        DFS(r+1, c); DFS(r-1, c); DFS(r, c+1); DFS(r, c-1);
+void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
+
+// Usage
+int x = 5, y = 10;
+Swap(ref x, ref y); // x=10, y=5
+
+string s1 = "hello", s2 = "world";
+Swap(ref s1, ref s2);
+```
+
+---
+
+### Q187. Implement the Singleton Pattern
+
+**Problem:** Ensure a class has only one instance throughout the application.
+
+```csharp
+public sealed class AppConfig {
+    private static AppConfig? _instance;
+    private static readonly object _lock = new();
+
+    private AppConfig() { }
+
+    public static AppConfig Instance {
+        get {
+            if (_instance == null)
+                lock (_lock) { _instance ??= new AppConfig(); }
+            return _instance;
+        }
     }
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            if (grid[i, j] == '1') { DFS(i, j); count++; }
-    return count;
+
+    public string ConnectionString { get; set; } = "";
 }
 ```
 
 ---
 
-### Q197. Check if a Sudoku Board is Valid
+### Q188. Implement the Factory Pattern
 
-**Problem:** Validate a 9×9 partially filled Sudoku board. Each row, column, and 3×3 box must contain digits 1-9 with no repeats.
+**Problem:** Create objects without specifying the exact class to instantiate.
 
 ```csharp
-bool IsValidSudoku(char[,] board) {
-    bool Check(IEnumerable<char> cells) {
-        var digits = cells.Where(c => c != '.').ToList();
-        return digits.Count == digits.Distinct().Count();
-    }
-    for (int i = 0; i < 9; i++) {
-        if (!Check(Enumerable.Range(0, 9).Select(j => board[i, j]))) return false;
-        if (!Check(Enumerable.Range(0, 9).Select(j => board[j, i]))) return false;
-    }
-    for (int br = 0; br < 3; br++)
-        for (int bc = 0; bc < 3; bc++)
-            if (!Check(from r in Enumerable.Range(br*3, 3)
-                       from c in Enumerable.Range(bc*3, 3)
-                       select board[r, c])) return false;
-    return true;
+interface IShape { double Area(); }
+class Circle : IShape { double r; public Circle(double r) => this.r = r; public double Area() => Math.PI * r * r; }
+class Square : IShape { double s; public Square(double s) => this.s = s; public double Area() => s * s; }
+
+static IShape CreateShape(string type, double size) => type switch {
+    "circle" => new Circle(size),
+    "square" => new Square(size),
+    _ => throw new ArgumentException("Unknown shape")
+};
+```
+
+---
+
+### Q189. Implement the Observer Pattern
+
+**Problem:** Allow multiple objects to subscribe to and receive notifications from a subject.
+
+```csharp
+interface IObserver { void Update(string message); }
+
+class EventPublisher {
+    private List<IObserver> _subscribers = new();
+    public void Subscribe(IObserver o) => _subscribers.Add(o);
+    public void Notify(string msg) => _subscribers.ForEach(o => o.Update(msg));
+}
+
+class Logger : IObserver {
+    public void Update(string message) => Console.WriteLine($"LOG: {message}");
 }
 ```
 
 ---
 
-### Q198. Generate All Subsets of an Array
+### Q190. Demonstrate Method Overloading
 
-**Problem:** Return all possible subsets (the power set) of an array.
-
-**Example:** `[1,2,3]` → `[[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]`
+**Problem:** Write a class with three `Add` methods — for int, double, and string concatenation.
 
 ```csharp
-List<List<int>> Subsets(int[] nums) {
-    var result = new List<List<int>> { new() };
-    foreach (int n in nums) {
-        var newSubsets = result.Select(s => new List<int>(s) { n }).ToList();
-        result.AddRange(newSubsets);
-    }
-    return result;
+class Calculator {
+    public int Add(int a, int b) => a + b;
+    public double Add(double a, double b) => a + b;
+    public string Add(string a, string b) => a + b;
 }
 ```
 
 ---
 
-### Q199. Decode a Run-Length Encoded String
+### Q191. Demonstrate Method Overriding with Virtual and Override
 
-**Problem:** Expand a run-length encoded string back to its original form.
-
-**Example:** `"a3b2c4"` → `"aaabbcccc"`
+**Problem:** Show how a derived class can override a base class method.
 
 ```csharp
-string Decode(string s) {
-    var sb = new StringBuilder();
-    int i = 0;
-    while (i < s.Length) {
-        char c = s[i++];
-        var numStr = new StringBuilder();
-        while (i < s.Length && char.IsDigit(s[i])) numStr.Append(s[i++]);
-        int count = numStr.Length > 0 ? int.Parse(numStr.ToString()) : 1;
-        sb.Append(new string(c, count));
-    }
-    return sb.ToString();
+class Animal {
+    public virtual string Speak() => "...";
 }
+
+class Dog : Animal {
+    public override string Speak() => "Woof!";
+}
+
+class Cat : Animal {
+    public override string Speak() => "Meow!";
+}
+
+// Usage
+Animal a = new Dog();
+Console.WriteLine(a.Speak()); // "Woof!" — runtime polymorphism
+```
+
+---
+
+### Q192. Implement an Interface with Multiple Classes
+
+**Problem:** Define an `IPayment` interface and implement it with two different classes.
+
+```csharp
+interface IPayment {
+    bool ProcessPayment(decimal amount);
+    string GetMethod();
+}
+
+class CreditCard : IPayment {
+    public bool ProcessPayment(decimal amount) { Console.WriteLine($"Credit: {amount}"); return true; }
+    public string GetMethod() => "Credit Card";
+}
+
+class PayPal : IPayment {
+    public bool ProcessPayment(decimal amount) { Console.WriteLine($"PayPal: {amount}"); return true; }
+    public string GetMethod() => "PayPal";
+}
+```
+
+---
+
+### Q193. Demonstrate Abstract Class vs Interface
+
+**Problem:** Show when to use abstract class (shared state/behavior) vs interface (contract only).
+
+```csharp
+// Abstract class — has shared logic and state
+abstract class Vehicle {
+    public string Brand { get; set; } = "";
+    public abstract int GetSpeed(); // must override
+    public string Describe() => $"{Brand} goes {GetSpeed()} km/h"; // shared logic
+}
+
+// Interface — pure contract, no state
+interface IFuelable {
+    void Refuel(int liters);
+    int FuelLevel { get; }
+}
+
+class Car : Vehicle, IFuelable {
+    private int _fuel = 0;
+    public override int GetSpeed() => 120;
+    public void Refuel(int liters) => _fuel += liters;
+    public int FuelLevel => _fuel;
+}
+```
+
+---
+
+### Q194. Write a Generic Stack Class
+
+**Problem:** Build a type-safe Stack from scratch using generics.
+
+```csharp
+class Stack<T> {
+    private List<T> _items = new();
+
+    public void Push(T item) => _items.Add(item);
+
+    public T Pop() {
+        if (_items.Count == 0) throw new InvalidOperationException("Stack is empty");
+        T item = _items[^1];
+        _items.RemoveAt(_items.Count - 1);
+        return item;
+    }
+
+    public T Peek() => _items.Count == 0
+        ? throw new InvalidOperationException("Stack is empty")
+        : _items[^1];
+
+    public bool IsEmpty => _items.Count == 0;
+    public int Count => _items.Count;
+}
+```
+
+---
+
+### Q195. Implement IComparable to Sort Custom Objects
+
+**Problem:** Allow a list of `Employee` objects to be sorted by salary using `List.Sort()`.
+
+```csharp
+class Employee : IComparable<Employee> {
+    public string Name { get; set; } = "";
+    public int Salary { get; set; }
+
+    public int CompareTo(Employee? other) => Salary.CompareTo(other?.Salary);
+}
+
+// Usage
+var employees = new List<Employee> {
+    new() { Name = "Alice", Salary = 80000 },
+    new() { Name = "Bob", Salary = 60000 }
+};
+employees.Sort(); // sorts by salary ascending
+```
+
+---
+
+### Q196. Use Extension Methods to Add Functionality to String
+
+**Problem:** Add an `IsNullOrEmpty` and `ToTitleCase` extension method to `string`.
+
+```csharp
+static class StringExtensions {
+    public static bool IsNullOrEmpty(this string? s) => string.IsNullOrEmpty(s);
+
+    public static string ToTitleCase(this string s) =>
+        string.Join(" ", s.Split(' ')
+            .Select(w => w.Length > 0
+                ? char.ToUpper(w[0]) + w.Substring(1).ToLower()
+                : w));
+}
+
+// Usage
+"hello world".ToTitleCase(); // "Hello World"
+```
+
+---
+
+### Q197. Demonstrate `async/await` with Task
+
+**Problem:** Write an async method that simulates fetching data with a delay.
+
+```csharp
+async Task<string> FetchDataAsync(int id) {
+    await Task.Delay(1000); // simulate network call
+    return $"Data for id {id}";
+}
+
+async Task RunAsync() {
+    Console.WriteLine("Fetching...");
+    string data = await FetchDataAsync(42);
+    Console.WriteLine(data);
+}
+```
+
+---
+
+### Q198. Write a Custom Exception Class
+
+**Problem:** Create a domain-specific exception with a custom message and error code.
+
+```csharp
+public class ValidationException : Exception {
+    public int ErrorCode { get; }
+
+    public ValidationException(string message, int errorCode)
+        : base(message) {
+        ErrorCode = errorCode;
+    }
+}
+
+// Usage
+throw new ValidationException("Email is required", 1001);
+
+try { /* ... */ }
+catch (ValidationException ex) {
+    Console.WriteLine($"[{ex.ErrorCode}] {ex.Message}");
+}
+```
+
+---
+
+### Q199. Implement the Builder Pattern
+
+**Problem:** Build a complex `Request` object step by step using a fluent builder.
+
+```csharp
+class HttpRequest {
+    public string Url { get; set; } = "";
+    public string Method { get; set; } = "GET";
+    public Dictionary<string, string> Headers { get; set; } = new();
+    public string? Body { get; set; }
+}
+
+class HttpRequestBuilder {
+    private HttpRequest _req = new();
+
+    public HttpRequestBuilder WithUrl(string url) { _req.Url = url; return this; }
+    public HttpRequestBuilder WithMethod(string method) { _req.Method = method; return this; }
+    public HttpRequestBuilder WithHeader(string key, string val) { _req.Headers[key] = val; return this; }
+    public HttpRequestBuilder WithBody(string body) { _req.Body = body; return this; }
+    public HttpRequest Build() => _req;
+}
+
+// Usage
+var request = new HttpRequestBuilder()
+    .WithUrl("https://api.example.com/data")
+    .WithMethod("POST")
+    .WithHeader("Authorization", "Bearer token")
+    .WithBody("{\"key\":\"value\"}")
+    .Build();
 ```
 
 ---
