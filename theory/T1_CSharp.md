@@ -24,13 +24,23 @@ C# Code → [C# Compiler] → IL (.dll/.exe) → [JIT at runtime] → Native Mac
 
 ---
 
-**Q3. What are the types of JIT compilation?**
+**Q3. How does Garbage Collector work in C#?**
 
-| Type | Description |
-|------|-------------|
-| **Normal JIT** | Compiles methods on first call, caches result |
-| **Econo JIT** | Compiles method, discards after use (low memory) |
-| **Pre-JIT (NGEN/AOT)** | Compiles entire assembly before execution (faster startup) |
+- Uses **.NET CLR GC** — automatic, generational
+- **3 Generations:**
+  - **Gen 0** → new objects, collected most often
+  - **Gen 1** → short-lived survivors
+  - **Gen 2** → long-lived objects, collected rarely
+- **LOH (Large Object Heap)** → objects > 85KB, collected with Gen 2
+- Internally runs **Mark → Compact → Update references**
+- GC handles **managed memory only** — use `IDisposable` + `using` for unmanaged resources
+
+```csharp
+using (var conn = new SqlConnection(connStr))
+{
+    // auto-disposed at end of block
+}
+```
 
 ---
 
@@ -695,14 +705,23 @@ A delegate is a **type-safe function pointer** — it holds a reference to a met
 - **Multicast:** Points to multiple methods (using `+=`).
 
 ```csharp
+// 1. DECLARE — define the signature blueprint
 delegate void Notify(string msg);
-
-void Email(string msg) => Console.WriteLine($"Email: {msg}");
-void SMS(string msg) => Console.WriteLine($"SMS: {msg}");
-
-Notify n = Email;   // singlecast
-n += SMS;           // multicast
-n("Alert!");        // calls both
+ 
+// 2. METHODS — must match delegate signature
+static void Email(string msg) => Console.WriteLine($"Email: {msg}");
+static void SMS(string msg)   => Console.WriteLine($"SMS: {msg}");
+ 
+// 3. INITIALIZE — assign a method
+Notify n = Email;
+ 
+// 4. CHAIN — add more methods
+n += SMS;
+ 
+// 5. CALL — fires all methods in order
+n("Alert!");
+// Email: Alert!
+// SMS: Alert!
 ```
 
 ---
@@ -763,14 +782,79 @@ for (int i = 0; i < 3; i++) {
 }
 actions.ForEach(a => a()); // 0, 1, 2 ✅
 ```
+---
+
+ **Q45. Lambda Expression vs Anonymous Method**
+
+| | Anonymous Method | Lambda Expression |
+|---|---|---|
+| Syntax | Verbose (`delegate`) | Concise (`=>`) |
+| Introduced | C# 2.0 | C# 3.0 |
+| Expression body | ❌ | ✅ |
+
+```csharp
+// Anonymous Method
+Func<int, int> square = delegate(int x) { return x * x; };
+
+// Lambda — same thing, shorter
+Func<int, int> square = x => x * x; // ✅ cleaner
+
+// Real world — filtering orders
+var big = orders.Where(delegate(Order o) { return o.Amount > 1000; }); // ❌ verbose
+var big = orders.Where(o => o.Amount > 1000);                          // ✅ lambda
+```
+
+**Rule:** Always prefer lambda — same thing, cleaner syntax. Anonymous methods are rarely used today.
 
 ---
+
+**Q46. Expression-Bodied Member**
+
+> Replace `{ return ... }` with `=>` for single-line members
+
+```csharp
+// ❌ Verbose
+public string GetName() { return "Alice"; }
+public int    Age      { get { return 25; } }
+
+// ✅ Expression-bodied
+public string GetName() => "Alice";
+public int    Age       => 25;
+
+// Works on methods, properties, constructors
+public string FullName => $"{First} {Last}";
+public void   Print()  => Console.WriteLine(Name);
+```
+
+> **Rule:** Single line that returns something → use `=>`
+
+---
+
+**Q47. What is Tuple Unpacking**
+
+> Destructure a tuple into individual named variables in one line
+
+```csharp
+// Return multiple values from a method
+(string Name, int Age) GetUser() => ("Alice", 25);
+
+// Unpack — instead of .Item1, .Item2
+var (name, age) = GetUser();
+Console.WriteLine(name); // Alice
+Console.WriteLine(age);  // 25
+
+// Real world — swap two variables
+int a = 1, b = 2;
+(a, b) = (b, a); // ✅ no temp variable needed
+```
+
+> **Rule:** Method returns multiple values → return tuple → unpack with `var (x, y) =`
 
 ## 🔷 Section 5: Exception Handling
 
 ---
 
-**Q45. `throw` vs `throw ex` in exception handling?**
+**Q48. `throw` vs `throw ex` in exception handling?**
 
 - `throw` re-throws with the **original stack trace** (correct).
 - `throw ex` re-throws but **resets the stack trace** (loses origin info).
@@ -786,7 +870,7 @@ catch (Exception ex) {
 
 ---
 
-**Q46. What is the order of catch blocks?**
+**Q49. What is the order of catch blocks?**
 
 Most specific exceptions first, most general last. `Exception` must be last.
 
@@ -800,7 +884,7 @@ finally { /* always runs */ }
 
 ---
 
-**Q47. `finally` vs `Finalize` vs `Dispose`?**
+**Q50. `finally` vs `Finalize` vs `Dispose`?**
 
 | | `finally` | `Finalize` | `Dispose` |
 |--|--|--|--|
@@ -824,7 +908,7 @@ using (var r = new Resource()) { } // Dispose called automatically
 
 ---
 
-**Q48. How to ensure unmanaged resources don't leak?**
+**Q51. How to ensure unmanaged resources don't leak?**
 
 Implement `IDisposable` and use the dispose pattern. Use `using` statement to auto-call `Dispose`.
 
@@ -855,29 +939,42 @@ using var fw = new FileWrapper("data.txt"); // auto-disposed
 
 ---
 
-**Q49. What are generics? What are constraints?**
+**Q52. What are generics? What are constraints?**
 
 Generics let you write type-safe code that works with any type, avoiding boxing and casting.
 
 ```csharp
-// Generic method
-T Max<T>(T a, T b) where T : IComparable<T> => a.CompareTo(b) > 0 ? a : b;
+// 1. INTERFACE — generic contract
+public interface IRepository<T>
+{
+    T GetById(int id);
+    void Add(T entity);
+    void Delete(T entity);
+}
 
-Max(3, 5);       // int
-Max("a", "b");   // string
+// 2. IMPLEMENTATION — one class for any entity
+public class Repository<T> : IRepository<T> where T : class
+{
+    private readonly DbContext _db;
 
-// Constraints
-void Print<T>(T item) where T : class, new() { }
-// where T : struct       — value type only
-// where T : class        — reference type only
-// where T : new()        — has parameterless constructor
-// where T : SomeClass    — must inherit SomeClass
-// where T : ISomeInterface — must implement interface
+    public T GetById(int id) => _db.Set<T>().Find(id);
+    public void Add(T entity)    => _db.Set<T>().Add(entity);
+    public void Delete(T entity) => _db.Set<T>().Remove(entity);
+}
+
+// 3. USAGE — same repo, any entity
+var userRepo    = new Repository<User>();
+var productRepo = new Repository<Product>();
+
+userRepo.GetById(1);
+productRepo.GetById(5);
 ```
+
+> **Benefit:** One repository class, works for **any entity** — no duplicate code per table.
 
 ---
 
-**Q50. Generic collections vs non-generic collections?**
+**Q53. Generic collections vs non-generic collections?**
 
 | Generic | Non-Generic | Difference |
 |--|--|--|
@@ -890,20 +987,42 @@ Always prefer generic collections.
 
 ---
 
-**Q51. `IEnumerable` vs `ICollection` vs `IList` vs `IQueryable`?**
+**Q54. `IEnumerable` vs `IReadOnlyCollection` vs `IReadOnlyList` vs `ICollection` vs `IList` vs `IQueryable`?**
 
-| Interface | Can enumerate | Count | Add/Remove | Index | Query on DB |
-|--|--|--|--|--|--|
-| `IEnumerable<T>` | ✅ | ❌ | ❌ | ❌ | ❌ |
-| `ICollection<T>` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `IList<T>` | ✅ | ✅ | ✅ | ✅ | ❌ |
-| `IQueryable<T>` | ✅ | ✅ | ❌ | ❌ | ✅ |
-
-`IQueryable` translates queries to SQL. `IEnumerable` evaluates in-memory.
+> Each interface below **adds more capability** than the previous one
+ 
+| Interface | Count | Add/Remove | Index | Read Only | DB Query | Use When |
+|---|---|---|---|---|---|---|
+| `IEnumerable<T>`        | ❌ | ❌ | ❌ | ✅ | ❌ | Just loop / read-only |
+| `IReadOnlyCollection<T>`| ✅ | ❌ | ❌ | ✅ | ❌ | Count, no modify |
+| `IReadOnlyList<T>`      | ✅ | ❌ | ✅ | ✅ | ❌ | Count + index, no modify |
+| `ICollection<T>`        | ✅ | ✅ | ❌ | ❌ | ❌ | Count + add/remove |
+| `IList<T>`              | ✅ | ✅ | ✅ | ❌ | ❌ | Full control + index |
+| `IQueryable<T>`         | ✅ | ❌ | ❌ | ✅ | ✅ | Filter on DB before loading |
+ 
+```csharp
+// All are interfaces — assign List<T> to them, never new() directly
+var list = new List<User> { new User { Name = "Alice" }, new User { Name = "Bob" } };
+ 
+IEnumerable<User>         e  = list; // just loop
+IReadOnlyCollection<User> rc = list; // count, no modify
+IReadOnlyList<User>       rl = list; // count + index, no modify
+ICollection<User>         c  = list; // count + add/remove
+IList<User>               l  = list; // full control
+ 
+c.Add(new User());   // ✅
+rc.Add(new User());  // ❌ compile error — read only
+ 
+// IQueryable — only from DB context, not from List
+IQueryable<User> q = db.Users;
+q.Where(u => u.Age > 18); // SELECT * WHERE Age > 18 ✅
+```
+ 
+ **Rule:** All are just references to a `List<T>` — the interface controls **what the caller is allowed to do** with it.
 
 ---
 
-**Q52. `IEnumerable<T>` vs `IEnumerator<T>`?**
+**Q55. `IEnumerable<T>` vs `IEnumerator<T>`?**
 
 - `IEnumerable<T>` — a collection that *can be iterated* (has `GetEnumerator()`).
 - `IEnumerator<T>` — the *iterator itself* (has `Current`, `MoveNext()`, `Reset()`).
@@ -919,18 +1038,43 @@ while (e.MoveNext()) Console.WriteLine(e.Current);
 
 ---
 
-**Q53. `List<T>` vs `LinkedList<T>` vs `Array`?**
+**Q56. `Array` vs `ArrayList` vs `List<T>` vs `LinkedList<T>`**
 
-| | Array | List<T> | LinkedList<T> |
-|--|--|--|--|
-| Size | Fixed | Dynamic | Dynamic |
-| Access by index | O(1) | O(1) | O(n) |
-| Insert/Delete (middle) | O(n) | O(n) | O(1) |
-| Memory | Compact | Compact | Node overhead |
+| | Array | ArrayList | List\<T\> | LinkedList\<T\> |
+|---|---|---|---|---|
+| Generic | ✅ | ❌ | ✅ | ✅ |
+| Type Safe | ✅ | ❌ (boxing) | ✅ | ✅ |
+| Size | Fixed | Dynamic | Dynamic | Dynamic |
+| Index Access | O(1) | O(1) | O(1) | O(n) |
+| Insert/Delete (middle) | O(n) | O(n) | O(n) | O(1) |
+| Use When | Size known | Legacy only | General purpose | Frequent insert/delete |
+ 
+```csharp
+// Array — fixed size
+int[] arr = new int[3] { 1, 2, 3 };
+var x = arr[0]; // O(1) ✅
+ 
+// ArrayList — non-generic, needs casting (avoid in modern code)
+ArrayList al = new ArrayList();
+al.Add(1);
+al.Add("oops"); // ❌ no type safety — mixes int and string
+int n = (int)al[0]; // needs cast, boxing overhead
+ 
+// List<T> — generic, type-safe, dynamic (prefer this always)
+var list = new List<int> { 1, 2, 3 };
+list.Add(4);       // ✅
+list.Insert(1, 9); // O(n) — shifts elements
+ 
+// LinkedList — fast insert/delete in middle
+var linked = new LinkedList<int>(new[] { 1, 2, 3 });
+linked.AddAfter(linked.First, 9); // O(1) ✅ no shifting
+```
+ 
+**Rule:** `ArrayList` → legacy, avoid. `List<T>` → always prefer. `LinkedList<T>` → only when frequent middle inserts/deletes.
 
 ---
 
-**Q54. `HashSet<T>` vs `List<T>` and `Dictionary<K,V>` vs `Hashtable`?**
+**Q57. `HashSet<T>` vs `List<T>` and `Dictionary<K,V>` vs `Hashtable`?**
 
 - `HashSet<T>` — no duplicates, O(1) lookup.
 - `List<T>` — allows duplicates, O(n) lookup.
@@ -947,7 +1091,7 @@ dict["age"]; // 25 — O(1)
 
 ---
 
-**Q55. What are concurrent collections in C#?**
+**Q58. What are concurrent collections in C#?**
 
 Thread-safe collections in `System.Collections.Concurrent`:
 
@@ -966,7 +1110,7 @@ dict.AddOrUpdate("count", 1, (key, old) => old + 1);
 
 ---
 
-**Q56. Shallow copy vs deep copy?**
+**Q59. Shallow copy vs deep copy?**
 
 - **Shallow copy:** Copies the object but reference members still point to the same objects.
 - **Deep copy:** Copies everything, including referenced objects.
@@ -987,7 +1131,7 @@ Person c = new Person { Name = a.Name, Address = new Address { City = a.Address.
 
 ---
 
-**Q57. What is LINQ? What is deferred vs immediate execution?**
+**Q60. What is LINQ? What is deferred vs immediate execution?**
 
 LINQ (Language Integrated Query) lets you query collections using SQL-like syntax.
 
@@ -1010,7 +1154,7 @@ var result = nums.Where(x => x > 2).ToList(); // runs immediately
 
 ---
 
-**Q58. Types of LINQ operators?**
+**Q61. Types of LINQ operators?**
 
 | Category | Examples |
 |--|--|
@@ -1026,7 +1170,7 @@ var result = nums.Where(x => x > 2).ToList(); // runs immediately
 
 ---
 
-**Q59. `FirstOrDefault` vs `SingleOrDefault`?**
+**Q62. `FirstOrDefault` vs `SingleOrDefault`?**
 
 - `FirstOrDefault` — returns the **first** match or null. OK with multiple matches.
 - `SingleOrDefault` — returns the match, but **throws** if more than one match.
@@ -1041,7 +1185,7 @@ list.SingleOrDefault(x => x == 3);  // 3 — exactly one match ✅
 
 ---
 
-**Q60. `IEnumerable<T>` vs `IQueryable<T>` in LINQ?**
+**Q63. `IEnumerable<T>` vs `IQueryable<T>` in LINQ?**
 
 - `IEnumerable<T>` — in-memory, all data loaded then filtered.
 - `IQueryable<T>` — translates `Where`/`Select` to SQL via expression trees, filters at DB.
@@ -1059,8 +1203,35 @@ var result = query.ToList();
 Always use `IQueryable` for database queries to avoid loading unnecessary data.
 
 ---
+ **Q64. `Select` vs `SelectMany` in LINQ**
+ 
+ `Select` = transform. `SelectMany` = flatten nested collections into one.
+ 
+```csharp
+var orders = new List<Order> {
+    new Order { Id = 1, Items = new List<string> { "Laptop", "Mouse" } },
+    new Order { Id = 2, Items = new List<string> { "Phone",  "Case"  } }
+};
+ 
+// Select — one result per order
+orders.Select(o => o.Id);
+// [ 1, 2 ]
+ 
+// SelectMany — all items across all orders, flat
+orders.SelectMany(o => o.Items);
+// [ "Laptop", "Mouse", "Phone", "Case" ] ✅
+ 
+// Real world — unique items sold
+orders.SelectMany(o => o.Items).Distinct();
+// [ "Laptop", "Mouse", "Phone", "Case" ]
+```
+ 
+> **Rule:** List inside a list → use `SelectMany` to flatten.
 
-**Q61. How to do pagination with LINQ?**
+
+---
+
+**Q65. How to do pagination with LINQ?**
 
 ```csharp
 int page = 2, pageSize = 10;
@@ -1074,7 +1245,7 @@ var pagedResults = db.Products
 
 ---
 
-**Q62. A LINQ query is slow. How to troubleshoot?**
+**Q66. A LINQ query is slow. How to troubleshoot?**
 
 - Check if it's `IEnumerable` loading all data (switch to `IQueryable`).
 - Look for N+1 query — use `.Include()` for EF Core.
@@ -1096,7 +1267,7 @@ var result = db.Orders.Include(o => o.User).ToList();
 
 ---
 
-**Q63. Synchronous vs Asynchronous programming?**
+**Q67. Synchronous vs Asynchronous programming?**
 
 - **Sync:** Waits for each operation before moving on. Blocks the thread.
 - **Async:** Starts an operation, **does other work** while waiting, resumes when done.
@@ -1111,7 +1282,7 @@ string content = await File.ReadAllTextAsync("big.txt");
 
 ---
 
-**Q64. What are `async` and `await`? How do they work under the hood?**
+**Q68. What are `async` and `await`? How do they work under the hood?**
 
 `async` marks a method as asynchronous. `await` suspends execution until the awaited task completes — **without blocking the thread**.
 
@@ -1132,7 +1303,7 @@ public async Task<string> FetchDataAsync() {
 
 ---
 
-**Q65. `async void` vs `async Task`? When to use each?**
+**Q69. `async void` vs `async Task`? When to use each?**
 
 | | `async Task` | `async void` |
 |--|--|--|
@@ -1153,7 +1324,7 @@ button.Click += async (s, e) => { await LoadDataAsync(); };
 
 ---
 
-**Q66. What is the difference between `Task`, `Task<T>`, and `ValueTask<T>`?**
+**Q70. What is the difference between `Task`, `Task<T>`, and `ValueTask<T>`?**
 
 | | `Task` | `Task<T>` | `ValueTask<T>` |
 |--|--|--|--|
@@ -1171,7 +1342,7 @@ async ValueTask<int> CachedCountAsync() {
 
 ---
 
-**Q67. `Task.Run`, `Task.Delay`, and `Thread.Sleep` — when to use each?**
+**Q71. `Task.Run`, `Task.Delay`, and `Thread.Sleep` — when to use each?**
 
 | | `Task.Run` | `Task.Delay` | `Thread.Sleep` |
 |--|--|--|--|
@@ -1190,7 +1361,7 @@ Thread.Sleep(1000); // ❌ avoid in async code
 
 ---
 
-**Q68. Difference between `Task`, `Thread`, and `Process`?**
+**Q72. Difference between `Task`, `Thread`, and `Process`?**
 
 | | Thread | Task | Process |
 |--|--|--|--|
@@ -1211,7 +1382,7 @@ Process.Start("notepad.exe");
 
 ---
 
-**Q69. `Task.WhenAll` vs `Task.WhenAny`?**
+**Q73. `Task.WhenAll` vs `Task.WhenAny`?**
 
 - `WhenAll` — waits for **all** tasks to complete.
 - `WhenAny` — waits until **any one** completes.
@@ -1231,24 +1402,38 @@ if (done == timeout) throw new TimeoutException();
 
 ---
 
-**Q70. `Task.FromResult`, `Task.FromException`, `Task.FromCanceled`?**
+**Q74. `Task.FromResult`, `Task.FromException`, `Task.FromCanceled`?**
 
-Create already-completed tasks without async overhead.
+
+ Create **already-completed tasks** — no async work, no thread used.
 
 ```csharp
-// Cached value — no async needed
-Task<int> GetCount() => Task.FromResult(42);
+Task<int> GetCount() => Task.FromResult(42);                              // ✅ value ready
+Task Fail()          => Task.FromException(new InvalidOperationException()); // ❌ error ready
+Task Cancel(CancellationToken ct) => Task.FromCanceled(ct);               // 🚫 cancelled
+```
 
-// Already failed
-Task Fail() => Task.FromException(new InvalidOperationException("Oops"));
+Interface forces `Task` return but answer is already in memory:
 
-// Already canceled
-Task Cancel(CancellationToken ct) => Task.FromCanceled(ct);
+```csharp
+public interface ICache { Task<int> GetCount(); }
+
+// DB — real async
+public class DbCache : ICache
+{
+    public async Task<int> GetCount() => await _db.Items.CountAsync();
+}
+
+// Memory — no async needed
+public class MemoryCache : ICache
+{
+    public Task<int> GetCount() => Task.FromResult(42); // ✅ skip async overhead
+}
 ```
 
 ---
 
-**Q71. Can you use `await` in `catch` or `finally` blocks?**
+**Q75. Can you use `await` in `catch` or `finally` blocks?**
 
 Yes, since C# 6.
 
@@ -1266,7 +1451,7 @@ finally {
 
 ---
 
-**Q72. What is `Thread.Sleep()` vs `Thread.Join()`?**
+**Q76. What is `Thread.Sleep()` vs `Thread.Join()`?**
 
 - `Thread.Sleep(ms)` — pauses the **current** thread for ms milliseconds.
 - `Thread.Join()` — makes the **calling thread wait** until another thread finishes.
@@ -1279,29 +1464,36 @@ t.Join(); // main thread waits here until t finishes
 
 ---
 
-**Q73. Race condition vs Deadlock?**
+**Q77. Race condition vs Deadlock?**
 
-- **Race condition:** Two threads access shared data simultaneously — result depends on timing.
-- **Deadlock:** Two threads each wait for a lock the other holds — both stuck forever.
-
+**Race Condition** : Two threads modify shared data simultaneously → wrong result
+ 
 ```csharp
-// Race condition — unsynchronized counter
-int count = 0;
-Parallel.For(0, 1000, _ => count++); // wrong result!
-
-// Fixed with Interlocked
-Parallel.For(0, 1000, _ => Interlocked.Increment(ref count));
-
-// Deadlock scenario
-lock(A) { lock(B) {} }  // Thread 1
-lock(B) { lock(A) {} }  // Thread 2 — deadlock!
+// ❌ Two people withdraw from same account at once — balance goes negative
+Parallel.Invoke(() => balance -= 80, () => balance -= 80);
+ 
+// ✅ Fix
+Parallel.Invoke(() => Interlocked.Add(ref balance, -80), () => Interlocked.Add(ref balance, -80));
 ```
-
-**Avoid with:** consistent lock ordering, `SemaphoreSlim`, `Monitor.TryEnter` with timeout.
+ 
+**Deadlock** : Two threads wait for each other's lock → both stuck forever
+ 
+```csharp
+lock(Pen) { lock(Paper) { } }  // Thread 1 — holds Pen, waits for Paper
+lock(Paper) { lock(Pen) { } }  // Thread 2 — holds Paper, waits for Pen ❌
+ 
+// ✅ Fix — always lock in same order
+lock(Pen) { lock(Paper) { } }  // Both threads
+```
+ 
+| | Race Condition | Deadlock |
+|---|---|---|
+| Problem | Threads overlap | Threads wait for each other |
+| Fix | `Interlocked` / `lock` | Consistent lock order |
 
 ---
 
-**Q74. What is the Producer-Consumer problem?**
+**Q78. What is the Producer-Consumer problem?**
 
 One or more producers add items, one or more consumers remove items from a shared buffer. The challenge: don't consume empty buffer, don't overflow full buffer.
 
@@ -1323,7 +1515,7 @@ Task.Run(() => {
 
 ---
 
-**Q75. What is a Semaphore in C#?**
+**Q79. What is a Semaphore in C#?**
 
 A semaphore controls access to a resource by allowing only N threads at a time (like a bouncer with N slots).
 
@@ -1342,7 +1534,7 @@ await Task.WhenAll(Enumerable.Range(1, 10).Select(ProcessAsync));
 
 ---
 
-**Q76. What is a CancellationToken?**
+**Q80. What is a CancellationToken?**
 
 Used to cooperatively cancel long-running or async operations.
 
@@ -1362,7 +1554,7 @@ catch (OperationCanceledException) { Console.WriteLine("Cancelled!"); }
 
 ---
 
-**Q77. What is `Parallel.ForEach` vs PLINQ vs `Parallel.For`?**
+**Q81. What is `Parallel.ForEach` vs PLINQ vs `Parallel.For`?**
 
 | | Use For |
 |--|--|
@@ -1385,7 +1577,7 @@ Use when work is **CPU-bound and independent**. Not for I/O.
 
 ---
 
-**Q78. Fire-and-forget tasks failing silently. How to fix?**
+**Q82. Fire-and-forget tasks failing silently. How to fix?**
 
 Unobserved exceptions in fire-and-forget tasks swallow silently. Fix:
 
@@ -1412,7 +1604,7 @@ public static async void FireAndForget(this Task task, Action<Exception> onError
 
 ---
 
-**Q79. SOLID Principles?**
+**Q83. Explain SOLID Principles?**
 
 | Letter | Principle | Meaning |
 |--|--|--|
@@ -1422,81 +1614,68 @@ public static async void FireAndForget(this Task task, Action<Exception> onError
 | I | Interface Segregation | Don't force clients to depend on methods they don't use |
 | D | Dependency Inversion | Depend on abstractions, not concretions |
 
+**S — Single Responsibility** : One class, one job
 ```csharp
-// D — DI example
 // ❌ Bad
-class OrderService { var db = new SqlDatabase(); }
-
-// ✅ Good — depend on interface
-class OrderService {
-    private readonly IDatabase _db;
-    public OrderService(IDatabase db) { _db = db; }
-}
+class OrderService { void Save() {} void SendEmail() {} }
+ 
+// ✅ Good
+class OrderRepository     { void Save(Order o) {} }
+class NotificationService { void Send(Order o) {} }
 ```
-
----
-
-**Q80. What happens when Liskov Substitution is violated?**
-
-Subclasses that break expected behavior cause bugs when used polymorphically.
-
+ 
+**O — Open/Closed** : Extend via new class, never modify old
 ```csharp
-// Violation — Square breaks Rectangle's contract
-class Rectangle { public virtual int Width { get; set; } public virtual int Height { get; set; } }
-class Square : Rectangle {
-    public override int Width { set { base.Width = base.Height = value; } }
-}
-
-// Caller expects Width and Height independent
-Rectangle r = new Square();
-r.Width = 5; r.Height = 3;
-Console.WriteLine(r.Width * r.Height); // Expected 15, got 9!
+interface INotifier { void Send(Order o); }
+ 
+class EmailNotifier : INotifier { public void Send(Order o) => Console.WriteLine("Email"); }
+class SmsNotifier   : INotifier { public void Send(Order o) => Console.WriteLine("SMS");   }
+// ✅ Add PushNotifier without touching EmailNotifier or SmsNotifier
+class PushNotifier  : INotifier { public void Send(Order o) => Console.WriteLine("Push");  }
 ```
-
----
-
-**Q81. Singleton Pattern?**
-
-Ensures only one instance of a class exists.
-
+ 
+**L — Liskov Substitution** : Swap child for parent, nothing breaks
 ```csharp
-public sealed class AppConfig {
-    private static readonly Lazy<AppConfig> _instance =
-        new Lazy<AppConfig>(() => new AppConfig());
-
-    private AppConfig() {}
-
-    public static AppConfig Instance => _instance.Value;
-    public string Theme { get; set; } = "Dark";
+// ✅ Every INotifier child honours Send() — swap freely
+INotifier n = new SmsNotifier();
+n.Send(order); // always works ✅
+ 
+// ❌ Bad — breaks promise
+class BrokenNotifier : INotifier {
+    public void Send(Order o) => throw new NotImplementedException(); // caller crashes!
 }
-
-// Usage
-AppConfig.Instance.Theme = "Light";
 ```
-
----
-
-**Q82. Repository Pattern?**
-
-Abstracts data access behind an interface — swappable implementations (DB, memory, API).
-
+ 
+**I — Interface Segregation** : Don't implement what you don't need
 ```csharp
-public interface IUserRepository {
-    Task<User> GetByIdAsync(int id);
-    Task SaveAsync(User user);
+// ❌ Bad — SmsNotifier forced to implement SendEmail it doesn't support
+interface INotifier { void SendEmail(Order o); void SendSms(Order o); }
+ 
+// ✅ Good — split
+interface IEmailNotifier { void SendEmail(Order o); }
+interface ISmsNotifier   { void SendSms(Order o);   }
+ 
+class SmsNotifier : ISmsNotifier { public void SendSms(Order o) => Console.WriteLine("SMS"); } // ✅ no junk
+```
+ 
+**D — Dependency Inversion** : Depend on interface, not concrete class
+```csharp
+// ❌ Bad
+class OrderProcessor { private SmsNotifier _n = new SmsNotifier(); }
+ 
+// ✅ Good — inject INotifier, swap freely
+class OrderProcessor {
+    private readonly ISmsNotifier _notifier;
+    public OrderProcessor(ISmsNotifier notifier) { _notifier = notifier; }
+    public void Process(Order o) => _notifier.SendSms(o);
 }
-
-public class SqlUserRepository : IUserRepository {
-    private readonly AppDbContext _db;
-    public SqlUserRepository(AppDbContext db) => _db = db;
-    public async Task<User> GetByIdAsync(int id) => await _db.Users.FindAsync(id);
-    public async Task SaveAsync(User user) { _db.Users.Add(user); await _db.SaveChangesAsync(); }
-}
+ 
+new OrderProcessor(new SmsNotifier()); // ✅
 ```
 
 ---
 
-**Q83. Dependency Injection vs `new` keyword?**
+**Q84. Dependency Injection vs `new` keyword?**
 
 | | `new` | DI |
 |--|--|--|
@@ -1517,13 +1696,13 @@ class OrderService {
 
 ---
 
-**Q84. What are Design Pattern types?**
+**Q85. What are Design Pattern types?**
 
-| Category | Examples |
-|--|--|
-| **Creational** | Singleton, Factory, Builder, Prototype |
-| **Structural** | Adapter, Decorator, Proxy, Facade, Composite |
-| **Behavioral** | Observer, Strategy, Command, Iterator, Template Method |
+| Category | About | Examples |
+|---|---|---|
+| **Creational** | How objects are **created** | Singleton, Factory, Builder, Prototype |
+| **Structural** | How objects are **composed/connected** | Adapter, Decorator, Facade, Proxy, Repository |
+| **Behavioral** | How objects **communicate/interact** | Mediator, Observer, Strategy, Command, CQRS |
 
 ---
 
@@ -1531,7 +1710,7 @@ class OrderService {
 
 ---
 
-**Q85. Access Modifiers in C#?**
+**Q86. Access Modifiers in C#?**
 
 | Modifier | Accessible From |
 |--|--|
@@ -1544,7 +1723,7 @@ class OrderService {
 
 ---
 
-**Q86. What are Records in C#? When to use them?**
+**Q87. What are Records in C#? When to use them?**
 
 Records are immutable reference types with value-based equality, ideal for DTOs and data models.
 
@@ -1565,7 +1744,7 @@ Use for: API responses, domain events, value objects.
 
 ---
 
-**Q87. `enum` vs `struct` vs `class`?**
+**Q88. `enum` vs `struct` vs `class`?**
 
 | | `enum` | `struct` | `class` |
 |--|--|--|--|
@@ -1581,7 +1760,7 @@ class Person { public string Name; public string Email; }
 
 ---
 
-**Q88. What are attributes in C#? How to create custom attributes?**
+**Q89. What are attributes in C#? How to create custom attributes?**
 
 Attributes add **metadata** to code, inspectable via reflection.
 
@@ -1605,7 +1784,7 @@ Console.WriteLine(attr.Level); // "Info"
 
 ---
 
-**Q89. Null-coalescing `??` and null-conditional `?.` operators?**
+**Q90. Null-coalescing `??` and null-conditional `?.` operators?**
 
 ```csharp
 string name = null;
@@ -1625,7 +1804,7 @@ string city = user?.Address?.City ?? "Unknown";
 
 ---
 
-**Q90. `readonly` property vs `init`-only property?**
+**Q91. `readonly` property vs `init`-only property?**
 
 - `readonly` field — can only be set in constructor or declaration.
 - `init` property — can be set during object initialization but not after.
@@ -1643,7 +1822,7 @@ c.Name = "Other"; // ❌ compile error — init only
 
 ---
 
-**Q91. Managed vs Unmanaged code?**
+**Q92. Managed vs Unmanaged code?**
 
 - **Managed:** Runs under CLR control — GC, type safety, exceptions. All normal C# code.
 - **Unmanaged:** Native code (C/C++), COM objects, OS APIs. No GC — you manage memory.
@@ -1658,7 +1837,7 @@ static extern IntPtr OpenProcess(int access, bool inherit, int pid);
 
 ---
 
-**Q92. What is Serialization and Deserialization?**
+**Q93. What is Serialization and Deserialization?**
 
 Converting objects to a storable/transmittable format (JSON, XML, binary) and back.
 
@@ -1677,7 +1856,7 @@ User restored = JsonSerializer.Deserialize<User>(json);
 
 ---
 
-**Q93. What are code smells? Give examples.**
+**Q94. What are code smells? Give examples.**
 
 Code smells are patterns that signal poorly written code — not bugs, but hints for refactoring.
 
@@ -1692,7 +1871,7 @@ Code smells are patterns that signal poorly written code — not bugs, but hints
 
 ---
 
-**Q94. What is `IDisposable` vs `IAsyncDisposable`?**
+**Q95. What is `IDisposable` vs `IAsyncDisposable`?**
 
 - `IDisposable.Dispose()` — synchronous cleanup.
 - `IAsyncDisposable.DisposeAsync()` — async cleanup (e.g., flushing async streams).
@@ -1711,7 +1890,7 @@ await using (var conn = new AsyncConn()) { }
 
 ---
 
-**Q95. `String.Intern` and String interning?**
+**Q96. `String.Intern` and String interning?**
 
 The CLR maintains a string pool. Interned strings with the same value share the same memory reference.
 
@@ -1729,7 +1908,7 @@ Console.WriteLine(ReferenceEquals(a, interned)); // true
 
 ---
 
-**Q96. What is `yield return` and iterator methods?**
+**Q97. What is `yield return` and iterator methods?**
 
 `yield return` produces values one at a time (lazy), without building a full collection.
 
@@ -1746,7 +1925,7 @@ foreach (var n in GetNumbers()) {
 
 ---
 
-**Q97. What is the difference between `static` class and `Singleton`?**
+**Q98. What is the difference between `static` class and `Singleton`?**
 
 | | Static Class | Singleton |
 |--|--|--|
@@ -1760,7 +1939,7 @@ Use Singleton over static when you need DI, interfaces, or testability.
 
 ---
 
-**Q98. What are expression trees in C#?**
+**Q99. What are expression trees in C#?**
 
 Expression trees represent code **as data** (a tree of objects), used by LINQ-to-SQL to translate queries.
 
@@ -1777,7 +1956,7 @@ Expression<Func<int, bool>> expr = x => x > 5;
 
 ---
 
-**Q99. What is `dynamic` dispatch vs reflection?**
+**Q100. What is `dynamic` dispatch vs reflection?**
 
 Both allow runtime behavior, but differ in performance and usage.
 
@@ -1794,29 +1973,3 @@ type.GetMethod("DoWork").Invoke(obj, null);
 `dynamic` is faster to write. Reflection gives more control (discover, inspect, invoke dynamically).
 
 ---
-
-**Q100. What are `Task.Factory` and `Task.Yield`?**
-
-- `Task.Factory.StartNew` — creates tasks with fine-grained control (scheduler, options, parent).
-- `Task.Yield` — yields control back to the caller, allowing other work to run, then resumes.
-
-```csharp
-// Task.Factory — use when you need custom scheduler or long-running task
-Task.Factory.StartNew(
-    () => LongRunningWork(),
-    TaskCreationOptions.LongRunning // hint: use dedicated thread
-);
-
-// Task.Yield — relinquish control briefly (useful in tight async loops)
-async Task ProcessAsync() {
-    for (int i = 0; i < 1000000; i++) {
-        DoWork(i);
-        if (i % 100 == 0)
-            await Task.Yield(); // let other tasks run
-    }
-}
-```
-
----
-
-*End of 100 C# Interview Questions — 5 Years Experience*
