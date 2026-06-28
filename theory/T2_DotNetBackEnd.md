@@ -615,29 +615,18 @@ For more complex scheduling, use **Hangfire** or **Quartz.NET**.
 
 ---
 
-**Q26. What is ArrayPool vs MemoryPool vs stackalloc?**
+**Q26. What are code smells? Give examples.**
 
-All three reduce heap allocations for better performance.
+Code smells are patterns that signal poorly written code — not bugs, but hints for refactoring.
 
-| | `ArrayPool<T>` | `MemoryPool<T>` | `stackalloc` |
-|--|--|--|--|
-| Where | Heap (rented) | Heap (rented) | Stack |
-| Size limit | Large OK | Large OK | Small only (~1KB) |
-| Use with async | ✅ | ✅ | ❌ (Span only) |
-
-```csharp
-var pool = ArrayPool<byte>.Shared;
-byte[] buffer = pool.Rent(4096);
-try { await stream.ReadAsync(buffer); }
-finally { pool.Return(buffer); }
-
-Span<int> nums = stackalloc int[10];
-nums[0] = 42;
-
-using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(1024);
-Memory<byte> mem = owner.Memory;
-await stream.ReadAsync(mem);
-```
+| Smell | Example |
+|--|--|
+| Long method | 200-line method doing too much |
+| God class | Class with 50+ responsibilities |
+| Magic numbers | `if (status == 3)` — what's 3? |
+| Deep nesting | 5 levels of if/for |
+| Duplicate code | Same logic in 3 places |
+| Feature envy | Class using another class's data more than its own |
 
 ---
 

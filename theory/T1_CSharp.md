@@ -174,23 +174,14 @@ Convert.ToString(s);    // ✅ returns ""
 
 **Q12. What are the types of constructors in C#?**
 
-| Type | Description |
-|------|-------------|
-| **Default** | No params, auto-generated if none defined |
-| **Parameterized** | Takes arguments to init fields |
-| **Static** | Runs once, initializes static members, no access modifier |
-| **Copy Constructor** | Takes same class as param, copies values |
-| **Private** | Prevents instantiation (used in Singleton) |
+| Type | Description | Example | Use case |
+|------|-------------|---------|----------|
+| **Default** | No params; auto-generated if none defined | `new Car()` | Objects with sensible defaults |
+| **Parameterized** | Takes arguments to initialize fields | `new Car("BMW", 2024)` | Enforcing required data at creation |
+| **Static** | Runs once; initializes static members; no access modifier | `static Car() { … }` | One-time setup like config loading |
+| **Copy** | Takes same class instance, copies its values | `new Car(existingCar)` | Cloning objects before mutation |
+| **Private** | Prevents instantiation from outside the class | `private Car() { … }` | Singleton / factory pattern |
 
-```csharp
-public class Car {
-    public Car() {}                        // Default
-    public Car(string model) {}            // Parameterized
-    public Car(Car other) { Model = other.Model; } // Copy
-    static Car() { /* static init */ }    // Static
-    private Car(int secret) {}             // Private
-}
-```
 
 ---
 
@@ -265,11 +256,11 @@ static readonly HttpClient Client = new();  // shared, set once
 
 **Q17. What is `ref` vs `out` vs `in` parameter?**
 
-| Keyword | Must be initialized before? | Caller can read after? |
-|---------|-----|----|
-| `ref` | Yes | Yes |
-| `out` | No | Yes (method must assign) |
-| `in` | Yes | Read-only inside method |
+| Keyword | Must be initialized before? | Caller can read after? | Use case |
+|---------|-----------------------------|------------------------|----------|
+| `ref` | Yes | Yes | Pass a value to modify in place — e.g. swapping two variables |
+| `out` | No | Yes (method must assign) | Return multiple values — e.g. `int.TryParse(str, out int result)` |
+| `in` | Yes | Read-only inside method | Like `ref` but method can't modify it — e.g. pass a `DateTime` struct to a `Calculate()` method by reference without copying or risking changes |
 
 ```csharp
 void WithRef(ref int x) { x += 1; }
@@ -304,6 +295,7 @@ Sum(new int[]{1,2}); // ✅ also works with array
 | Typed at | Compile time | Runtime | Compile time |
 | Type safe | Yes | No | No (requires cast) |
 | Performance | Fast | Slow (DLR) | Slow (boxing/casting) |
+| Use case | Everyday local variables where type is obvious — e.g. `var list = new List<int>()` | Interop with COM, JSON, or Python/JS — e.g. reading Excel via COM API where return type is unknown | Pre-generics collections like `ArrayList` stored everything as `object` — must cast back manually, can crash at runtime |
 
 ```csharp
 var x = 42;          // int — inferred at compile time
@@ -313,21 +305,28 @@ object o = 42;       // need to cast back: (int)o
 
 ---
 
-**Q20. What are `string` vs `StringBuilder` vs string concatenation?**
-
-- `string` is **immutable** — each `+` creates a new string.
-- In a loop, use `StringBuilder` — it mutates in-place.
-
+## Q20. What are `string` vs `String` vs `StringBuilder` vs string concatenation?
+ 
+| | `string` / `String` | `StringBuilder` | Concatenation (`+`) |
+|--|--|--|--|
+| Mutable | No | Yes | No |
+| Performance | Fast for few ops | Fast for many ops | Slow in loops — O(n²) |
+| Use case | Fixed text, comparisons | Building strings in loops | Joining 2–3 values only |
+ 
+> `string` and `String` are identical — `string` is just a C# alias for `System.String`.
+ 
 ```csharp
-// Bad: O(n²) allocations
+// Bad: creates a new string object on every iteration — O(n²) allocations
 string result = "";
 for (int i = 0; i < 1000; i++) result += i;
-
-// Good: O(n) single buffer
+ 
+// Good: mutates a single buffer in-place — O(n)
 var sb = new StringBuilder();
 for (int i = 0; i < 1000; i++) sb.Append(i);
 string result = sb.ToString();
 ```
+ 
+**Simple rule:** Use `+` for 2–3 values. Use `StringBuilder` the moment you're in a loop.
 
 ---
 
@@ -381,29 +380,50 @@ class Duck : Animal, ISwimmable {
 
 ---
 
-**Q23. Why doesn't C# support multiple class inheritance?**
-
-To avoid the **Diamond Problem** — if two parent classes define the same method, the child wouldn't know which to use. C# solves this by allowing multiple **interface** inheritance instead.
+**Q23. Why doesn't C# support multiple class inheritance? What are the types?**
+ 
+C# blocks multiple class inheritance to avoid the **Diamond Problem** — ambiguity when two parents define the same method. Use interfaces instead.
+ 
+#### Types of Inheritance in C#
+ 
+| Type | Supported | Example |
+|------|-----------|---------|
+| **Single** | Yes | `class Dog : Animal` |
+| **Multilevel** | Yes | `class Puppy : Dog` |
+| **Hierarchical** | Yes | `Dog : Animal`, `Cat : Animal` |
+| **Multiple (class)** | No ❌ | `class Dog : Animal, Pet` |
+| **Multiple (interface)** | Yes ✅ | `class Dog : IAnimal, IPet` |
 
 ---
 
-**Q24. What is the `base` keyword?**
+**Q24. What is `base` and `this` keyword?**
 
-Used to call the parent class constructor or method.
 
+| | `base` | `this` |
+|--|--|--|
+| Refers to | Parent class | Current class |
+| Use case | Call parent constructor/method | Chain constructors, current instance |
+ 
 ```csharp
-class Vehicle {
-    public Vehicle(string type) => Console.WriteLine($"Vehicle: {type}");
-    public virtual void Start() => Console.WriteLine("Starting...");
-}
-
-class Car : Vehicle {
-    public Car() : base("Car") {}  // call parent constructor
-    public override void Start() {
-        base.Start();              // call parent method
-        Console.WriteLine("Car engine on.");
+class Dog : Animal
+{
+    public Dog(string name) : base(name) { }       // base — calls Animal's constructor
+    public Dog() : this("Unknown") { }              // this — chains to Dog(string)
+ 
+    public override void Speak()
+    {
+        base.Speak();          // runs Animal.Speak() first
+        Console.WriteLine("Woof!");
     }
 }
+```
+ 
+#### `this` in extension methods
+Marks which type the method extends.
+ 
+```csharp
+public static bool IsEven(this int n) => n % 2 == 0;
+4.IsEven();  // true
 ```
 
 ---
@@ -451,17 +471,30 @@ class Child : Base {
 
 ---
 
-**Q27. What is method hiding (`new` keyword)?**
-
-When a derived class defines a method with the same signature using `new`, it **hides** the base method rather than overriding it. The method called depends on the **reference type**, not the object type.
-
+**Q27. Class vs Struct vs Record vs Enum in C#**
+  
+| | `class` | `struct` | `record` | `enum` |
+|--|--|--|--|--|
+| Type | Reference | Value | Reference (`record`) / Value (`record struct`) | Value |
+| Stored in | Heap | Stack | Heap / Stack | Stack |
+| Mutable | Yes | Yes | No (default) | No |
+| Inheritance | Yes | No | Yes | No |
+| Equality | Reference | Value | Value (auto) | Value |
+| `null` allowed | Yes | No | Yes | No |
+| Best for | Objects & behavior | Small, short-lived data | Immutable data models | Named constants |
+ 
 ```csharp
-class A { public void Show() => Console.WriteLine("A"); }
-class B : A { public new void Show() => Console.WriteLine("B"); }
-
-A obj = new B();
-obj.Show(); // "A" — uses reference type (hiding, not polymorphism)
+class Person { public string Name { get; set; } }           // mutable, heap
+struct Point { public int X, Y; }                           // copied on assignment
+record Product(string Name, decimal Price);                  // reference type, value equality
+record struct Point3D(int X, int Y, int Z);                  // value type, value equality
+enum Status { Active, Inactive, Pending }                    // named constants
 ```
+ 
+#### Key rules
+- `struct` is **copied** on assignment; `class` shares the same reference
+- `record` → reference type; `record struct` → value type — both get **value equality** and **immutability**
+- `enum` — no methods, no properties; just named integer constants
 
 ---
 
@@ -481,17 +514,29 @@ Animal a = new Dog(); a.Speak(); // virtual dispatch
 
 ---
 
-**Q29. What is Is-A vs Has-A relationship?**
+**Q29. What is Is-A vs Has-A vs Can-Do relationship?**
 
-- **Is-A:** Inheritance — a `Dog` is an `Animal`.
-- **Has-A:** Composition — a `Car` has an `Engine`.
-
+| | Is-a | Has-a | Can-do |
+|--|--|--|--|
+| Relationship | Inheritance | Composition | Interface |
+| Keyword | `class Dog : Animal` | `class Car { Engine _engine; }` | `class Bird : IFlyable` |
+| Meaning | Dog **is a** type of Animal | Car **has an** Engine inside it | Bird **can** fly |
+| Couples tightly? | Yes | No | No |
+| Use case | Shared base behavior — e.g. `Animal` has `Eat()`, `Dog` inherits it | Building complex objects from smaller parts — e.g. `Car` owns `Engine`, `Wheels` | Adding capabilities across unrelated types — e.g. both `Bird` and `Plane` can implement `IFlyable` |
+ 
 ```csharp
-class Animal {}
-class Dog : Animal {}          // Is-A
-
-class Engine {}
-class Car { Engine _engine = new Engine(); }  // Has-A (composition)
+// Is-a — inheritance
+class Animal { public void Eat() { } }
+class Dog : Animal { }  // Dog is an Animal
+ 
+// Has-a — composition
+class Engine { public void Start() { } }
+class Car { private Engine _engine = new Engine(); }  // Car has an Engine
+ 
+// Can-do — interface
+interface IFlyable { void Fly(); }
+class Bird : IFlyable { public void Fly() { } }   // Bird can fly
+class Plane : IFlyable { public void Fly() { } }  // Plane can fly too
 ```
 
 Prefer **composition over inheritance** for flexibility.
@@ -510,6 +555,14 @@ public static class StringExtensions {
 // Usage
 "user@mail.com".IsEmail(); // true
 ```
+
+#### Pros & Cons
+ 
+| Pros | Cons |
+|------|------|
+| Extend sealed/third-party types | No access to private members |
+| Fluent, clean syntax | Clutters intellisense if overused |
+| LINQ is built on them | Hard to find where defined |
 
 ---
 
@@ -939,7 +992,7 @@ using var fw = new FileWrapper("data.txt"); // auto-disposed
 
 ---
 
-**Q52. What are generics? What are constraints?**
+**Q52. What are generics? Give a real use case?**
 
 Generics let you write type-safe code that works with any type, avoiding boxing and casting.
 
@@ -976,18 +1029,58 @@ productRepo.GetById(5);
 
 **Q53. Generic collections vs non-generic collections?**
 
-| Generic | Non-Generic | Difference |
-|--|--|--|
-| `List<T>` | `ArrayList` | Generics are type-safe, no boxing |
-| `Dictionary<K,V>` | `Hashtable` | Type safe, faster |
-| `Queue<T>` | `Queue` | Type safe |
-| `Stack<T>` | `Stack` | Type safe |
+Non-generics store everything as `object` — causing **boxing, casting, and runtime bugs**. Generics are type-safe and faster.
+ 
+| Generic | Non-Generic |
+|--|--|
+| `List<T>` | `ArrayList` |
+| `Dictionary<K,V>` | `Hashtable` |
+| `Queue<T>` | `Queue` |
+| `Stack<T>` | `Stack` |
+ 
+```csharp
+// Non-generic — runtime bug
+ArrayList list = new ArrayList();
+list.Add("oops");        // no error at compile time
+int x = (int)list[0];   // 💥 crashes at runtime
+ 
+// Generic — compile-time safety
+List<int> list = new List<int>();
+list.Add("oops");        // ❌ caught at compile time
+```
+ 
+Non-generics are legacy (pre .NET 2.0) — always prefer generics.
 
-Always prefer generic collections.
+---
+**Q54 What are Generic Parameters & Constraints?**
+
+A placeholder for a type defined at **compile time** — write once, work for any type.
+ 
+```csharp
+// T is the type parameter — decided when called
+List<int> nums = new List<int>();     // T = int
+List<string> names = new List<string>(); // T = string
+```
+ 
+```csharp
+T Max<T>(T a, T b) where T : IComparable<T>
+    => a.CompareTo(b) > 0 ? a : b;
+```
+  
+| Constraint | Meaning |
+|------------|---------|
+| `where T : class` | Reference type only |
+| `where T : struct` | Value type only |
+| `where T : new()` | Must have parameterless constructor |
+| `where T : BaseClass` | Must inherit `BaseClass` |
+| `where T : IInterface` | Must implement `IInterface` |
+| `where T : notnull` | Non-nullable only |
+ 
+> Without constraints, `T` is treated as `object`.
 
 ---
 
-**Q54. `IEnumerable` vs `IReadOnlyCollection` vs `IReadOnlyList` vs `ICollection` vs `IList` vs `IQueryable`?**
+**Q55. `IEnumerable` vs `IReadOnlyCollection` vs `IReadOnlyList` vs `ICollection` vs `IList` vs `IQueryable`?**
 
 > Each interface below **adds more capability** than the previous one
  
@@ -1019,22 +1112,6 @@ q.Where(u => u.Age > 18); // SELECT * WHERE Age > 18 ✅
 ```
  
  **Rule:** All are just references to a `List<T>` — the interface controls **what the caller is allowed to do** with it.
-
----
-
-**Q55. `IEnumerable<T>` vs `IEnumerator<T>`?**
-
-- `IEnumerable<T>` — a collection that *can be iterated* (has `GetEnumerator()`).
-- `IEnumerator<T>` — the *iterator itself* (has `Current`, `MoveNext()`, `Reset()`).
-
-```csharp
-// IEnumerable gives you the enumerator
-IEnumerable<int> list = new List<int> { 1, 2, 3 };
-
-// IEnumerator does the actual iteration
-IEnumerator<int> e = list.GetEnumerator();
-while (e.MoveNext()) Console.WriteLine(e.Current);
-```
 
 ---
 
@@ -1074,20 +1151,24 @@ linked.AddAfter(linked.First, 9); // O(1) ✅ no shifting
 
 ---
 
-**Q57. `HashSet<T>` vs `List<T>` and `Dictionary<K,V>` vs `Hashtable`?**
+**Q57.  `List<T>` vs `HashSet<T>` vs `SortedSet<T>`?**
 
-- `HashSet<T>` — no duplicates, O(1) lookup.
-- `List<T>` — allows duplicates, O(n) lookup.
-- `Dictionary<K,V>` — generic, type-safe, O(1) lookup.
-- `Hashtable` — non-generic, boxing, not type-safe.
-
+| | Duplicates | Ordered | Type-safe | Lookup | Use case |
+|--|--|--|--|--|--|
+| `List<T>` | Yes | Yes | Yes | O(n) | General ordered collection |
+| `HashSet<T>` | No | No | Yes | O(1) | Unique values, fast lookup |
+| `SortedSet<T>` | No | Yes (auto) | Yes | O(log n) | Unique + sorted values |
+ 
 ```csharp
+var list = new List<int> { 1, 2, 2 };           // [1, 2, 2] — duplicates allowed
+ 
 var set = new HashSet<int> { 1, 2, 3 };
-set.Add(2); // ignored — already exists
-
-var dict = new Dictionary<string, int> { ["age"] = 25 };
-dict["age"]; // 25 — O(1)
+set.Add(2);                                       // ignored — already exists
+ 
+var sorted = new SortedSet<int> { 3, 1, 2 };     // auto-sorts → [1, 2, 3]
 ```
+ 
+**Rule:** Use `HashSet<T>` for unique values, `SortedSet<T>` when you also need sorting.
 
 ---
 
@@ -1110,20 +1191,19 @@ dict.AddOrUpdate("count", 1, (key, old) => old + 1);
 
 ---
 
-**Q59. Shallow copy vs deep copy?**
+**Q59. Types of Dictionary Collections**
 
-- **Shallow copy:** Copies the object but reference members still point to the same objects.
-- **Deep copy:** Copies everything, including referenced objects.
 
-```csharp
-// Shallow — Address is shared
-Person a = new Person { Name = "Alice", Address = new Address { City = "NY" } };
-Person b = (Person)a.MemberwiseClone(); // shallow
-b.Address.City = "LA"; // also changes a.Address.City!
+| | Ordered | Thread-safe | Performance | Use case |
+|--|--|--|--|--|
+| `Dictionary<K,V>` | No | No | O(1) | General fast lookup |
+| `SortedDictionary<K,V>` | Yes (Red-Black Tree) | No | O(log n) | Frequent insert/delete |
+| `SortedList<K,V>` | Yes (Two arrays) | No | O(log n) | Built once, read many times |
+| `ConcurrentDictionary<K,V>` | No | Yes | O(1) | Multi-thread access |
+| `Hashtable` | No | No | O(1) | Legacy code only |
+ 
+ Default to `Dictionary<K,V>` — switch only when you need sorting or thread safety.
 
-// Deep — Address is duplicated
-Person c = new Person { Name = a.Name, Address = new Address { City = a.Address.City } };
-```
 
 ---
 
@@ -1723,39 +1803,57 @@ class OrderService {
 
 ---
 
-**Q87. What are Records in C#? When to use them?**
+**Q87. What is `checked` vs `unchecked` in C#?**
 
-Records are immutable reference types with value-based equality, ideal for DTOs and data models.
-
+Controls what happens when an **integer overflows**.
+ 
+| | `checked` | `unchecked` |
+|--|--|--|
+| On overflow | Throws `OverflowException` | Wraps around silently |
+| Use when | Data accuracy matters | Performance, intentional wrap |
+| Real use | Financial calculations | Hash codes, bit manipulation |
+ 
 ```csharp
-public record Person(string Name, int Age);
-
-var p1 = new Person("Alice", 30);
-var p2 = new Person("Alice", 30);
-
-Console.WriteLine(p1 == p2); // true — value equality
-Console.WriteLine(p1);       // Person { Name = Alice, Age = 30 }
-
-// Non-destructive mutation
-var p3 = p1 with { Age = 31 };
+int max = int.MaxValue;  // 2,147,483,647
+ 
+checked   { int x = max + 1; }  // 💥 OverflowException
+unchecked { int x = max + 1; }  // -2,147,483,648 — wraps around
 ```
+ 
+> Default is `unchecked` — use `checked` when wrong numbers are worse than a crash.
 
-Use for: API responses, domain events, value objects.
+
+#### Why do both keywords exist?
+ 
+To **override the current default** — if the project is globally `checked`, you need `unchecked` to opt out for specific blocks like hash codes, and vice versa.
 
 ---
 
-**Q88. `enum` vs `struct` vs `class`?**
+**Q88. What is Interlop in C# ?**
 
-| | `enum` | `struct` | `class` |
-|--|--|--|--|
-| Type | Value | Value | Reference |
-| Inherits | `Enum` | `ValueType` | `object` |
-| Use for | Named constants | Small, immutable data | Complex objects |
-
+Allows C# to call **unmanaged code** (C, C++, Win32 APIs).
+ 
+ 
+| Keyword | Purpose |
+|---------|---------|
+| `extern` | Method implemented outside C# |
+| `unsafe` | Enables pointer manipulation |
+| `fixed` | Pins memory so GC won't move it |
+| `volatile` | Always read fresh from memory — no thread caching |
+ 
+ 
 ```csharp
-enum Status { Active, Inactive }
-struct Point { public int X, Y; }
-class Person { public string Name; public string Email; }
+// extern — call a Windows API
+[DllImport("user32.dll")]
+public static extern int MessageBox(IntPtr h, string msg, string title, int type);
+ 
+// unsafe + fixed — pointer manipulation
+unsafe {
+    fixed (int* p = &value) { *p = 100; }
+}
+ 
+// volatile — prevent thread caching
+volatile bool _running = true;
 ```
 
 ---
@@ -1856,19 +1954,29 @@ User restored = JsonSerializer.Deserialize<User>(json);
 
 ---
 
-**Q94. What are code smells? Give examples.**
+**Q94. What is ArrayPool vs MemoryPool vs stackalloc?**
 
-Code smells are patterns that signal poorly written code — not bugs, but hints for refactoring.
+All three reduce heap allocations for better performance.
 
-| Smell | Example |
-|--|--|
-| Long method | 200-line method doing too much |
-| God class | Class with 50+ responsibilities |
-| Magic numbers | `if (status == 3)` — what's 3? |
-| Deep nesting | 5 levels of if/for |
-| Duplicate code | Same logic in 3 places |
-| Feature envy | Class using another class's data more than its own |
+| | `ArrayPool<T>` | `MemoryPool<T>` | `stackalloc` |
+|--|--|--|--|
+| Where | Heap (rented) | Heap (rented) | Stack |
+| Size limit | Large OK | Large OK | Small only (~1KB) |
+| Use with async | ✅ | ✅ | ❌ (Span only) |
 
+```csharp
+var pool = ArrayPool<byte>.Shared;
+byte[] buffer = pool.Rent(4096);
+try { await stream.ReadAsync(buffer); }
+finally { pool.Return(buffer); }
+
+Span<int> nums = stackalloc int[10];
+nums[0] = 42;
+
+using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(1024);
+Memory<byte> mem = owner.Memory;
+await stream.ReadAsync(mem);
+```
 ---
 
 **Q95. What is `IDisposable` vs `IAsyncDisposable`?**
