@@ -1755,24 +1755,32 @@ new OrderProcessor(new SmsNotifier()); // ✅
 
 ---
 
-**Q84. Dependency Injection vs `new` keyword?**
+**Q84. Exaplin `DRY` and `KISS` Principles ?**
 
-| | `new` | DI |
-|--|--|--|
-| Coupling | Tight | Loose |
-| Testable | Hard to mock | Easy to mock |
-| Lifecycle | You manage | Framework manages |
-
+#### DRY — Don't Repeat Yourself
+Same logic should exist in **one place only**.
+ 
 ```csharp
-// ❌ Tight coupling — can't swap or mock
-class OrderService { var repo = new SqlRepository(); }
-
-// ✅ DI — inject via constructor
-class OrderService {
-    private readonly IRepository _repo;
-    public OrderService(IRepository repo) { _repo = repo; } // inject
-}
+// Bad — duplicated tax logic
+public decimal OrderTotal(Order o) => o.Items.Sum(i => i.Price) * 1.18m;
+public decimal InvoiceTotal(Order o) => o.Items.Sum(i => i.Price) * 1.18m;
+ 
+// Good — one method
+public decimal CalculateTotal(Order o) => o.Items.Sum(i => i.Price) * 1.18m;
 ```
+ 
+#### KISS — Keep It Simple, Stupid
+Write the **simplest solution** that works.
+ 
+```csharp
+// Bad
+public bool IsEven(int n) => n % 2 == 0 ? true : false;
+ 
+// Good
+public bool IsEven(int n) => n % 2 == 0;
+```
+ 
+ DRY = no duplication · KISS = no unnecessary complexity
 
 ---
 
