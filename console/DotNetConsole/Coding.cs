@@ -405,7 +405,49 @@ namespace DotNetConsole
             }
         }
 
-       
+        public static void Q20_ParantehsisBalanced()
+        {
+            string paranthesis = "[({})]";
+            var stack = new Stack<char>();
+
+            foreach( char c in paranthesis)
+            {
+                if (c == '(' || c == '{' || c == '[')
+                    stack.Push(c);
+                else
+                {
+                    if (stack.Count == 0)
+                    {
+                        Console.WriteLine("Not Balanced");
+                        return;
+                    }
+
+                    char poped = stack.Pop();
+
+                    if (c==')'&& poped!='(')
+                    {
+                        Console.WriteLine("Not Balanced");
+                        break;
+                    }
+                    else if (c=='}' && poped!='{')
+                    {
+                        Console.WriteLine("Not Balanced");
+                        break;
+                    }
+                    else if(c==']' && poped!='[')
+                    {
+                        Console.WriteLine("Not Balanced");
+                        break;
+                    }
+
+                }
+            }
+
+            Console.WriteLine("Balanced");
+
+        }
+
+
         public static void Q21_Most_Frequent()
         {
             string word = "mississippi";
@@ -435,8 +477,25 @@ namespace DotNetConsole
               
         }
 
+        public static void Q24_CountUpperLower()
+        {
+            string word = "Hello World";
 
-        public static void Q31_Largest()
+            int upper=0, lower=0;
+
+            foreach(char c in word)
+            {
+                char lowerCase = char.ToLower(c);
+                if (c == lowerCase)
+                    lower++;
+                else
+                    upper++;
+            }
+
+            Console.WriteLine("Lower : {0}, Upper : {1}",lower,upper);
+        }
+
+        public static void Q51_Largest()
         {
             int[] array = new int[] { 4, 5, 9, 6, 6, 15 };
             //LinQ
@@ -454,23 +513,7 @@ namespace DotNetConsole
             Console.WriteLine($"Largest number is {largest}");
         }
 
-        public static void Q33_ArraySum()
-        {
-            int[] numbers = new int[] { 2, 5, 9, 7, 6 };
-
-            //LinQ
-            //Console.WriteLine(numbers.Sum());
-
-            int sum = 0;
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                sum += numbers[i];
-            }
-
-            Console.WriteLine($"The sum is {sum}");
-        }
-
-        public static void Q32_LowestNumber()
+        public static void Q52_LowestNumber()
         {
             int[] nums = new int[] { 5, 8, 1, 9, 16, 54 };
 
@@ -488,7 +531,25 @@ namespace DotNetConsole
             Console.WriteLine($"The smallest number is {lowest}");
         }
 
-        public static void Q34_AverageArray()
+        public static void Q53_ArraySum()
+        {
+            int[] numbers = new int[] { 2, 5, 9, 7, 6 };
+
+            //LinQ
+            //Console.WriteLine(numbers.Sum());
+
+            int sum = 0;
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                sum += numbers[i];
+            }
+
+            Console.WriteLine($"The sum is {sum}");
+        }
+
+ 
+
+        public static void Q54_AverageArray()
         {
             int[] numbers = { 5, 8, 6, 8, 9, 4, 35 };
             double average = numbers.Average();
@@ -496,7 +557,7 @@ namespace DotNetConsole
             Console.WriteLine($"The average is {average}");
         }
 
-        public static void Q35_ReverseArray()
+        public static void Q55_ReverseArray()
         {
             int[] numbers = { 1, 5, 8, 6, 3, 7, 9 };
             int[] reverse = new int[numbers.Length];
@@ -509,7 +570,7 @@ namespace DotNetConsole
             Array.ForEach(reverse, x => Console.WriteLine(x));
         }
 
-        public static void Q36_RemoveDuplicates()
+        public static void Q56_RemoveDuplicates()
         {
             //int[] nums = { 1, 6, 2, 2, 4, 4, 1 };
             //int[] result = nums.Distinct().ToArray();
@@ -555,6 +616,48 @@ namespace DotNetConsole
 
         }
 
+        public static void Q57_SecondLargest()
+        {
+            int[] array = [1, 3, 5, 8, 9, 2];
+
+            var a = array.OrderByDescending(c => c).ToArray();
+
+            Console.WriteLine(a[1]);
+        }
+
+        public static void Q58_CheckArraySort()
+        {
+            int[] array = [1,2, 3, 5, 8, 9];
+
+            for(int i = 0;i<array.Length-1;i++)
+            {
+                if (array[i] > array[i+1])
+                {
+                    Console.WriteLine("Not Sorted");
+                    return;
+                }
+            }
+            Console.WriteLine("Sorted");
+
+        }
+
+        public static void Q59_CountEvenOdd()
+        {
+            int[] array = [1, 5, 8, 4, 7, 9];
+
+            int even = 0,odd = 0;
+
+            foreach( var v in array)
+            {
+                if (v % 2 == 0)
+                {
+                    even++;
+                }
+                else odd++;
+            }
+
+            Console.WriteLine("Even: {0}, Odd: {1}",even, odd);
+        }
 
         public static void Q76_RightTriangle()
         {
