@@ -64,14 +64,29 @@ Values in `appsettings.Development.json` **override** `appsettings.json` in the 
 
 ---
 
-**Q4. What are metapackages in .NET?**
+**Q4. `Package` vs `Metapackage` vs `SDK` in .NET?**
 
-A metapackage is a NuGet package that **bundles many packages together** — you install one package and get everything.
-
-- `Microsoft.AspNetCore.App` — all ASP.NET Core libraries.
-- `Microsoft.NETCore.App` — base .NET runtime libraries.
-
-In modern .NET (5+), these are referenced automatically via the SDK — you rarely reference them manually.
+| | Package | Metapackage | SDK |
+|--|--|--|--|
+| What | Single NuGet library | Bundle of many packages | Build tools + runtime + packages |
+| Example | `Newtonsoft.Json` | `Microsoft.AspNetCore.App` | `Microsoft.NET.Sdk.Web` |
+| Install | Manual via NuGet | One install, gets everything | Auto-included in `.csproj` |
+| Controls | One feature | Entire stack (e.g. ASP.NET Core) | Compile, run, publish |
+ 
+```xml
+<!-- SDK — top of every .csproj, auto-includes base packages -->
+<Project Sdk="Microsoft.NET.Sdk.Web">
+ 
+  <!-- Metapackage — one line pulls in all ASP.NET Core libs -->
+  <PackageReference Include="Microsoft.AspNetCore.App" />
+ 
+  <!-- Package — single library -->
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+ 
+</Project>
+```
+ 
+> In .NET 5+, metapackages are included automatically via the SDK — you rarely reference them manually.
 
 ---
 
@@ -175,6 +190,15 @@ services.AddTransient<IEmailBuilder, EmailBuilder>();         // new each time
 // ⚠️ Never inject Scoped into Singleton — Scoped lives shorter, causes bugs
 ```
 
+#### Injection Methods
+ 
+| Method | Example | Use when |
+|--------|---------|----------|
+| Constructor | `public Service(IDep d)` | Default — always prefer |
+| Method | `([FromServices] IDep d)` | One-off in a single action |
+| Property | `[Inject] public IDep D` | Legacy/Autofac only |
+| Manual | `services.GetService<IDep>()` | Dynamic runtime resolution |
+
 ---
 
 **Q10. What is middleware? How do you create custom middleware?**
@@ -211,34 +235,20 @@ app.UseRequestTiming();
 Yes — middleware runs **in registration order** for requests and **reverse order** for responses. Wrong order causes bugs (e.g., auth before routing).
 
 ```csharp
-// ✅ Recommended order
-app.UseExceptionHandler();    // 1. Catch all errors first
-app.UseHsts();                // 2. Security headers
-app.UseHttpsRedirection();    // 3. Redirect HTTP → HTTPS
-app.UseStaticFiles();         // 4. Serve static files (no auth needed)
-app.UseRouting();             // 5. Match routes
-app.UseAuthentication();      // 6. Who are you?
-app.UseAuthorization();       // 7. What can you do?
-app.UseMiddleware<CustomMiddleware>(); // 8. Your custom logic
-app.MapControllers();         // 9. Execute the endpoint
+app.UseExceptionHandler();      // 1. Catch all errors first     (Every)
+app.UseHsts();                  // 2. Security headers           (House)
+app.UseHttpsRedirection();      // 3. HTTP → HTTPS               (Stays)
+app.UseStaticFiles();           // 4. Serve public files         (Stays)
+app.UseRouting();               // 5. Find the route             (Really)
+app.UseAuthentication();        // 6. Who are you?               (Awesome)
+app.UseAuthorization();         // 7. What can you do?           (And)
+app.UseMiddleware<Custom>();    // 8. Your custom logic          (Calm)
+app.MapControllers();           // 9. Hit the endpoint           (Calm)
 ```
 
 ---
 
-**Q12. Middleware vs Filters — which to use when?**
-
-| | Middleware | Filters |
-|--|--|--|
-| Scope | Entire pipeline | MVC/API action level |
-| Access to MVC context | ❌ | ✅ (ActionContext, etc.) |
-| Use for | Auth, logging, HTTPS, CORS | Validation, exception handling per action |
-| Registered in | `Program.cs` | Controller/Action attributes or globally |
-
-Use **middleware** for cross-cutting concerns at the HTTP level. Use **filters** when you need access to MVC action/controller context.
-
----
-
-**Q13. What are Filters? Types and order?**
+**Q12. What are Filters? Types and order?**
 
 Filters run code at specific points in the MVC pipeline around action execution.
 
@@ -268,6 +278,19 @@ builder.Services.AddControllers(options => {
 [ServiceFilter(typeof(LogActionFilter))]
 public class OrdersController : ControllerBase { }
 ```
+
+---
+
+**Q13. Middleware vs Filters — which to use when?**
+
+| | Middleware | Filters |
+|--|--|--|
+| Scope | Entire pipeline | MVC/API action level |
+| Access to MVC context | ❌ | ✅ (ActionContext, etc.) |
+| Use for | Auth, logging, HTTPS, CORS | Validation, exception handling per action |
+| Registered in | `Program.cs` | Controller/Action attributes or globally |
+
+Use **middleware** for cross-cutting concerns at the HTTP level. Use **filters** when you need access to MVC action/controller context.
 
 ---
 
@@ -305,14 +328,14 @@ Use `IOptions<T>` (singleton), `IOptionsSnapshot<T>` (per-request), or `IOptions
 
 ---
 
-**Q15. How to upgrade from .NET 6 to .NET 8?**
+**Q15. How to upgrade from .NET 6 to .NET 8 to .NET 10?**
 
 1. Update the `TargetFramework` in `.csproj`:
 ```xml
 <TargetFramework>net8.0</TargetFramework>
 ```
 
-2. Update all NuGet packages to their .NET 8 compatible versions.
+2. Update all NuGet packages to their .NET 8/10 compatible versions.
 3. Update `global.json` SDK version if pinned.
 4. Fix any breaking changes (check Microsoft's migration guide).
 5. Run tests to catch regressions.
@@ -326,38 +349,11 @@ upgrade-assistant upgrade MyApp.csproj
 
 ---
 
-## 🔷 Section 3: Dependency Injection & Design Patterns
+## 🔷 Section 3: Design Patterns
 
 ---
 
-**Q16. What is the Factory Pattern with DI?**
-
-When you need to create different implementations at runtime (based on a condition), use a factory registered in DI.
-
-```csharp
-public interface IPaymentGateway { void Pay(decimal amount); }
-public class StripeGateway : IPaymentGateway { public void Pay(decimal a) => Console.WriteLine("Stripe"); }
-public class PayPalGateway : IPaymentGateway { public void Pay(decimal a) => Console.WriteLine("PayPal"); }
-
-public class PaymentGatewayFactory {
-    private readonly IServiceProvider _sp;
-    public PaymentGatewayFactory(IServiceProvider sp) => _sp = sp;
-
-    public IPaymentGateway Create(string type) => type switch {
-        "stripe" => _sp.GetRequiredService<StripeGateway>(),
-        "paypal" => _sp.GetRequiredService<PayPalGateway>(),
-        _ => throw new ArgumentException("Unknown gateway")
-    };
-}
-
-services.AddTransient<StripeGateway>();
-services.AddTransient<PayPalGateway>();
-services.AddSingleton<PaymentGatewayFactory>();
-```
-
----
-
-**Q17. What is Singleton Design Pattern ?**
+**Q16. What is Singleton Design Pattern ?**
 
 Only **one instance** of a class exists throughout the app lifetime.
 
@@ -386,6 +382,52 @@ var b = DatabaseSingleton.GetInstance();
 // a == b ✅
 ```
  **In ASP.NET Core:** `services.AddSingleton<Database>()` does the same thing — one instance for the entire app lifetime.
+
+ ---
+
+**Q17. What is the Factory Pattern with DI?**
+
+Use the **Factory Pattern** when you need to create **different implementations at runtime**. The factory is registered in **DI** and uses `IServiceProvider` to resolve the required implementation.
+
+```csharp
+public interface INotification {void Send(string message);}
+
+public class EmailNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"Email: {message}");
+}
+
+public class SmsNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"SMS: {message}");
+}
+
+public class PushNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"Push: {message}");
+}
+
+public class NotificationFactory
+{
+    private readonly IServiceProvider _sp;
+
+    public NotificationFactory(IServiceProvider sp) => _sp = sp;
+
+    public INotification Create(string type) => type switch
+    {
+        "email" => _sp.GetRequiredService<EmailNotification>(),
+        "sms"   => _sp.GetRequiredService<SmsNotification>(),
+        _ => throw new ArgumentException("Unknown type")
+    };
+}
+
+// Usage
+var notification = factory.Create("email");
+notification.Send("Order confirmed!");
+```
+
+**Key Point:** Factory decides **what** to create; **DI** creates and injects the object.
+
 
  ---
 
@@ -442,23 +484,46 @@ Often combined with **MediatR** and **Event Sourcing**.
 
 **Q20. What is the Saga Pattern?**
 
-Used for **long-running distributed transactions** across multiple services. Instead of a single DB transaction, each step succeeds or triggers a **compensating action** to undo previous steps.
+## Saga Pattern
+
+Used for **long-running distributed transactions** across multiple microservices. Instead of a single database transaction, each step either succeeds or triggers a **compensating action** to undo previous successful steps.
 
 | Style | Description |
 |--|--|
-| **Orchestration** | Central coordinator tells each service what to do |
-| **Choreography** | Each service reacts to events — no central control |
+| **Orchestration** | A central coordinator (Saga Orchestrator) tells each service what to do next. |
+| **Choreography** | No central coordinator. Each service reacts to events published by other services. |
 
-```
-// Order Saga (Orchestration):
-1. Create Order → success
-2. Reserve Inventory → success
-3. Charge Payment → FAILS
-4. Compensate: Release Inventory ← undo step 2
-5. Compensate: Cancel Order ← undo step 1
+#### Orchestration Example
+
+```text
+1. Create Order           → Success
+2. Reserve Inventory      → Success
+3. Charge Payment         → FAILS
+4. Release Inventory      ← Compensate Step 2
+5. Cancel Order           ← Compensate Step 1
 ```
 
-Implemented with tools like **MassTransit**, **NServiceBus**, or **Dapr**.
+#### Choreography Example
+
+```text
+OrderCreated
+      ↓
+InventoryReserved
+      ↓
+PaymentFailed
+      ↓
+InventoryReleased
+      ↓
+OrderCancelled
+```
+
+> **Orchestration:** Services communicate via **commands** from an orchestrator.  
+> **Choreography:** Services communicate via **events** without an orchestrator.
+
+| Style | Common Tools |
+|--|--|
+| **Orchestration** | Azure Durable Functions, MassTransit Saga State Machine, NServiceBus Saga, Dapr Workflow |
+| **Choreography** | RabbitMQ, Kafka, Azure Service Bus, MassTransit Event Consumers |
 
 ---
 
@@ -554,19 +619,29 @@ In EF Core, `DbContext.SaveChangesAsync()` is already a Unit of Work.
 
 **Q23. What are architectural patterns? Give a brief overview.**
 
-| Pattern | Description |
-|--|--|
-| **Layered (N-Tier)** | Split into Presentation, Business, Data layers |
-| **MVC** | Model-View-Controller separation |
-| **MVVM** | Model-View-ViewModel (WPF, Blazor) |
-| **Microservices** | Small, independently deployable services |
-| **Monolithic** | All in one deployable unit |
-| **Repository** | Abstraction over data access |
-| **CQRS** | Separate reads from writes |
-| **Event-driven** | Components communicate via events/messages |
-| **Saga** | Long-running distributed transactions |
-| **Event Sourcing** | Store all changes as events, not current state |
-| **Serverless** | Stateless functions triggered by events (Azure Functions) |
+#### Structural
+| Pattern | Description | Example |
+|--|--|--|
+| **Layered (N-Tier)** | Presentation → Business → Data | Controllers → Services → Repositories |
+| **Clean / Onion / Hexagonal** | Domain at center, dependencies point inward | `Domain` → `Application` → `Infrastructure` → `API` |
+| **MVC / MVVM / MVP** | Separate UI, logic, data | `MVC`: ASP.NET Core · `MVVM`: Blazor,WPF,MAUI · `MVP`: WinForms |
+| **DDD** | Model around business domain | `Order` aggregate owns `OrderItems` |
+ 
+#### Deployment
+| Pattern | Description | Example |
+|--|--|--|
+| **Monolithic** | All in one unit | Small ASP.NET Core project |
+| **Microservices** | Independent deployable services | Netflix — streaming, billing, recommendations |
+| **Serverless** | Functions triggered by events | Azure Function on blob upload |
+ 
+#### Data & Communication
+| Pattern | Description | Example |
+|--|--|--|
+| **Repository** | Abstraction over data access | `IProductRepository` over EF Core |
+| **CQRS** | Separate reads from writes | `GetOrderQuery` vs `CreateOrderCommand` |
+| **Event-driven** | Communicate via events | Order placed → triggers email, inventory |
+| **Saga** | Distributed transactions | Book flight + hotel — rollback on failure |
+| **Event Sourcing** | Store events not state | Bank — every deposit/withdrawal as event |
 
 ---
 
@@ -615,29 +690,18 @@ For more complex scheduling, use **Hangfire** or **Quartz.NET**.
 
 ---
 
-**Q26. What is ArrayPool vs MemoryPool vs stackalloc?**
+**Q26. What are code smells? Give examples.**
 
-All three reduce heap allocations for better performance.
+Code smells are patterns that signal poorly written code — not bugs, but hints for refactoring.
 
-| | `ArrayPool<T>` | `MemoryPool<T>` | `stackalloc` |
-|--|--|--|--|
-| Where | Heap (rented) | Heap (rented) | Stack |
-| Size limit | Large OK | Large OK | Small only (~1KB) |
-| Use with async | ✅ | ✅ | ❌ (Span only) |
-
-```csharp
-var pool = ArrayPool<byte>.Shared;
-byte[] buffer = pool.Rent(4096);
-try { await stream.ReadAsync(buffer); }
-finally { pool.Return(buffer); }
-
-Span<int> nums = stackalloc int[10];
-nums[0] = 42;
-
-using IMemoryOwner<byte> owner = MemoryPool<byte>.Shared.Rent(1024);
-Memory<byte> mem = owner.Memory;
-await stream.ReadAsync(mem);
-```
+| Smell | Example |
+|--|--|
+| Long method | 200-line method doing too much |
+| God class | Class with 50+ responsibilities |
+| Magic numbers | `if (status == 3)` — what's 3? |
+| Deep nesting | 5 levels of if/for |
+| Duplicate code | Same logic in 3 places |
+| Feature envy | Class using another class's data more than its own |
 
 ---
 
@@ -759,7 +823,7 @@ In practice, use **Serilog** or **NLog** — they are battle-tested, configurabl
 | Best for | New projects | Legacy DBs |
 
 ```bash
-# Code First — create migration from code
+# Code First — create migration from code ( create Model + add DbSet to DbContext)
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 
@@ -1031,20 +1095,22 @@ EF Core is preferred today. Use `DataTable` for legacy integrations, SSRS report
 
 ---
 
-**Q44. Unit Testing vs Integration Testing vs End-to-End Testing?**
+**Q44. Explain major testing strategy in .Net ?**
 
-| | Unit | Integration | End-to-End (E2E) |
-|--|--|--|--|
-| Tests | Single class/method | Multiple components together | Full app flow |
-| Speed | Very fast | Medium | Slow |
-| Dependencies | Mocked | Real (DB, services) | Real everything |
-| Tools | xUnit, Moq | xUnit + TestServer | Playwright, Selenium |
-
+| | Unit | Integration | E2E | DB Tests |
+|--|--|--|--|--|
+| Tests | Single class/method | Multiple components | Full app flow | DB operations only |
+| Speed | Very fast | Medium | Slow | Medium |
+| Dependencies | Mocked | Real (DB, services) | Real everything | In-Memory/Test DB |
+| Tools | xUnit, Moq | xUnit + TestServer | Playwright, Selenium | xUnit + EF InMemory |
+ 
 ```
 Unit:         OrderService.CalculateTotal() works correctly
 Integration:  POST /orders creates a record in the test DB
 E2E:          User opens browser, places order, sees confirmation page
+DB Test:      Seed orders → query → assert → flush DB
 ```
+
 
 ---
 
@@ -1265,27 +1331,31 @@ For development, you can use `.AllowAnyOrigin()` but never in production.
 
 There are four main approaches, used together in a real app:
 
-1. **try-catch in controller** — for specific known errors.
-2. **Exception filters** — `IExceptionFilter` or `[ExceptionFilter]` attribute for reusable logic.
-3. **Global middleware** — the recommended approach in .NET 6+.
-4. **ProblemDetails** — standard RFC 7807 error response format.
-
+| Approach | Use when |
+|----------|----------|
+| `try-catch` | Specific known errors in controller |
+| Exception filters | Reusable logic across controllers |
+| Global middleware | Catches everything — recommended |
+| `ProblemDetails` | Standard RFC 7807 error shape |
+ 
 ```csharp
-app.UseExceptionHandler(appError =>
-{
-    appError.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        var error = context.Features.Get<IExceptionHandlerFeature>();
-        await context.Response.WriteAsJsonAsync(new
-        {
-            StatusCode = 500,
-            Message = "An unexpected error occurred.",
-            Detail = error?.Error.Message
-        });
-    });
-});
+// Global middleware
+app.UseExceptionHandler(err => err.Run(async ctx => {
+    ctx.Response.StatusCode = 500;
+    await ctx.Response.WriteAsJsonAsync(new { Message = "Error occurred" });
+}));
+ 
+// ProblemDetails — .NET 7+
+builder.Services.AddProblemDetails();
+ 
+// Manual response for known errors
+return Problem(
+    statusCode: 404,
+    title: "Not Found",
+    detail: $"Order {id} not found.",
+    instance: $"/orders/{id}"
+);
+// { "status": 404, "title": "Not Found", "detail": "...", "instance": "/orders/5" }
 ```
 
 ---
@@ -1419,26 +1489,73 @@ gRPC is a high-performance RPC framework by Google that uses HTTP/2 and Protocol
 gRPC is ideal for internal microservice communication. REST is better for public APIs and browser clients.
 
 ---
+**Q64. Difference between GraphQL and REST**
 
-**Q64. What is the difference between synchronous and asynchronous controllers and when should you use async?**
+| | REST | GraphQL |
+|--|--|--|
+| Endpoints | Multiple (`/users`, `/orders`) | Single (`/graphql`) |
+| Data fetching | Fixed response — over/under-fetch | Client picks exact fields |
+| Multiple resources | Multiple calls needed | One call, nested query |
+| Real-time | ❌ | ✅ Subscriptions |
+| Caching | Easy (HTTP cache) | Harder |
+| Best for | Simple CRUD, public APIs | Mobile, complex nested data |
+ 
+```
+// REST — two calls, all fields returned
+GET /users/1
+GET /users/1/orders
+ 
+// GraphQL — one call, only what you need
+POST /graphql
+{ user(id: 1) { name, orders { total } } }
+```
 
-A synchronous controller blocks a thread while waiting for I/O (DB query, HTTP call, file read). Under high load, this exhausts the thread pool.
+---
 
-An async controller releases the thread back to the pool while waiting for I/O, allowing the same thread to handle other requests. This dramatically improves throughput under high load.
+**Q65. What is the difference between synchronous and asynchronous controllers and when should you use async?**
 
-**Always use async for any I/O-bound operation.** Use sync only for CPU-bound work that is very fast.
-
+**Sync** blocks the thread while waiting for I/O — under high load, threads run out.
+**Async** releases the thread back to the pool while waiting — same threads handle more requests.
+ 
+Think of it like a waiter:
+- **Sync** — waiter stands at the kitchen doing nothing until food is ready
+- **Async** — waiter takes other orders while kitchen prepares the food
 ```csharp
-// BAD - blocks thread
-[HttpGet("{id}")]
-public IActionResult Get(int id) => Ok(_db.Products.Find(id));
-
-// GOOD - async I/O
-[HttpGet("{id}")]
-public async Task<IActionResult> Get(int id)
+// Sync — thread blocked during entire Stripe API call (2-3 seconds!)
+// 100 users paying = 100 threads stuck = thread pool exhausted
+[HttpPost("pay")]
+public IActionResult Pay(PaymentRequest request) {
+    var response = client.PostAsync("https://api.stripe.com/charges", ...).Result;  // 😴 blocks
+    var result = response.Content.ReadAsStringAsync().Result;                        // 😴 blocks again
+    return Ok(result);
+}
+ 
+// Async — thread freed during both network calls
+[HttpPost("pay")]
+public async Task<IActionResult> Pay(PaymentRequest request) {
+    var response = await client.PostAsync("https://api.stripe.com/charges", ...);  // ✅ thread free
+    var result = await response.Content.ReadAsStringAsync();                        // ✅ thread free
+    return Ok(result);
+}
+```
+ 
+> **Rule:** Never use `.Result` or `.Wait()` in controllers — deadlock risk + thread blocking.
+ 
+ 
+| Use Async | Use Sync |
+|-----------|----------|
+| DB queries | Simple calculations |
+| HTTP/API calls | String manipulation |
+| File read/write | In-memory operations |
+| Email/SMS sending | CPU-bound fast work |
+ 
+```csharp
+// Sync is fine — generates a PDF invoice in-memory, no I/O
+[HttpGet("invoice/{id}")]
+public IActionResult GetInvoice(int id)
 {
-    var product = await _db.Products.FindAsync(id);
-    return product is null ? NotFound() : Ok(product);
+    var pdf = _pdfService.Generate(id);  // CPU only, instant
+    return File(pdf, "application/pdf");
 }
 ```
 
@@ -1448,21 +1565,36 @@ public async Task<IActionResult> Get(int id)
 
 ---
 
-**Q65. What are the types of authentication in ASP.NET Core?**
+**Q66. What are the types of authentication in ASP.NET Core?**
 
-- **Cookie authentication** — stores session in a cookie; used in MVC web apps.
-- **JWT (JSON Web Token)** — stateless token-based auth; standard for APIs.
-- **OAuth2** — authorization framework that lets users grant access to third-party apps.
-- **OpenID Connect (OIDC)** — identity layer on top of OAuth2; handles authentication (who are you?).
-- **API Keys** — simple, static keys sent in headers; used for server-to-server calls.
-- **Windows Authentication** — for internal enterprise apps on Windows.
-- **ASP.NET Core Identity** — full user management system (registration, login, roles, claims).
-
+#### 1. Identity Providers (Who issues the identity?)
+ 
+| Provider | Used for |
+|----------|----------|
+| **ASP.NET Core Identity** | Your own app's users |
+| **Azure AD / Entra ID** | Enterprise, Function Apps |
+| **Google / GitHub / Facebook** | Social login |
+| **Okta / Auth0** | Managed identity solution |
+ 
+---
+ 
+#### 2. Authentication Mechanisms (How do you prove who you are?)
+ 
+| Mechanism | Use case | How it works |
+|-----------|----------|--------------|
+| **Cookie** | Web app login | After login, server issues an encrypted cookie. Browser sends it on every request — server validates it. |
+| **JWT** | REST APIs | Server issues a signed token. Client sends it in `Authorization: Bearer <token>` header. Server validates the signature — no DB lookup needed. |
+| **OAuth2 + OIDC** | SSO, social login | OAuth2 delegates access, OIDC adds identity. User logs in via Google/Azure — they issue a token your app trusts. |
+| **API Keys** | Server-to-server | Static key sent in header (`x-api-key`). Simple but no expiry or user context — rotate regularly. |
+| **Windows Auth** | Enterprise intranet | Uses Active Directory credentials. Browser passes Windows identity automatically — no login form needed. |
+| **Managed Identity** | Azure resources | Azure assigns an identity to your resource (Function App, App Service). No credentials stored — Azure handles token exchange automatically. |
+| **Basic Auth** | Legacy/testing only | Username + password sent as Base64 in header. No encryption — always requires HTTPS. Avoid in production. |
+ 
 ---
 
-**Q66. How do you create and validate a JWT token?**
+**Q67. How do you create and validate a JWT token?**
 
-A JWT has three parts: Header (algorithm), Payload (claims), Signature. The server creates the token and the client sends it in the `Authorization: Bearer <token>` header on every request.
+A Json Web Token has three parts: Header (algorithm), Payload (claims), Signature. The server creates the token and the client sends it in the `Authorization: Bearer <token>` header on every request.
 
 ```csharp
 // Generate JWT
@@ -1503,38 +1635,122 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 ---
 
-**Q67. What is the difference between OAuth2 and OpenID Connect?**
+**Q68. What is the difference between OAuth2 and OpenID Connect?**
 
-OAuth2 is an **authorization** framework — it answers "what can this app do on your behalf?". It doesn't tell you who the user is.
-
-OpenID Connect (OIDC) is built on top of OAuth2 and adds **authentication** — it answers "who is this user?". OIDC provides an `id_token` (JWT) with user identity claims like name, email, sub (subject ID).
-
-In short: OAuth2 = access to resources. OIDC = identity of user.
-
----
-
-**Q68. What are the ways to implement authorization in ASP.NET Core?**
-
-- **Role-based** — `[Authorize(Roles = "Admin")]`
-- **Claims-based** — authorize based on specific claim values.
-- **Policy-based** — define named policies with complex requirements.
-- **Resource-based** — check if a user can access a specific resource instance (e.g., "can this user edit this post?").
-- **Attribute-based** — custom attributes that implement `IAuthorizationFilter`.
-
+| | OAuth2 | OpenID Connect |
+|--|--|--|
+| Answers | What can this app do? | Who is this user? |
+| Type | Authorization | Authentication |
+| Token | `access_token` | `access_token` + `id_token` |
+| Use case | API access, social login | SSO, identity verification |
+ 
+> OIDC is built on top of OAuth2 — OAuth2 alone doesn't tell you who the user is.
+ 
+#### Where to get Client ID & Secret?
+ 
+Register your app with the IdP — they issue the credentials.
+ 
+| Provider | Where |
+|----------|-------|
+| **Google** | console.cloud.google.com → APIs & Services → Credentials |
+| **GitHub** | Settings → Developer Settings → OAuth Apps |
+| **Azure AD** | Azure Portal → App Registrations → New Registration |
+| **Auth0 / Okta** | Their dashboard → Applications → Create App |
+ 
+```json
+// Store in appsettings.json — never hardcode in code
+"Authentication": {
+  "Google": {
+    "ClientId": "xxxx.apps.googleusercontent.com",
+    "ClientSecret": "xxxx"
+  }
+}
+```
+ 
+> In production — store in **Azure Key Vault** or **environment variables**, not in code.
+ 
 ```csharp
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("SeniorEmployee", policy =>
-        policy.RequireClaim("EmploymentYears", "5", "6", "7", "8"));
-});
-
-[Authorize(Policy = "SeniorEmployee")]
-public IActionResult GetSensitiveReport() => Ok();
+// OAuth2 — access GitHub API on user's behalf
+builder.Services.AddAuthentication()
+    .AddOAuth("GitHub", options => {
+        options.ClientId = "your-client-id";
+        options.ClientSecret = "your-secret";
+        options.CallbackPath = "/signin-github";
+        options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
+        options.TokenEndpoint = "https://github.com/login/oauth/access_token";
+    });
+ 
+// OIDC — login with Google (identity + access)
+builder.Services.AddAuthentication()
+    .AddOpenIdConnect("Google", options => {
+        options.ClientId = "your-client-id";
+        options.ClientSecret = "your-secret";
+        options.Authority = "https://accounts.google.com";
+        // gives you id_token with name, email, sub
+    });
 ```
 
 ---
 
-**Q69. How do you implement refresh tokens with JWT?**
+**Q69. What are the ways to implement authorization in ASP.NET Core?**
+
+#### 1. Role-based
+```csharp
+[Authorize(Roles = "Admin")]
+public IActionResult Delete() => Ok();
+```
+ 
+#### 2. Claims-based
+```csharp
+[Authorize]
+public IActionResult ViewSalary() {
+    if (!User.HasClaim("Department", "HR")) return Forbid();
+    return Ok();
+}
+```
+ 
+#### 3. Policy-based
+```csharp
+// Setup
+options.AddPolicy("SeniorEmployee", policy =>
+    policy.RequireClaim("EmploymentYears", "5", "6", "7"));
+ 
+// Usage
+[Authorize(Policy = "SeniorEmployee")]
+public IActionResult GetReport() => Ok();
+```
+ 
+#### 4. Resource-based
+```csharp
+// Handler — check if user owns the resource
+protected override Task HandleRequirementAsync(
+    AuthorizationHandlerContext context, OwnerRequirement req, Post post) {
+    if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) == post.OwnerId)
+        context.Succeed(req);
+    return Task.CompletedTask;
+}
+ 
+// Usage
+var auth = await _authService.AuthorizeAsync(User, post, new OwnerRequirement());
+if (!auth.Succeeded) return Forbid();
+```
+ 
+#### 5. Attribute-based (Custom Filter)
+```csharp
+public class MinimumAgeAttribute : Attribute, IAuthorizationFilter {
+    public void OnAuthorization(AuthorizationFilterContext context) {
+        var age = int.Parse(context.HttpContext.User.FindFirst("Age").Value);
+        if (age < 18) context.Result = new ForbidResult();
+    }
+}
+ 
+[MinimumAge(18)]
+public IActionResult ViewContent() => Ok();
+```
+
+---
+
+**Q70. How do you implement refresh tokens with JWT?**
 
 Access tokens are short-lived (15 min–1 hour). When they expire, the client uses a refresh token (long-lived, stored securely) to get a new access token without logging in again.
 
@@ -1552,7 +1768,7 @@ Store refresh tokens in a DB, not JWT, so you can revoke them.
 
 ---
 
-**Q70. What are the caching strategies in Web API?**
+**Q71. What are the caching strategies in Web API?**
 
 - **In-memory caching** — cache in the server process memory using `IMemoryCache`. Fast but not shared across multiple servers.
 - **Distributed caching** — cache in Redis or SQL Server using `IDistributedCache`. Works across multiple server instances.
@@ -1577,14 +1793,6 @@ public class ProductService
     }
 }
 ```
-
----
-
-**Q71. What is the difference between IMemoryCache and IDistributedCache?**
-
-`IMemoryCache` stores data in the application process memory. It's fast but is local to one server — if you have multiple instances, each has its own cache. It's lost on app restart.
-
-`IDistributedCache` stores data in an external store like Redis. It's shared across all server instances, survives restarts, and supports serialization. It's slightly slower due to network overhead but is the right choice for production multi-instance deployments.
 
 ---
 
@@ -1637,7 +1845,7 @@ public async Task<Product> GetProduct(int id)
 - **Database optimization** — add indexes, use read replicas, avoid N+1 queries.
 - **Connection pooling** — reuse DB connections.
 - **Message queues** — offload heavy tasks to background workers via RabbitMQ/Azure Service Bus.
-- **CDN** — cache static assets at edge.
+- **CDN** — cache static assets at edge servers.
 - **Compression** — enable gzip/brotli response compression.
 - **Pagination** — never return unbounded lists.
 
@@ -1683,8 +1891,32 @@ builder.Services.AddHttpClient<IPaymentService, PaymentService>()
 This retries up to 3 times with delays of 2, 4, and 8 seconds. Polly also supports circuit breakers, timeouts, and fallbacks.
 
 ---
+**Q77. Difference between Proxy and Reverse Proxy?**
+ 
+| | Proxy (Forward) | Reverse Proxy |
+|--|--|--|
+| Sits between | Client and internet | Internet and server |
+| Hides | Client identity | Server identity |
+| Used by | Client side | Server side |
+| Use case | Bypass restrictions, anonymity | Load balancing, SSL, caching |
+| Example | VPN, corporate firewall | NGINX, APIM, Cloudflare |
+ 
+```
+// Forward Proxy — hides the client
+Client → [Proxy] → Internet → Server
+         (server sees proxy IP, not client)
+ 
+// Reverse Proxy — hides the server
+Client → Internet → [Reverse Proxy] → Server
+         (client sees proxy URL, not server)
+```
+ 
+- **Proxy** — you ask a friend to buy something for you — the shop doesn't know who you are
+- **Reverse Proxy** — you call a company's main number — you don't know which department picks up
+> API Gateway is a reverse proxy with extra features — auth, rate limiting, analytics.
 
-**Q77. What is an API Gateway and Azure API Management?**
+---
+**Q78. What is an API Gateway and Azure API Management?**
 
 An **API Gateway** is a single entry point for all clients. It handles cross-cutting concerns like authentication, rate limiting, routing, logging, and SSL termination, so individual microservices don't have to.
 
@@ -1726,23 +1958,36 @@ An **API Gateway** is a single entry point for all clients. It handles cross-cut
 
 ---
 
-**Q79. Design a real-time collaboration tool like Google Docs.**
+**Q79. Design an E-commerce Order Processing System.**
 
 **Architecture:**
 
-1. Clients connect via **SignalR** (WebSockets under the hood).
-2. Each keystroke generates an operation — use **Operational Transformation (OT)** or **CRDTs** to handle concurrent edits without conflicts.
-3. Operations are broadcast to all connected clients in the same document room.
-4. Periodically snapshot the full document state to a database.
-5. Use **Redis** as the SignalR backplane so it works across multiple server instances.
-6. Version each operation with a monotonic sequence number so clients can replay missed operations on reconnect.
+1. Angular client calls ASP.NET Core APIs through an **API Gateway**.
+2. **Order Service** validates and stores the order in SQL Server.
+3. Publish an **OrderCreated** event to **Azure Service Bus**.
+4. **Inventory**, **Payment**, and **Notification** services consume the event asynchronously.
+5. Use **Redis** for caching frequently accessed data (e.g., product details).
+6. Store files/images in **Azure Blob Storage** and monitor logs with **Application Insights**.
 
-```
-[Client A] ←→ [SignalR Hub] ←→ [Client B]
-                   ↓
-              [Redis Pub/Sub]
-                   ↓
-          [Document Store (Cosmos DB)]
+```text
+      [Angular Client]
+              │
+              ▼
+        [API Gateway]
+              │
+   ┌──────────┴──────────┐
+   ▼                     ▼
+Order Service      Product Service
+      │
+      ▼
+ Azure Service Bus
+      │
+ ┌────┼─────────┐
+ ▼    ▼         ▼
+Inventory   Payment   Notification
+      │
+      ▼
+ SQL Server / Redis / Blob Storage
 ```
 
 ---
@@ -1799,9 +2044,26 @@ Azure equivalents: **Deployment Slots** in Azure App Service.
 
 ---
 
-**Q84. What is an Azure Function App?**
+**Q84. Azure Function App vs Rest API?**
 
-An Azure Function App is a serverless compute service that runs small pieces of code (functions) in response to triggers without managing infrastructure. You pay only for execution time. It's ideal for event-driven, background processing, and integration tasks.
+| | Azure Function | REST API |
+|--|--|--|
+| Infrastructure | Serverless | Server needed |
+| Cost | Pay per execution | Pay always |
+| Cold start | Yes | No |
+| Stateful | No | Yes |
+| Best for | Event-driven, background tasks | Complex apps, full control |
+ 
+#### Use Function App when
+- Background jobs — emails, image resize, log cleanup
+- Scheduled tasks — nightly cron jobs
+- Event-driven — react to blob upload, queue, DB change
+#### Use REST API when
+- Complex business logic, many endpoints
+- Need full middleware pipeline (auth, logging, filters)
+- Full control over request/response lifecycle
+#### Long-running? → Use Durable Functions
+Stateful, unlimited duration, multi-step workflows — built on top of Azure Functions.
 
 ---
 
@@ -1818,15 +2080,7 @@ An Azure Function App is a serverless compute service that runs small pieces of 
 
 ---
 
-**Q86. What is the difference between Azure Functions Consumption Plan, Premium Plan, and Dedicated Plan?**
-
-- **Consumption Plan** — scales to zero, pay per execution. Cold start latency on first invocation. Best for intermittent workloads.
-- **Premium Plan** — pre-warmed instances (no cold start), VNet integration, more powerful instances. Best for latency-sensitive production workloads.
-- **Dedicated (App Service) Plan** — runs on always-on VMs you already pay for. Best if you have an existing App Service plan or need long-running functions.
-
----
-
-**Q87. How do you write a Timer Trigger function in .NET?**
+**Q86. How do you write a Timer Trigger function in .NET?**
 
 ```csharp
 public class DailyReportFunction
@@ -1846,7 +2100,7 @@ The CRON expression format in Azure Functions is: `{second} {minute} {hour} {day
 
 ---
 
-**Q88. How do you write an HTTP Trigger function?**
+**Q87. How do you write an HTTP Trigger function?**
 
 ```csharp
 public class GetProductFunction
@@ -1869,13 +2123,14 @@ public class GetProductFunction
 
 ---
 
-**Q89. What is Durable Functions?**
+**Q88. What is Durable Functions?**
 
 Durable Functions is an extension of Azure Functions that allows writing stateful workflows as code. It manages state, checkpointing, and retries automatically. Useful for:
 
 - Long-running workflows (fan-out/fan-in, chaining).
 - Human interaction workflows (waiting for approval).
 - Aggregating events over time.
+- Client(Timer/Http/&c) -> Orchestrator -> Activity 
 
 ```csharp
 [FunctionName("OrderWorkflow")]
@@ -1889,30 +2144,91 @@ public static async Task RunOrchestrator(
 ```
 
 ---
+**89. What are entity function in durable function?**
 
-**Q90. How do you inject dependencies into Azure Functions?**
+A **stateful object in the cloud** — persists state across calls, any function can read/update it.
+ 
+| Use case | Example |
+|----------|---------|
+| Counter | API call count per user |
+| Shopping cart | Add/remove items across requests |
+| Rate limiter | Requests per user per minute |
+ 
+```csharp
+[FunctionName("Counter")]
+public static void Counter([EntityTrigger] IDurableEntityContext ctx)
+{
+    int count = ctx.GetState<int>();
+    if (ctx.OperationName == "increment") ctx.SetState(count + 1);
+    if (ctx.OperationName == "get") ctx.Return(count);
+}
+```
+ 
+> Use when multiple functions share state — without managing a DB.
 
-Use `Microsoft.Azure.Functions.Extensions` to add a `Startup` class that registers services with the DI container.
+---
+
+**Q90. How to implement `Service Bus Trigger` Function?**
+
+#### Azure Service Bus - Producer & Consumer
+
+#### Producer (Send Message)
 
 ```csharp
-[assembly: FunctionsStartup(typeof(MyApp.Startup))]
-namespace MyApp
+var client = new ServiceBusClient(connectionString);
+var sender = client.CreateSender("orders");
+
+await sender.SendMessageAsync(new ServiceBusMessage("Order Created"));
+```
+
+#### Consumer (Azure Function)
+
+```csharp
+public class OrderProcessor
 {
-    public class Startup : FunctionsStartup
+    [Function("OrderProcessor")]
+    public void Run(
+        [ServiceBusTrigger("orders", Connection = "ServiceBusConnection")]
+        string message)
     {
-        public override void Configure(IFunctionsHostBuilder builder)
-        {
-            builder.Services.AddSingleton<IProductService, ProductService>();
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Environment.GetEnvironmentVariable("SqlConnection")));
-        }
+        Console.WriteLine(message);
+    }
+}
+```
+
+---
+**Q91 How to implement `Blob Trigger` function?**
+
+#### Azure Blob Trigger - Producer & Consumer
+
+#### Producer (Upload Blob)
+
+```csharp
+var client = new BlobContainerClient(connectionString, "files");
+var blob = client.GetBlobClient("sample.txt");
+
+await blob.UploadAsync(BinaryData.FromString("Hello Blob"), overwrite: true);
+```
+
+#### Consumer (Azure Function)
+
+```csharp
+public class BlobProcessor
+{
+    [Function("BlobProcessor")]
+    public void Run(
+        [BlobTrigger("files/{name}", Connection = "StorageConnection")]
+        string content,
+        string name)
+    {
+        Console.WriteLine($"{name}: {content}");
     }
 }
 ```
 
 ---
 
-**Q91. How do you handle errors and retries in Azure Functions?**
+**Q92. How do you handle errors and retries in Azure Functions?**
 
 - For queue/Service Bus triggers, Azure Functions automatically retries on failure. Configure max retry count in `host.json`.
 - Messages that fail all retries go to the **dead-letter queue**.
@@ -1937,22 +2253,6 @@ namespace MyApp
   }
 }
 ```
-
----
-
-**Q92. What is the difference between Azure Storage Queue and Azure Service Bus?**
-
-| Feature | Storage Queue | Service Bus |
-|---|---|---|
-| Max message size | 64 KB | 256 KB (Standard), 100 MB (Premium) |
-| Message ordering | FIFO best-effort | FIFO guaranteed with sessions |
-| Dead-letter queue | No | Yes |
-| Topics/Subscriptions | No | Yes |
-| Transactions | No | Yes |
-| At-least-once delivery | Yes | Yes |
-| Price | Very cheap | More expensive |
-
-Use Storage Queue for simple, cheap, high-volume scenarios. Use Service Bus for enterprise messaging with ordering, dead-lettering, and pub/sub.
 
 ---
 
