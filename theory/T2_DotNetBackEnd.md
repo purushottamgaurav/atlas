@@ -64,14 +64,29 @@ Values in `appsettings.Development.json` **override** `appsettings.json` in the 
 
 ---
 
-**Q4. What are metapackages in .NET?**
+**Q4. `Package` vs `Metapackage` vs `SDK` in .NET?**
 
-A metapackage is a NuGet package that **bundles many packages together** — you install one package and get everything.
-
-- `Microsoft.AspNetCore.App` — all ASP.NET Core libraries.
-- `Microsoft.NETCore.App` — base .NET runtime libraries.
-
-In modern .NET (5+), these are referenced automatically via the SDK — you rarely reference them manually.
+| | Package | Metapackage | SDK |
+|--|--|--|--|
+| What | Single NuGet library | Bundle of many packages | Build tools + runtime + packages |
+| Example | `Newtonsoft.Json` | `Microsoft.AspNetCore.App` | `Microsoft.NET.Sdk.Web` |
+| Install | Manual via NuGet | One install, gets everything | Auto-included in `.csproj` |
+| Controls | One feature | Entire stack (e.g. ASP.NET Core) | Compile, run, publish |
+ 
+```xml
+<!-- SDK — top of every .csproj, auto-includes base packages -->
+<Project Sdk="Microsoft.NET.Sdk.Web">
+ 
+  <!-- Metapackage — one line pulls in all ASP.NET Core libs -->
+  <PackageReference Include="Microsoft.AspNetCore.App" />
+ 
+  <!-- Package — single library -->
+  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+ 
+</Project>
+```
+ 
+> In .NET 5+, metapackages are included automatically via the SDK — you rarely reference them manually.
 
 ---
 
@@ -175,6 +190,15 @@ services.AddTransient<IEmailBuilder, EmailBuilder>();         // new each time
 // ⚠️ Never inject Scoped into Singleton — Scoped lives shorter, causes bugs
 ```
 
+#### Injection Methods
+ 
+| Method | Example | Use when |
+|--------|---------|----------|
+| Constructor | `public Service(IDep d)` | Default — always prefer |
+| Method | `([FromServices] IDep d)` | One-off in a single action |
+| Property | `[Inject] public IDep D` | Legacy/Autofac only |
+| Manual | `services.GetService<IDep>()` | Dynamic runtime resolution |
+
 ---
 
 **Q10. What is middleware? How do you create custom middleware?**
@@ -225,20 +249,7 @@ app.MapControllers();         // 9. Execute the endpoint
 
 ---
 
-**Q12. Middleware vs Filters — which to use when?**
-
-| | Middleware | Filters |
-|--|--|--|
-| Scope | Entire pipeline | MVC/API action level |
-| Access to MVC context | ❌ | ✅ (ActionContext, etc.) |
-| Use for | Auth, logging, HTTPS, CORS | Validation, exception handling per action |
-| Registered in | `Program.cs` | Controller/Action attributes or globally |
-
-Use **middleware** for cross-cutting concerns at the HTTP level. Use **filters** when you need access to MVC action/controller context.
-
----
-
-**Q13. What are Filters? Types and order?**
+**Q12. What are Filters? Types and order?**
 
 Filters run code at specific points in the MVC pipeline around action execution.
 
@@ -268,6 +279,19 @@ builder.Services.AddControllers(options => {
 [ServiceFilter(typeof(LogActionFilter))]
 public class OrdersController : ControllerBase { }
 ```
+
+---
+
+**Q13. Middleware vs Filters — which to use when?**
+
+| | Middleware | Filters |
+|--|--|--|
+| Scope | Entire pipeline | MVC/API action level |
+| Access to MVC context | ❌ | ✅ (ActionContext, etc.) |
+| Use for | Auth, logging, HTTPS, CORS | Validation, exception handling per action |
+| Registered in | `Program.cs` | Controller/Action attributes or globally |
+
+Use **middleware** for cross-cutting concerns at the HTTP level. Use **filters** when you need access to MVC action/controller context.
 
 ---
 
@@ -305,14 +329,14 @@ Use `IOptions<T>` (singleton), `IOptionsSnapshot<T>` (per-request), or `IOptions
 
 ---
 
-**Q15. How to upgrade from .NET 6 to .NET 8?**
+**Q15. How to upgrade from .NET 6 to .NET 8 to .NET 10?**
 
 1. Update the `TargetFramework` in `.csproj`:
 ```xml
 <TargetFramework>net8.0</TargetFramework>
 ```
 
-2. Update all NuGet packages to their .NET 8 compatible versions.
+2. Update all NuGet packages to their .NET 8/10 compatible versions.
 3. Update `global.json` SDK version if pinned.
 4. Fix any breaking changes (check Microsoft's migration guide).
 5. Run tests to catch regressions.
@@ -326,38 +350,11 @@ upgrade-assistant upgrade MyApp.csproj
 
 ---
 
-## 🔷 Section 3: Dependency Injection & Design Patterns
+## 🔷 Section 3: Design Patterns
 
 ---
 
-**Q16. What is the Factory Pattern with DI?**
-
-When you need to create different implementations at runtime (based on a condition), use a factory registered in DI.
-
-```csharp
-public interface IPaymentGateway { void Pay(decimal amount); }
-public class StripeGateway : IPaymentGateway { public void Pay(decimal a) => Console.WriteLine("Stripe"); }
-public class PayPalGateway : IPaymentGateway { public void Pay(decimal a) => Console.WriteLine("PayPal"); }
-
-public class PaymentGatewayFactory {
-    private readonly IServiceProvider _sp;
-    public PaymentGatewayFactory(IServiceProvider sp) => _sp = sp;
-
-    public IPaymentGateway Create(string type) => type switch {
-        "stripe" => _sp.GetRequiredService<StripeGateway>(),
-        "paypal" => _sp.GetRequiredService<PayPalGateway>(),
-        _ => throw new ArgumentException("Unknown gateway")
-    };
-}
-
-services.AddTransient<StripeGateway>();
-services.AddTransient<PayPalGateway>();
-services.AddSingleton<PaymentGatewayFactory>();
-```
-
----
-
-**Q17. What is Singleton Design Pattern ?**
+**Q16. What is Singleton Design Pattern ?**
 
 Only **one instance** of a class exists throughout the app lifetime.
 
@@ -386,6 +383,52 @@ var b = DatabaseSingleton.GetInstance();
 // a == b ✅
 ```
  **In ASP.NET Core:** `services.AddSingleton<Database>()` does the same thing — one instance for the entire app lifetime.
+
+ ---
+
+**Q17. What is the Factory Pattern with DI?**
+
+Use the **Factory Pattern** when you need to create **different implementations at runtime**. The factory is registered in **DI** and uses `IServiceProvider` to resolve the required implementation.
+
+```csharp
+public interface INotification {void Send(string message);}
+
+public class EmailNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"Email: {message}");
+}
+
+public class SmsNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"SMS: {message}");
+}
+
+public class PushNotification : INotification
+{
+    public void Send(string message) => Console.WriteLine($"Push: {message}");
+}
+
+public class NotificationFactory
+{
+    private readonly IServiceProvider _sp;
+
+    public NotificationFactory(IServiceProvider sp) => _sp = sp;
+
+    public INotification Create(string type) => type switch
+    {
+        "email" => _sp.GetRequiredService<EmailNotification>(),
+        "sms"   => _sp.GetRequiredService<SmsNotification>(),
+        _ => throw new ArgumentException("Unknown type")
+    };
+}
+
+// Usage
+var notification = factory.Create("email");
+notification.Send("Order confirmed!");
+```
+
+**Key Point:** Factory decides **what** to create; **DI** creates and injects the object.
+
 
  ---
 
@@ -442,23 +485,46 @@ Often combined with **MediatR** and **Event Sourcing**.
 
 **Q20. What is the Saga Pattern?**
 
-Used for **long-running distributed transactions** across multiple services. Instead of a single DB transaction, each step succeeds or triggers a **compensating action** to undo previous steps.
+## Saga Pattern
+
+Used for **long-running distributed transactions** across multiple microservices. Instead of a single database transaction, each step either succeeds or triggers a **compensating action** to undo previous successful steps.
 
 | Style | Description |
 |--|--|
-| **Orchestration** | Central coordinator tells each service what to do |
-| **Choreography** | Each service reacts to events — no central control |
+| **Orchestration** | A central coordinator (Saga Orchestrator) tells each service what to do next. |
+| **Choreography** | No central coordinator. Each service reacts to events published by other services. |
 
-```
-// Order Saga (Orchestration):
-1. Create Order → success
-2. Reserve Inventory → success
-3. Charge Payment → FAILS
-4. Compensate: Release Inventory ← undo step 2
-5. Compensate: Cancel Order ← undo step 1
+#### Orchestration Example
+
+```text
+1. Create Order           → Success
+2. Reserve Inventory      → Success
+3. Charge Payment         → FAILS
+4. Release Inventory      ← Compensate Step 2
+5. Cancel Order           ← Compensate Step 1
 ```
 
-Implemented with tools like **MassTransit**, **NServiceBus**, or **Dapr**.
+#### Choreography Example
+
+```text
+OrderCreated
+      ↓
+InventoryReserved
+      ↓
+PaymentFailed
+      ↓
+InventoryReleased
+      ↓
+OrderCancelled
+```
+
+> **Orchestration:** Services communicate via **commands** from an orchestrator.  
+> **Choreography:** Services communicate via **events** without an orchestrator.
+
+| Style | Common Tools |
+|--|--|
+| **Orchestration** | Azure Durable Functions, MassTransit Saga State Machine, NServiceBus Saga, Dapr Workflow |
+| **Choreography** | RabbitMQ, Kafka, Azure Service Bus, MassTransit Event Consumers |
 
 ---
 
