@@ -555,6 +555,106 @@ namespace DotNetConsole
 
         }
 
+        public static void Q60_TwoNumbersTarget()
+        {
+            int[] array = [2,7,11,15];
+            int target = 18;
+            for(int i = 0; i<array.Length;i++)
+            {
+                for( int j = i+ 1; j<array.Length;j++)
+                {
+                    if (array[i] + array[j] == target)
+                    {
+                        Console.WriteLine("[{0},{1}]", array[i], array[j]);
+                        return;
+                    }
+                    
+                }
+            }
+
+        }
+
+        public static void Q63_FindDuplicateNumber()
+        {
+            int[] array = [1, 2, 3, 2, 4, 3];
+
+            HashSet<int> duplicate = new();
+
+            for( int i = 0;i<array.Length;i++)
+            {
+                for(int j =1+i; j<array.Length;j++)
+                {
+                    if (array[i] == array[j])
+                        duplicate.Add(array[i]);
+                }
+            }
+
+            foreach( var c in duplicate)
+            {
+                Console.Write(c);
+
+            }
+        }
+
+        public static void Q65_ZerosToEnd()
+        {
+            int[] array = [0, 1, 0, 3, 12];
+            int[] newArray = new int[array.Length];
+
+            int count = 0;
+            for(int i = 0; i<array.Length;i++)
+            {
+                if (array[i] == 0)
+                {
+                    newArray[array.Length - 1 - i] = 0;
+                }
+                else
+                {
+                    newArray[count] = array[i];
+                    count++;
+                }
+
+            }
+
+            foreach( var v in newArray)
+            {
+                Console.Write(v);
+            }
+        }
+
+        public static void Q68_UnionOfArray()
+        {
+            int[] array1 = [1,2,3];
+            int[] array2 = [3,4,5];
+
+            var length = array1.Length + array2.Length;
+
+            var set = new HashSet<int>();
+
+            foreach(var c in array1)
+            {
+                set.Add(c);
+            }
+
+
+            foreach (var c in array2)
+            {
+                set.Add(c);
+            }
+
+            foreach( var c in set.ToArray())
+            {
+                Console.Write(c);
+            }
+        }
+
+        public static void Q69_ArraySpecificValue()
+        {
+            int[] array = [1, 2, 3, 4];
+
+            Console.WriteLine(array.Contains(3));
+
+        }
 
         public static void Q76_RightTriangle()
         {
@@ -636,7 +736,7 @@ namespace DotNetConsole
 
         }
 
-        public static void Q96_PrimeNumber()
+        public static void Q101_PrimeNumber()
         {
             for (int i = 3; i < 100; i++)
             {
@@ -656,6 +756,18 @@ namespace DotNetConsole
             }
         }
 
+        public static void Q102_Factorial()
+        {
+            int n = 5;
+            int factorial = 1;
+
+            for ( int i = 1; i <= n; i ++)
+            {
+                factorial = factorial * i;
+            }
+
+            Console.WriteLine(factorial);
+        }
 
 
 
