@@ -655,10 +655,14 @@ SQL (Structured Query Language) is the standard language for managing relational
 
 **Q2. What is the difference between DBMS and RDBMS?**
 
-- **DBMS** stores data as files; no relational integrity (e.g., FoxPro, MS Access older versions).
-- **RDBMS** stores data in tables with relationships, enforces ACID and referential integrity (SQL Server, Oracle, PostgreSQL, MySQL).
-
-All modern systems are RDBMS.
+| DBMS | RDBMS |
+|------|--------|
+| Stores data as files or standalone tables. | Stores data in related tables. |
+| No relationships between tables. | Uses **Primary Keys** and **Foreign Keys** for relationships. |
+| Does not enforce referential integrity. | Enforces referential integrity. |
+| Limited transaction support. | Supports **ACID** transactions. |
+| Best for small/single-user applications. | Best for large, multi-user enterprise applications. |
+| **Examples:** FoxPro, dBase | **Examples:** SQL Server, Oracle, PostgreSQL, MySQL |
 
 ---
 
@@ -674,8 +678,12 @@ Use DELETE when you need conditions or rollback. Use TRUNCATE to wipe a table fa
 
 **Q4. What is the difference between WHERE and HAVING?**
 
-- **WHERE** — filters rows **before** grouping. Cannot use aggregate functions.
-- **HAVING** — filters groups **after** `GROUP BY`. Can use aggregate functions.
+| **WHERE** | **HAVING** |
+|-----------|------------|
+| Filters **rows** before grouping. | Filters **groups** after `GROUP BY`. |
+| Applied **before** aggregation. | Applied **after** aggregation. |
+| **Cannot** use aggregate functions (`SUM`, `COUNT`, `AVG`, etc.). | **Can** use aggregate functions. |
+| Can be used with or without `GROUP BY`. | Typically used with `GROUP BY`. |
 
 ```sql
 SELECT Dept, COUNT(*) AS Total
@@ -700,8 +708,13 @@ All require matching column counts and compatible data types.
 
 **Q6. What is the difference between Clustered and Non-Clustered Index?**
 
-- **Clustered Index** — physically sorts and stores table data in index order. Only **one** per table. Created automatically on Primary Key. Fast for range queries.
-- **Non-Clustered Index** — a separate structure that points to the actual rows. You can have **many** per table. Good for columns frequently used in `WHERE` or `JOIN`.
+| **Clustered Index** | **Non-Clustered Index** |
+|----------------------|-------------------------|
+| Physically stores table data in the index order. | Stores only the index; points to the actual data rows. |
+| Only **one** clustered index per table. | Multiple non-clustered indexes can exist on a table. |
+| Faster for **range queries**, sorting, and ordered retrieval. | Faster for **searching**, filtering (`WHERE`), and `JOIN`s. |
+| Usually created on the **Primary Key** by default (unless specified otherwise). | Created on frequently searched columns. |
+
 
 Think of clustered index as the book itself (sorted), non-clustered as the index at the back of the book (pointers).
 
@@ -709,10 +722,17 @@ Think of clustered index as the book itself (sorted), non-clustered as the index
 
 **Q7. What are ACID properties?**
 
-- **Atomicity** — all steps in a transaction succeed or none do.
-- **Consistency** — the database moves from one valid state to another.
-- **Isolation** — concurrent transactions don't interfere with each other.
-- **Durability** — committed data is permanent, even after a crash.
+- **Atomicity** – Either all operations in a transaction succeed or none do.  
+  **Example:** During a bank transfer, money is debited from Account A and credited to Account B. If the credit fails, the debit is rolled back.
+
+- **Consistency** – A transaction always leaves the database in a valid state by enforcing all rules and constraints.  
+  **Example:** An order cannot be created for a customer that doesn't exist (Foreign Key constraint).
+
+- **Isolation** – Concurrent transactions execute independently without affecting each other.  
+  **Example:** While User A is updating a product's price, User B cannot read the uncommitted new price.
+
+- **Durability** – Once a transaction is committed, the changes are permanently saved.  
+  **Example:** After an order is successfully placed and committed, it remains in the database even if the server crashes immediately afterward.
 
 ---
 
@@ -819,14 +839,30 @@ WHERE EXISTS (SELECT 1 FROM Products p WHERE p.productbuyerid = c.customerid);
 
 **Q16. What is the difference between a Subquery and a Correlated Subquery?**
 
-- **Subquery** — runs once, independently of the outer query.
-- **Correlated Subquery** — references the outer query and runs **once per outer row**. Slower but useful for row-by-row checks.
 
+| **Subquery** | **Correlated Subquery** |
+|--------------|-------------------------|
+| Runs **once**. | Runs **once per outer row**. |
+| Independent of the outer query. | References the outer query. |
+| Faster. | Slower. |
+
+**Subquery**
 ```sql
--- Correlated
-SELECT * FROM Customers c
-WHERE c.expense > (SELECT AVG(expense) FROM Customers WHERE customerid <= c.customerid);
+SELECT * FROM Employees
+WHERE Salary > (SELECT AVG(Salary) FROM Employees);
 ```
+> `AVG(Salary)` is calculated **once**.
+
+**Correlated Subquery**
+```sql
+SELECT * FROM Customers c
+WHERE c.Expense > (
+    SELECT AVG(Expense)
+    FROM Customers
+    WHERE CustomerId <= c.CustomerId
+);
+```
+> The inner query runs **for each customer**.
 
 ---
 
@@ -845,14 +881,25 @@ Use a subquery for simple one-off inline filtering.
 
 **Q18. What is a Recursive CTE?**
 
-A CTE that references itself. It has two parts: an **anchor** member (base case) and a **recursive** member, combined with `UNION ALL`. Used for hierarchies (employee-manager), tree traversal, generating sequences.
+A **Recursive CTE** is a CTE that **calls itself** to retrieve hierarchical data like **employee-manager**, **folders**, or **categories**.
+
+It has **2 parts**:
+- **Anchor Member** – Starting point (e.g., CEO).
+- **Recursive Member** – Repeatedly finds the next level using `UNION ALL`.
 
 ```sql
 WITH OrgChart AS (
-    SELECT Id, ManagerId, 0 AS Lvl FROM Employees WHERE ManagerId IS NULL
+    -- Anchor
+    SELECT Id, ManagerId
+    FROM Employees
+    WHERE ManagerId IS NULL
+
     UNION ALL
-    SELECT e.Id, e.ManagerId, oc.Lvl + 1
-    FROM Employees e JOIN OrgChart oc ON e.ManagerId = oc.Id
+
+    -- Recursive
+    SELECT e.Id, e.ManagerId
+    FROM Employees e
+    JOIN OrgChart oc ON e.ManagerId = oc.Id
 )
 SELECT * FROM OrgChart;
 ```
@@ -877,8 +924,15 @@ Other useful ones: `LAG`, `LEAD`, `NTILE`, `SUM/AVG OVER (...)`.
 - **UNPIVOT** — does the reverse, columns into rows.
 
 ```sql
-SELECT * FROM (SELECT DepartmentId, Salary FROM Employees) src
-PIVOT (SUM(Salary) FOR DepartmentId IN ([1],[2],[3])) pvt;
+-- PIVOT
+SELECT * FROM Employees
+PIVOT (SUM(Salary) FOR DepartmentId IN ([1],[2])) p;
+```
+
+```sql
+-- UNPIVOT
+SELECT * FROM DeptSalary
+UNPIVOT (Salary FOR DepartmentId IN ([1],[2])) u;
 ```
 
 ---
@@ -909,8 +963,12 @@ SELECT COALESCE(MiddleName, NickName, 'N/A') FROM Employees;
 
 **Q23. What is the difference between Local and Global Temporary Tables?**
 
-- **Local (#table)** — visible only to the current session. Dropped when the session ends.
-- **Global (##table)** — visible to all sessions. Dropped when the last session using it disconnects.
+| **Local Temp Table (`#`)** | **Global Temp Table (`##`)** |
+|----------------------------|------------------------------|
+| Visible only to the **current session**. | Visible to **all sessions**. |
+| Created with a single `#`. | Created with a double `##`. |
+| Automatically dropped when the **creating session ends**. | Dropped when the **last session using it ends**. |
+| Used for session-specific temporary data. | Used to share temporary data across sessions. |
 
 Both are physically stored in `tempdb`.
 
@@ -927,7 +985,8 @@ Both are physically stored in `tempdb`.
 | Statistics | Yes | No |
 | Recompilation | More likely | Less likely |
 
-Use temp tables for large datasets or when you need indexes/stats. Use table variables for small, short-lived data in a batch.
+Use temp tables for large datasets or when you need indexes/stats. 
+Use table variables for small, short-lived data in a batch.
 
 ---
 
@@ -962,7 +1021,13 @@ SELECT Id, Name, Dept FROM Employees WHERE IsActive = 1;
 
 **Q27. What is an Indexed View / Materialized View?**
 
-A regular view runs its query every time. An **indexed view** (SQL Server's term for a materialized view) physically stores the result on disk with a unique clustered index. Reads are fast, but every base table change must update the indexed view.
+
+| **Regular View** | **Indexed View** |
+|------------------|------------------|
+| Stores only the SQL query. | Stores the query result on disk. |
+| Executes the query every time it is accessed. | Reads precomputed data, so queries are faster. |
+| No extra storage. | Requires additional storage. |
+| Faster updates. | Slower updates because the view must also be updated. |
 
 ```sql
 CREATE VIEW dbo.vw_Sales WITH SCHEMABINDING AS
@@ -992,14 +1057,25 @@ Triggers have access to `INSERTED` and `DELETED` virtual tables with new and old
 A cursor lets you process rows one at a time, like an iterator. Useful for row-by-row logic that can't be expressed in set-based SQL — but **avoid cursors when a set-based query works**, they are much slower.
 
 ```sql
-DECLARE cur CURSOR FOR SELECT Id FROM Customers;
-OPEN cur;
-FETCH NEXT FROM cur INTO @id;
-WHILE @@FETCH_STATUS = 0 BEGIN
-    -- per-row logic
-    FETCH NEXT FROM cur INTO @id;
+DECLARE @EmpId INT;
+
+DECLARE EmpCursor CURSOR FOR
+SELECT EmployeeId
+FROM Employees;
+
+OPEN EmpCursor;
+
+FETCH NEXT FROM EmpCursor INTO @EmpId;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    PRINT 'Processing Employee: ' + CAST(@EmpId AS VARCHAR);
+
+    FETCH NEXT FROM EmpCursor INTO @EmpId;
 END
-CLOSE cur; DEALLOCATE cur;
+
+CLOSE EmpCursor;
+DEALLOCATE EmpCursor;
 ```
 
 ---
@@ -1009,10 +1085,23 @@ CLOSE cur; DEALLOCATE cur;
 A transaction is a group of SQL statements that must all succeed or all fail together. Needed to keep data consistent — e.g., transferring money: debit one account and credit another must both happen or neither.
 
 ```sql
-BEGIN TRANSACTION;
-    UPDATE Accounts SET Balance -= 500 WHERE Id = 1;
-    UPDATE Accounts SET Balance += 500 WHERE Id = 2;
-COMMIT;  -- or ROLLBACK if something fails
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    UPDATE Accounts
+    SET Balance = Balance - 500
+    WHERE Id = 1;
+
+    UPDATE Accounts
+    SET Balance = Balance + 500
+    WHERE Id = 2;
+
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
 ```
 
 ---
@@ -1053,6 +1142,21 @@ Prevention:
 - **Pessimistic** — locks rows when read so no one else can modify them. Safe but blocks readers/writers. Use when conflicts are frequent.
 - **Optimistic** — no locks; checks at save time whether the row was modified since it was read (using a `RowVersion` / `Timestamp`). If yes, rejects with concurrency error. Use when conflicts are rare (most web apps).
 
+**Pessimistic** – **Locks the row** while editing. Other users must wait.
+  ```sql
+  SELECT * FROM Accounts
+  WITH (UPDLOCK)
+  WHERE Id = 1;
+  ```
+
+**Optimistic** – **No lock**. Checks `RowVersion` before updating.
+  ```sql
+  UPDATE Accounts
+  SET Balance = 5000
+  WHERE Id = 1
+    AND RowVersion = @OldRowVersion;
+  ```
+
 ---
 
 **Q34. What is the NOLOCK hint and when should you avoid it?**
@@ -1085,14 +1189,21 @@ Making queries run faster and use fewer resources:
 
 **Q36. What is a SARGable query?**
 
-SARG = Search ARGument. A query is **SARGable** if it can use indexes effectively. Wrapping an indexed column in a function makes it **non-SARGable**.
+**SARGable (Search ARGument Able)** means a query is written so SQL Server can **use an index efficiently**. This usually means comparing the **column directly** instead of applying functions to it.
+
+❌ **Non-SARGable** (can't efficiently use the index)
 
 ```sql
--- ❌ Non-SARGable (function on column)
-SELECT * FROM Orders WHERE YEAR(OrderDate) = 2023;
+SELECT * FROM Orders
+WHERE YEAR(OrderDate) = 2023;
+```
 
--- ✅ SARGable (range on bare column)
-SELECT * FROM Orders WHERE OrderDate >= '2023-01-01' AND OrderDate < '2024-01-01';
+✅ **SARGable** (can use the index)
+
+```sql
+SELECT * FROM Orders
+WHERE OrderDate >= '2023-01-01'
+  AND OrderDate < '2024-01-01';
 ```
 
 ---
