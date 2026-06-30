@@ -1007,12 +1007,24 @@ Azure Repos = Git hosting inside Azure DevOps. Standard Git flow:
 
 ---
 
-**Q73. What is the difference between Classic (Build/Release) and YAML Pipelines?**
+**Q73. What is CI/CD pipeline?**
 
-- **Classic Pipelines** — visual designer in the Portal. Separate **Build** (CI) and **Release** (CD) pipelines. Legacy.
-- **YAML Pipelines** — pipeline defined as code in `azure-pipelines.yml` in the repo. Versioned with the app, easier code review, can be templated.
+A **CI/CD pipeline** is an automated workflow that **builds, tests, and deploys** an application whenever code is committed.
 
-Microsoft recommends **YAML for all new pipelines**. Classic Release is still supported but no new features.
+| CI (Continuous Integration) | CD (Continuous Delivery/Deployment) |
+|------------------------------|--------------------------------------|
+| Automatically builds the application | Automatically deploys the application |
+| Runs unit/integration tests | Deploys to Dev, QA, and Production |
+| Detects issues early | Delivers updates quickly and reliably |
+
+**Pipeline Flow:**
+
+```text
+Code Commit → Build → Test → Deploy
+```
+
+**Example:**  
+A developer pushes code to GitHub. An Azure DevOps pipeline automatically builds the application, runs tests, and deploys it to Azure.
 
 ---
 

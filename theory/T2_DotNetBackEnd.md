@@ -2067,16 +2067,27 @@ Stateful, unlimited duration, multi-step workflows — built on top of Azure Fun
 
 ---
 
-**Q86. What are the different trigger types in Azure Functions?**
+**Q86. Azure Function App vs Azure Logic App?**
 
-- **HTTP Trigger** — invoked by an HTTP request. Used to build serverless APIs.
-- **Timer Trigger** — runs on a CRON schedule (e.g., every hour).
-- **Blob Trigger** — fires when a file is added or updated in Azure Blob Storage.
-- **Queue Trigger** — processes messages from Azure Storage Queue.
-- **Service Bus Trigger** — processes messages from Azure Service Bus.
-- **Event Hub Trigger** — processes events from Azure Event Hubs (high-throughput streaming).
-- **Cosmos DB Trigger** — fires on document changes via change feed.
-- **Event Grid Trigger** — reacts to events from Azure Event Grid.
+| Azure Function App | Azure Logic App |
+|--------------------|-----------------|
+| Code-first | Low-code / No-code |
+| Used for custom business logic | Used for workflow automation and integrations |
+| Best for calculations, processing, APIs | Best for connecting services and approvals |
+
+**Use Azure Function App when:**
+- You need to write custom code.
+- You have complex business logic or data processing.
+
+**Example:**  
+A customer uploads an image → Azure Function resizes it, generates thumbnails, and stores the processed images.
+
+**Use Azure Logic App when:**
+- You need to automate workflows or integrate multiple services.
+- Little or no custom coding is required.
+
+**Example:**  
+A leave request is submitted → Send approval email → Manager approves → Update HR system → Notify employee.
 
 ---
 
