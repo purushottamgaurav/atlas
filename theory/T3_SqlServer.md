@@ -2000,7 +2000,34 @@ end catch
 
 ---
 
-**Q41. Create a view for high spenders (expense > 80).**
+**Q41. Insert multiple rows in a transaction. If one insert fails, rollback only that part using a savepoint, not the whole transaction.**
+
+```sql
+BEGIN TRY
+    BEGIN TRANSACTION
+
+        INSERT INTO Customers VALUES (101, 'A', 100, '2024-01-01')
+        SAVE TRANSACTION sp1
+
+        INSERT INTO Customers VALUES (102, 'B', 200, '2024-01-01')
+        SAVE TRANSACTION sp2
+
+        -- this will fail
+        INSERT INTO Customers VALUES (101, 'Duplicate', 300, '2024-01-01')
+
+    COMMIT TRANSACTION
+
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION sp2
+
+    SELECT ERROR_MESSAGE() AS ErrorMessage
+END CATCH
+```
+
+---
+
+**Q42. Create a view for high spenders (expense > 80).**
 
 ```sql
 create view vw_HighSpenders as
@@ -2013,7 +2040,7 @@ select * from vw_HighSpenders
 
 ---
 
-**Q42. CTE to list customers above average expense.**
+**Q43. CTE to list customers above average expense.**
 
 ```sql
 with AvgCTE as (
@@ -2027,23 +2054,33 @@ where c.expense > a.AvgExp
 
 ---
 
-**Q43. AFTER-INSERT trigger that logs the new customer id.**
+**Q44. AFTER-INSERT trigger that logs the customer info in Audit table.**
 
 ```sql
-create trigger trig_LogInsert
-on Customers
-after insert
-as
-begin
-    declare @newid int
-    select @newid = customerid from inserted
-    print 'New customer added with ID: ' + cast(@newid as varchar)
-end
+CREATE TABLE CustomerAudit
+(
+    AuditId INT IDENTITY PRIMARY KEY,
+    CustomerId INT,
+    ActionType VARCHAR(20),
+    ActionDate DATETIME
+);
+
+CREATE TRIGGER trg_Customer_Insert
+ON Customers
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO CustomerAudit(CustomerId, ActionType, ActionDate)
+    SELECT CustomerId,
+           'INSERT',
+           GETDATE()
+    FROM inserted;
+END;
 ```
 
 ---
 
-**Q44. Delete duplicate products keeping the one with the highest productid.**
+**Q45. Delete duplicate products keeping the one with the highest productid.**
 
 ```sql
 delete from Products
@@ -2056,28 +2093,29 @@ where productid not in (
 
 ---
 
-**Q45. Add an `email` column to Customers and then drop it.**
+**Q46. Add an `Email` column to `Customers` and make it unique.**
 
 ```sql
-alter table Customers add email varchar(100)
-alter table Customers drop column email
+ALTER TABLE Customers
+ADD Email VARCHAR(100);
+
+ALTER TABLE Customers
+ADD CONSTRAINT UQ_Customers_Email UNIQUE (Email);
 ```
 
 ---
 
-**Q46. Create a clustered index on expense and a non-clustered index on customername.**
+**Q47. Create a filtered index for customers with expense greater than 5000.**
 
 ```sql
-create clustered index    IX_C_Expense on Customers(expense)
-create nonclustered index IX_NC_Name   on Customers(customername)
-
-drop index IX_C_Expense on Customers
-drop index IX_NC_Name   on Customers
+CREATE INDEX IX_Customers_HighExpense
+ON Customers(Expense)
+WHERE Expense > 5000;
 ```
 
 ---
 
-**Q47. Recreate the Products FK with ON DELETE CASCADE.**
+**Q48. Recreate the Products FK with ON DELETE CASCADE.**
 
 ```sql
 alter table Products drop constraint FK_buyer
@@ -2090,37 +2128,34 @@ alter table Products
 
 ---
 
-**Q48. Pivot — show total expense per customer as columns.**
+**Q49. Display the total product price for each buyer as separate columns using `PIVOT`**
 
 ```sql
-select
-    sum(case when customername = 'Rahul1' then expense else 0 end) as Rahul1,
-    sum(case when customername = 'Priya'  then expense else 0 end) as Priya,
-    sum(case when customername = 'Gaurav' then expense else 0 end) as Gaurav
-from Customers
+SELECT *
+FROM (
+    SELECT ProductBuyerId, ProductPrice
+    FROM Products
+) AS SourceTable
+PIVOT (
+    SUM(ProductPrice)
+    FOR ProductBuyerId IN ([1], [2], [3])
+) AS PivotTable;
 ```
 
 ---
 
-**Q49. Compare SCOPE_IDENTITY, @@IDENTITY, and IDENT_CURRENT after a Credentials insert.**
+**Q50. Insert a new credential and retrieve the generated identity value.**
 
 ```sql
-insert into Credentials values ('newuser','pass123')
-select scope_identity()            as ScopeIdentity,
-       @@identity                  as AtAtIdentity,
-       ident_current('Credentials') as IdentCurrent
+INSERT INTO Credentials (CredUsername, CredPassword)
+VALUES ('newuser', 'pass123');
+
+SELECT SCOPE_IDENTITY() AS NewCredentialId;
 ```
 
 ---
 
-**Q50. Comma-separated list of product names per buyer using STRING_AGG (SQL Server 2017+).**
-
-```sql
-select productbuyerid,
-       string_agg(productname, ', ') within group (order by productname) as Products
-from Products
-group by productbuyerid
-```
+>End Of Document
 
 ---
 
