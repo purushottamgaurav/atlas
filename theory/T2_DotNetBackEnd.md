@@ -1934,7 +1934,7 @@ An **API Gateway** is a single entry point for all clients. It handles cross-cut
 
 ---
 
-**Q78. Design a notification system for email sending.**
+**Q79. Design a notification system for email sending.**
 
 **Architecture:**
 
@@ -1958,7 +1958,7 @@ An **API Gateway** is a single entry point for all clients. It handles cross-cut
 
 ---
 
-**Q79. Design an E-commerce Order Processing System.**
+**Q80. Design an E-commerce Order Processing System.**
 
 **Architecture:**
 
@@ -1992,7 +1992,7 @@ Inventory   Payment   Notification
 
 ---
 
-**Q80. How do you ensure data consistency in a distributed system?**
+**Q81. How do you ensure data consistency in a distributed system?**
 
 - **Eventual consistency** — accept that data will be consistent "eventually" after all nodes sync. Acceptable for non-critical data.
 - **Distributed transactions (Saga pattern)** — coordinate across services using a series of local transactions and compensating transactions on failure.
@@ -2002,7 +2002,7 @@ Inventory   Payment   Notification
 
 ---
 
-**Q81. How would you migrate a database in production safely?**
+**Q82. How would you migrate a database in production safely?**
 
 1. Use **EF Core migrations** or **Flyway** to version-control schema changes.
 2. Test migrations on a staging environment that mirrors production.
@@ -2019,7 +2019,7 @@ dotnet ef migrations list
 
 ---
 
-**Q82. What is the Outbox Pattern?**
+**Q83. What is the Outbox Pattern?**
 
 The Outbox pattern solves the problem of "write to DB and publish event atomically". Without it, if the service writes to DB then crashes before publishing, the event is lost.
 
@@ -2032,7 +2032,7 @@ Solution: write the domain record AND the outbound event to the same DB in a sin
 
 ---
 
-**Q83. What is blue-green deployment?**
+**Q84. What is blue-green deployment?**
 
 Blue-green deployment runs two identical production environments. "Blue" is live; "Green" is the new version. You deploy and test Green while Blue serves traffic. Once Green is verified, you switch the load balancer to point to Green. If something goes wrong, you switch back to Blue instantly. Zero downtime.
 
@@ -2044,7 +2044,7 @@ Azure equivalents: **Deployment Slots** in Azure App Service.
 
 ---
 
-**Q84. Azure Function App vs Rest API?**
+**Q85. Azure Function App vs Rest API?**
 
 | | Azure Function | REST API |
 |--|--|--|
@@ -2067,20 +2067,31 @@ Stateful, unlimited duration, multi-step workflows — built on top of Azure Fun
 
 ---
 
-**Q85. What are the different trigger types in Azure Functions?**
+**Q86. Azure Function App vs Azure Logic App?**
 
-- **HTTP Trigger** — invoked by an HTTP request. Used to build serverless APIs.
-- **Timer Trigger** — runs on a CRON schedule (e.g., every hour).
-- **Blob Trigger** — fires when a file is added or updated in Azure Blob Storage.
-- **Queue Trigger** — processes messages from Azure Storage Queue.
-- **Service Bus Trigger** — processes messages from Azure Service Bus.
-- **Event Hub Trigger** — processes events from Azure Event Hubs (high-throughput streaming).
-- **Cosmos DB Trigger** — fires on document changes via change feed.
-- **Event Grid Trigger** — reacts to events from Azure Event Grid.
+| Azure Function App | Azure Logic App |
+|--------------------|-----------------|
+| Code-first | Low-code / No-code |
+| Used for custom business logic | Used for workflow automation and integrations |
+| Best for calculations, processing, APIs | Best for connecting services and approvals |
+
+**Use Azure Function App when:**
+- You need to write custom code.
+- You have complex business logic or data processing.
+
+**Example:**  
+A customer uploads an image → Azure Function resizes it, generates thumbnails, and stores the processed images.
+
+**Use Azure Logic App when:**
+- You need to automate workflows or integrate multiple services.
+- Little or no custom coding is required.
+
+**Example:**  
+A leave request is submitted → Send approval email → Manager approves → Update HR system → Notify employee.
 
 ---
 
-**Q86. How do you write a Timer Trigger function in .NET?**
+**Q87. How do you write a Timer Trigger function in .NET?**
 
 ```csharp
 public class DailyReportFunction
@@ -2100,7 +2111,7 @@ The CRON expression format in Azure Functions is: `{second} {minute} {hour} {day
 
 ---
 
-**Q87. How do you write an HTTP Trigger function?**
+**Q88. How do you write an HTTP Trigger function?**
 
 ```csharp
 public class GetProductFunction
@@ -2123,7 +2134,7 @@ public class GetProductFunction
 
 ---
 
-**Q88. What is Durable Functions?**
+**Q89. What is Durable Functions?**
 
 Durable Functions is an extension of Azure Functions that allows writing stateful workflows as code. It manages state, checkpointing, and retries automatically. Useful for:
 
@@ -2144,7 +2155,7 @@ public static async Task RunOrchestrator(
 ```
 
 ---
-**89. What are entity function in durable function?**
+**Q90. What are entity function in durable function?**
 
 A **stateful object in the cloud** — persists state across calls, any function can read/update it.
  
@@ -2168,7 +2179,7 @@ public static void Counter([EntityTrigger] IDurableEntityContext ctx)
 
 ---
 
-**Q90. How to implement `Service Bus Trigger` Function?**
+**Q91. How to implement `Service Bus Trigger` Function?**
 
 #### Azure Service Bus - Producer & Consumer
 
@@ -2197,7 +2208,7 @@ public class OrderProcessor
 ```
 
 ---
-**Q91 How to implement `Blob Trigger` function?**
+**Q92 How to implement `Blob Trigger` function?**
 
 #### Azure Blob Trigger - Producer & Consumer
 
@@ -2228,7 +2239,7 @@ public class BlobProcessor
 
 ---
 
-**Q92. How do you handle errors and retries in Azure Functions?**
+**Q93. How do you handle errors and retries in Azure Functions?**
 
 - For queue/Service Bus triggers, Azure Functions automatically retries on failure. Configure max retry count in `host.json`.
 - Messages that fail all retries go to the **dead-letter queue**.
@@ -2260,7 +2271,7 @@ public class BlobProcessor
 
 ---
 
-**Q93. There is a memory leak causing daily restarts. How do you troubleshoot?**
+**Q94. There is a memory leak causing daily restarts. How do you troubleshoot?**
 
 1. Take a **heap snapshot** using dotMemory, PerfView, or `dotnet-dump` before the app crashes.
 2. Analyze the snapshot — look for objects that should have been GC'd but are still alive.
@@ -2274,7 +2285,7 @@ public class BlobProcessor
 
 ---
 
-**Q94. You need to integrate with a third-party payment API that sometimes goes down. How do you handle this?**
+**Q95. You need to integrate with a third-party payment API that sometimes goes down. How do you handle this?**
 
 - Wrap all calls in a **Polly circuit breaker** — stop calling a failing service for a period to let it recover.
 - Use **retry with exponential backoff** for transient failures.
@@ -2287,24 +2298,6 @@ services.AddHttpClient<IPaymentService, PaymentService>()
     .AddTransientHttpErrorPolicy(p => p.RetryAsync(3))
     .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
 ```
-
----
-
-**Q95. How do you implement idempotency in a REST API?**
-
-An idempotent API produces the same result when called multiple times with the same input. For POST endpoints (which aren't naturally idempotent), use an **idempotency key** sent by the client in a header.
-
-```
-POST /api/payments
-Idempotency-Key: abc-123-xyz
-```
-
-On the server:
-1. Check if `abc-123-xyz` exists in a cache/DB.
-2. If yes, return the stored response.
-3. If no, process the request, store the result with the key, return the result.
-
-This ensures retries after network failures don't create duplicate records.
 
 ---
 

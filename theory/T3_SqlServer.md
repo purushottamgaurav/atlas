@@ -686,11 +686,11 @@ Use DELETE when you need conditions or rollback. Use TRUNCATE to wipe a table fa
 | Can be used with or without `GROUP BY`. | Typically used with `GROUP BY`. |
 
 ```sql
-SELECT Dept, COUNT(*) AS Total
-FROM Employees
-WHERE Age > 25            -- filters rows first
-GROUP BY Dept
-HAVING COUNT(*) > 5;      -- filters groups after
+SELECT Expense, COUNT(*) AS TotalCustomers
+FROM Customers
+WHERE Expense > 25000          -- Filters rows first
+GROUP BY Expense
+HAVING COUNT(*) > 5;           -- Filters groups after
 ```
 
 ---
@@ -706,21 +706,7 @@ All require matching column counts and compatible data types.
 
 ---
 
-**Q6. What is the difference between Clustered and Non-Clustered Index?**
-
-| **Clustered Index** | **Non-Clustered Index** |
-|----------------------|-------------------------|
-| Physically stores table data in the index order. | Stores only the index; points to the actual data rows. |
-| Only **one** clustered index per table. | Multiple non-clustered indexes can exist on a table. |
-| Faster for **range queries**, sorting, and ordered retrieval. | Faster for **searching**, filtering (`WHERE`), and `JOIN`s. |
-| Usually created on the **Primary Key** by default (unless specified otherwise). | Created on frequently searched columns. |
-
-
-Think of clustered index as the book itself (sorted), non-clustered as the index at the back of the book (pointers).
-
----
-
-**Q7. What are ACID properties?**
+**Q6. What are ACID properties?**
 
 - **Atomicity** – Either all operations in a transaction succeed or none do.  
   **Example:** During a bank transfer, money is debited from Account A and credited to Account B. If the credit fails, the debit is rolled back.
@@ -736,7 +722,7 @@ Think of clustered index as the book itself (sorted), non-clustered as the index
 
 ---
 
-**Q8. What is the difference between a Stored Procedure and a Function?**
+**Q7. What is the difference between a Stored Procedure and a Function?**
 
 | Feature | Stored Procedure | Function |
 |---|---|---|
@@ -750,7 +736,7 @@ Use functions for calculations used inside queries. Use stored procedures for bu
 
 ---
 
-**Q9. What is normalization? Explain 1NF, 2NF, 3NF, and BCNF.**
+**Q8. What is normalization? Explain 1NF, 2NF, 3NF, and BCNF.**
 
 Normalization organizes tables to reduce data redundancy and improve integrity.
 
@@ -761,7 +747,7 @@ Normalization organizes tables to reduce data redundancy and improve integrity.
 
 ---
 
-**Q10. What is denormalization and when do you use it?**
+**Q9. What is denormalization and when do you use it?**
 
 Denormalization deliberately introduces redundancy into a normalized database to improve read performance. You duplicate data or pre-compute joins so queries run faster — at the cost of more storage and more complex writes.
 
@@ -772,7 +758,7 @@ Use it for:
 
 ---
 
-**Q11. What are SQL Constraints?**
+**Q10. What are SQL Constraints?**
 
 Constraints enforce rules on data in a table:
 
@@ -785,7 +771,7 @@ Constraints enforce rules on data in a table:
 
 ---
 
-**Q12. What is the difference between Primary Key and Unique Key?**
+**Q11. What is the difference between Primary Key and Unique Key?**
 
 | Feature | Primary Key | Unique Key |
 |---|---|---|
@@ -796,7 +782,7 @@ Constraints enforce rules on data in a table:
 
 ---
 
-**Q13. What is a Foreign Key and what is referential integrity?**
+**Q12. What is a Foreign Key and what is referential integrity?**
 
 A **Foreign Key** is a column in one table that references the primary key of another table, enforcing **referential integrity** — you can't insert a child row pointing to a non-existent parent.
 
@@ -808,7 +794,7 @@ Cascade options on FKs:
 
 ---
 
-**Q14. What are the different types of JOINs?**
+**Q13. What are the different types of JOINs?**
 
 - **INNER JOIN** — rows with a match in both tables.
 - **LEFT JOIN** — all rows from left, matching from right (NULL if no match).
@@ -819,25 +805,35 @@ Cascade options on FKs:
 
 ---
 
-**Q15. What is the difference between EXISTS and IN?**
+**Q14. What is the difference between EXISTS and IN?**
 
 - **IN** compares the column to a list/subquery of values.
 - **EXISTS** checks whether the subquery returns at least one row; doesn't care about the value.
 
 ```sql
--- IN
-SELECT * FROM Customers WHERE customerid IN (SELECT productbuyerid FROM Products);
+SELECT *
+FROM Customers
+WHERE CustomerId IN (
+    SELECT ProductBuyerId
+    FROM Products
+);
+```
 
--- EXISTS (often faster on large subqueries; stops at first match)
-SELECT * FROM Customers c
-WHERE EXISTS (SELECT 1 FROM Products p WHERE p.productbuyerid = c.customerid);
+```sql
+SELECT *
+FROM Customers c
+WHERE EXISTS (
+    SELECT 1
+    FROM Products p
+    WHERE p.ProductBuyerId = c.CustomerId
+);
 ```
 
 `EXISTS` handles NULLs better than `NOT IN`.
 
 ---
 
-**Q16. What is the difference between a Subquery and a Correlated Subquery?**
+**Q15. What is the difference between a Subquery and a Correlated Subquery?**
 
 
 | **Subquery** | **Correlated Subquery** |
@@ -846,27 +842,33 @@ WHERE EXISTS (SELECT 1 FROM Products p WHERE p.productbuyerid = c.customerid);
 | Independent of the outer query. | References the outer query. |
 | Faster. | Slower. |
 
-**Subquery**
-```sql
-SELECT * FROM Employees
-WHERE Salary > (SELECT AVG(Salary) FROM Employees);
-```
-> `AVG(Salary)` is calculated **once**.
 
-**Correlated Subquery**
 ```sql
-SELECT * FROM Customers c
+SELECT *
+FROM Customers
+WHERE Expense > (
+    SELECT AVG(Expense)
+    FROM Customers
+);
+```
+
+> `AVG(Expense)` is calculated **once**.
+
+```sql
+SELECT *
+FROM Customers c
 WHERE c.Expense > (
     SELECT AVG(Expense)
     FROM Customers
     WHERE CustomerId <= c.CustomerId
 );
 ```
+
 > The inner query runs **for each customer**.
 
 ---
 
-**Q17. What is a CTE and when would you use it over a Subquery?**
+**Q16. What is a CTE and when would you use it over a Subquery?**
 
 A **CTE (Common Table Expression)** is a named temporary result set defined with `WITH` at the top of a query.
 
@@ -879,7 +881,7 @@ Use a subquery for simple one-off inline filtering.
 
 ---
 
-**Q18. What is a Recursive CTE?**
+**Q17. What is a Recursive CTE?**
 
 A **Recursive CTE** is a CTE that **calls itself** to retrieve hierarchical data like **employee-manager**, **folders**, or **categories**.
 
@@ -906,7 +908,7 @@ SELECT * FROM OrgChart;
 
 ---
 
-**Q19. What are Window Functions? Explain RANK, DENSE_RANK, ROW_NUMBER.**
+**Q18. What are Window Functions? Explain RANK, DENSE_RANK, ROW_NUMBER.**
 
 Window functions perform calculations across a set of rows related to the current row, without collapsing rows like `GROUP BY`.
 
@@ -918,26 +920,32 @@ Other useful ones: `LAG`, `LEAD`, `NTILE`, `SUM/AVG OVER (...)`.
 
 ---
 
-**Q20. What is PIVOT and UNPIVOT?**
+**Q19. What is PIVOT and UNPIVOT?**
 
 - **PIVOT** — rotates row data into columns (e.g., monthly totals as columns).
 - **UNPIVOT** — does the reverse, columns into rows.
 
 ```sql
--- PIVOT
-SELECT * FROM Employees
-PIVOT (SUM(Salary) FOR DepartmentId IN ([1],[2])) p;
+SELECT *
+FROM Products
+PIVOT (
+    SUM(ProductPrice)
+    FOR ProductBuyerId IN ([1], [2])
+) p;
 ```
 
 ```sql
--- UNPIVOT
-SELECT * FROM DeptSalary
-UNPIVOT (Salary FOR DepartmentId IN ([1],[2])) u;
+SELECT *
+FROM BuyerProductPrice
+UNPIVOT (
+    ProductPrice
+    FOR ProductBuyerId IN ([1], [2])
+) u;
 ```
 
 ---
 
-**Q21. What is the difference between CHAR, VARCHAR, NCHAR, NVARCHAR?**
+**Q20. What is the difference between CHAR, VARCHAR, NCHAR, NVARCHAR?**
 
 - **CHAR(n)** — fixed length, non-Unicode. Always uses n bytes.
 - **VARCHAR(n)** — variable length, non-Unicode. Uses only what's needed.
@@ -948,7 +956,7 @@ Use `VARCHAR` for English-only data, `NVARCHAR` for any language. Prefix Unicode
 
 ---
 
-**Q22. What is COALESCE() and how is it different from ISNULL()?**
+**Q21. What is COALESCE() and how is it different from ISNULL()?**
 
 `COALESCE()` returns the first non-NULL value from a list of expressions.
 
@@ -961,7 +969,7 @@ SELECT COALESCE(MiddleName, NickName, 'N/A') FROM Employees;
 
 ---
 
-**Q23. What is the difference between Local and Global Temporary Tables?**
+**Q22. What is the difference between Local and Global Temporary Tables?**
 
 | **Local Temp Table (`#`)** | **Global Temp Table (`##`)** |
 |----------------------------|------------------------------|
@@ -974,7 +982,7 @@ Both are physically stored in `tempdb`.
 
 ---
 
-**Q24. What is the difference between Temp Tables and Table Variables?**
+**Q23. What is the difference between Temp Tables and Table Variables?**
 
 | Feature | Temp Table (`#table`) | Table Variable (`@table`) |
 |---|---|---|
@@ -990,20 +998,34 @@ Use table variables for small, short-lived data in a batch.
 
 ---
 
-**Q25. What is UPSERT and how do you do it in SQL Server?**
+**Q24. What is UPSERT and how do you do it in SQL Server?**
 
 UPSERT = "insert if the row doesn't exist, update if it does." In SQL Server, use the `MERGE` statement.
 
 ```sql
-MERGE INTO Employees AS target
-USING (SELECT 1 AS Id, 'John' AS Name) AS source ON target.Id = source.Id
-WHEN MATCHED THEN UPDATE SET target.Name = source.Name
-WHEN NOT MATCHED THEN INSERT (Id, Name) VALUES (source.Id, source.Name);
+MERGE INTO Customers AS target
+USING (
+    SELECT 1 AS CustomerId,
+           'John' AS CustomerName,
+           5000 AS Expense,
+           GETDATE() AS CreateDate
+) AS source
+ON target.CustomerId = source.CustomerId
+
+WHEN MATCHED THEN
+    UPDATE SET
+        target.CustomerName = source.CustomerName,
+        target.Expense = source.Expense,
+        target.CreateDate = source.CreateDate
+
+WHEN NOT MATCHED THEN
+    INSERT (CustomerId, CustomerName, Expense, CreateDate)
+    VALUES (source.CustomerId, source.CustomerName, source.Expense, source.CreateDate);
 ```
 
 ---
 
-**Q26. What is a View and when would you use it?**
+**Q25. What is a View and when would you use it?**
 
 A view is a saved SQL query that acts like a virtual table. It doesn't store data itself — it runs the underlying query each time.
 
@@ -1013,13 +1035,17 @@ Use views to:
 - Present data in a business-friendly format.
 
 ```sql
-CREATE VIEW ActiveEmployees AS
-SELECT Id, Name, Dept FROM Employees WHERE IsActive = 1;
+CREATE VIEW CustomerDetails AS
+SELECT CustomerId,
+       CustomerName,
+       Expense,
+       CreateDate
+FROM Customers;
 ```
 
 ---
 
-**Q27. What is an Indexed View / Materialized View?**
+**Q26. What is an Indexed View / Materialized View?**
 
 
 | **Regular View** | **Indexed View** |
@@ -1030,16 +1056,24 @@ SELECT Id, Name, Dept FROM Employees WHERE IsActive = 1;
 | Faster updates. | Slower updates because the view must also be updated. |
 
 ```sql
-CREATE VIEW dbo.vw_Sales WITH SCHEMABINDING AS
-SELECT ProductId, SUM(Qty) AS TotalQty, COUNT_BIG(*) AS Cnt
-FROM dbo.Sales GROUP BY ProductId;
+CREATE VIEW dbo.vw_ProductSales
+WITH SCHEMABINDING
+AS
+SELECT
+    ProductBuyerId,
+    SUM(ProductPrice) AS TotalAmount,
+    COUNT_BIG(*) AS ProductCount
+FROM dbo.Products
+GROUP BY ProductBuyerId;
+GO
 
-CREATE UNIQUE CLUSTERED INDEX IX_vw_Sales ON dbo.vw_Sales (ProductId);
+CREATE UNIQUE CLUSTERED INDEX IX_vw_ProductSales
+ON dbo.vw_ProductSales (ProductBuyerId);
 ```
 
 ---
 
-**Q28. What are Triggers and what types exist?**
+**Q27. What are Triggers and what types exist?**
 
 Triggers are stored procedures that automatically run when a specific event happens.
 
@@ -1052,35 +1086,35 @@ Triggers have access to `INSERTED` and `DELETED` virtual tables with new and old
 
 ---
 
-**Q29. What is a Cursor and when should you use one?**
+**Q28. What is a Cursor and when should you use one?**
 
 A cursor lets you process rows one at a time, like an iterator. Useful for row-by-row logic that can't be expressed in set-based SQL — but **avoid cursors when a set-based query works**, they are much slower.
 
 ```sql
-DECLARE @EmpId INT;
+DECLARE @CustomerId INT;
 
-DECLARE EmpCursor CURSOR FOR
-SELECT EmployeeId
-FROM Employees;
+DECLARE CustomerCursor CURSOR FOR
+SELECT CustomerId
+FROM Customers;
 
-OPEN EmpCursor;
+OPEN CustomerCursor;
 
-FETCH NEXT FROM EmpCursor INTO @EmpId;
+FETCH NEXT FROM CustomerCursor INTO @CustomerId;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
-    PRINT 'Processing Employee: ' + CAST(@EmpId AS VARCHAR);
+    PRINT 'Processing Customer: ' + CAST(@CustomerId AS VARCHAR);
 
-    FETCH NEXT FROM EmpCursor INTO @EmpId;
+    FETCH NEXT FROM CustomerCursor INTO @CustomerId;
 END
 
-CLOSE EmpCursor;
-DEALLOCATE EmpCursor;
+CLOSE CustomerCursor;
+DEALLOCATE CustomerCursor;
 ```
 
 ---
 
-**Q30. What is a Transaction and why is it needed?**
+**Q29. What is a Transaction and why is it needed?**
 
 A transaction is a group of SQL statements that must all succeed or all fail together. Needed to keep data consistent — e.g., transferring money: debit one account and credit another must both happen or neither.
 
@@ -1106,7 +1140,7 @@ END CATCH;
 
 ---
 
-**Q31. What are the Isolation Levels in SQL Server?**
+**Q30. What are the Isolation Levels in SQL Server?**
 
 | Level | Dirty Read | Non-repeatable Read | Phantom Read |
 |---|---|---|---|
@@ -1124,7 +1158,7 @@ Stricter level = more consistency but more blocking.
 
 ---
 
-**Q32. What is a Deadlock and how do you prevent it?**
+**Q31. What is a Deadlock and how do you prevent it?**
 
 A deadlock happens when two transactions hold locks the other needs, and neither can proceed. SQL Server detects deadlocks and kills the lower-priority one (the "deadlock victim", error 1205).
 
@@ -1137,41 +1171,46 @@ Prevention:
 
 ---
 
-**Q33. What is Optimistic vs Pessimistic Concurrency?**
+**Q32. What is Optimistic vs Pessimistic Concurrency?**
 
 - **Pessimistic** — locks rows when read so no one else can modify them. Safe but blocks readers/writers. Use when conflicts are frequent.
 - **Optimistic** — no locks; checks at save time whether the row was modified since it was read (using a `RowVersion` / `Timestamp`). If yes, rejects with concurrency error. Use when conflicts are rare (most web apps).
 
-**Pessimistic** – **Locks the row** while editing. Other users must wait.
-  ```sql
-  SELECT * FROM Accounts
-  WITH (UPDLOCK)
-  WHERE Id = 1;
-  ```
+#### Pessimistic (Locks the row)
 
-**Optimistic** – **No lock**. Checks `RowVersion` before updating.
-  ```sql
-  UPDATE Accounts
-  SET Balance = 5000
-  WHERE Id = 1
-    AND RowVersion = @OldRowVersion;
-  ```
+```sql
+SELECT *
+FROM Customers
+WITH (UPDLOCK)
+WHERE CustomerId = 1;
+```
+
+#### Optimistic (Uses `ROWVERSION`)
+
+```sql
+UPDATE Customers
+SET Expense = 5000
+WHERE CustomerId = 1
+  AND RowVersion = @OldRowVersion;
+```
 
 ---
 
-**Q34. What is the NOLOCK hint and when should you avoid it?**
+**Q33. What is the NOLOCK hint and when should you avoid it?**
 
 `WITH (NOLOCK)` is equivalent to `READ UNCOMMITTED` for a single table — it ignores locks and may return **dirty data** (uncommitted, may be rolled back), missing rows, or duplicate rows.
 
 Use sparingly for reports that tolerate inaccuracy. **Never use** on financial, billing, or audit data.
 
 ```sql
-SELECT * FROM Orders WITH (NOLOCK);
+SELECT *
+FROM Customers
+WITH (NOLOCK);
 ```
 
 ---
 
-**Q35. What is Query Optimization? Name common techniques.**
+**Q34. What is Query Optimization? Name common techniques.**
 
 Making queries run faster and use fewer resources:
 
@@ -1187,67 +1226,123 @@ Making queries run faster and use fewer resources:
 
 ---
 
-**Q36. What is a SARGable query?**
+**Q35. What is a SARGable query?**
 
 **SARGable (Search ARGument Able)** means a query is written so SQL Server can **use an index efficiently**. This usually means comparing the **column directly** instead of applying functions to it.
 
 ❌ **Non-SARGable** (can't efficiently use the index)
 
 ```sql
-SELECT * FROM Orders
-WHERE YEAR(OrderDate) = 2023;
+SELECT *
+FROM Customers
+WHERE YEAR(CreateDate) = 2023;
 ```
 
 ✅ **SARGable** (can use the index)
 
 ```sql
-SELECT * FROM Orders
-WHERE OrderDate >= '2023-01-01'
-  AND OrderDate < '2024-01-01';
+SELECT *
+FROM Customers
+WHERE CreateDate >= '2023-01-01'
+  AND CreateDate < '2024-01-01';
 ```
 
 ---
 
-**Q37. What is database indexing and what are the downsides of too many indexes?**
+**Q36. What is database indexing and what are the upsides and downsides of too many indexes?**
 
-An index is a data structure that speeds up data retrieval on a column. Without it, SQL Server does a full table scan.
+A **database index** is a data structure that helps SQL Server **find rows faster** without scanning the entire table. It is similar to an **index in a book**—instead of reading every page, you jump directly to the required information.
 
-Downsides of too many indexes:
-- **Slower writes** — every `INSERT/UPDATE/DELETE` must update all indexes.
-- **More storage** — each index takes disk space.
-- **Higher maintenance** — fragmented indexes need rebuilding.
+#### Advantages
 
-Add indexes on columns used in `WHERE`, `JOIN`, `ORDER BY`. Remove unused ones.
+- **Faster `SELECT` queries**.
+- Improves performance of **`WHERE`**, **`JOIN`**, **`ORDER BY`**, and **`GROUP BY`** operations.
+- Reduces full table scans by enabling **index seeks**.
+
+#### Disadvantages of Too Many Indexes
+
+- **Slower writes** – Every `INSERT`, `UPDATE`, and `DELETE` must update all related indexes.
+- **More storage** – Each index consumes additional disk space.
+- **Higher maintenance** – Indexes can become fragmented and require rebuilding or reorganizing.
+
+#### Best Practices
+
+- ✅ Create indexes on columns frequently used in **`WHERE`**, **`JOIN`**, **`ORDER BY`**, and **`GROUP BY`**.
+- ❌ Avoid indexing every column.
+- ❌ Remove unused or duplicate indexes.
+
+---
+**Q37. What is the difference between Clustered and Non-Clustered Index?**
+
+| **Clustered Index** | **Non-Clustered Index** |
+|----------------------|-------------------------|
+| Physically stores table data in the index order. | Stores only the index; points to the actual data rows. |
+| Only **one** clustered index per table. | Multiple non-clustered indexes can exist on a table. |
+| Faster for **range queries**, sorting, and ordered retrieval. | Faster for **searching**, filtering (`WHERE`), and `JOIN`s. |
+| Usually created on the **Primary Key** by default (unless specified otherwise). | Created on frequently searched columns. |
+
+
+Think of clustered index as the book itself (sorted), non-clustered as the index at the back of the book (pointers).
 
 ---
 
 **Q38. What is a Composite Index? When to use it?**
 
-An index on multiple columns. The **column order matters** — it's only used efficiently when the leading column appears in `WHERE`.
+A **Composite Index** is an index on **multiple columns**. It speeds up queries that use those columns together.
+
+> **Column order matters.** SQL Server efficiently uses the index only when the **leading (leftmost) column** is included in the query.
 
 ```sql
-CREATE INDEX IX_Orders_CustomerDate ON Orders(CustomerId, OrderDate);
--- Helps: WHERE CustomerId = 5 AND OrderDate > '2023-01-01'
--- Helps: WHERE CustomerId = 5
--- Does NOT help: WHERE OrderDate > '2023-01-01'  (skips leading col)
+CREATE INDEX IX_Products_BuyerPrice
+ON Products(ProductBuyerId, ProductPrice);
 ```
+
+- ✅ `WHERE ProductBuyerId = 1`
+- ✅ `WHERE ProductBuyerId = 1 AND ProductPrice > 1000`
+- ❌ `WHERE ProductPrice > 1000`
+
+> Follows the **leftmost prefix rule**.
 
 ---
 
 **Q39. What is the difference between @@IDENTITY, SCOPE_IDENTITY(), and IDENT_CURRENT()?**
 
-All return the last auto-generated identity value, but scope differs:
 
-- **@@IDENTITY** — last identity inserted in the current session, **any table including triggers**.
-- **SCOPE_IDENTITY()** — last identity in the current scope (same SP/batch). **Preferred** — safer.
-- **IDENT_CURRENT('TableName')** — last identity for a specific table regardless of session or scope.
+| Function | Returns | Use Case |
+|----------|---------|----------|
+| **@@IDENTITY** | Last identity generated in the **current session**, including **triggers**. | Rarely used; can return unexpected values if triggers insert into other tables. |
+| **SCOPE_IDENTITY()** | Last identity generated in the **current scope** (same procedure/batch). | ✅ **Preferred** after an `INSERT` to get the ID you just inserted. |
+| **IDENT_CURRENT('Table')** | Last identity generated for a **specific table**, regardless of session or scope. | Used to check the latest identity value of a table (not safe for retrieving your inserted row). |
+
+```sql
+INSERT INTO Credentials (CredUsername, CredPassword)
+VALUES ('john', 'pass123');
+
+SELECT @@IDENTITY;
+SELECT SCOPE_IDENTITY();            -- Current scope
+SELECT IDENT_CURRENT('Credentials'); -- Last identity in table
+```
 
 ---
 
 **Q40. What is a Composite Key vs Surrogate Key?**
 
-- **Composite Key** — primary key made of two or more columns (e.g., `(OrderId, ProductId)` in an order-items table).
-- **Surrogate Key** — an artificial single-column key (usually an IDENTITY/UUID) with no business meaning. Preferred for ease of joins and changes.
+| **Composite Key** | **Surrogate Key** |
+|-------------------|-------------------|
+| A **Primary Key** made of **two or more columns**. | An **artificial single-column key** (e.g., `IDENTITY` or `UUID`) with no business meaning. |
+| Uses existing business data to uniquely identify a row. | Used only to uniquely identify a row. |
+| Can make joins and foreign keys more complex. | Simpler joins and easier maintenance. |
+| **Example:** `(OrderId, ProductId)` in `OrderItems`. | **Example:** `OrderItemId` as an `IDENTITY` column. |
+
+```sql
+-- Composite Key
+PRIMARY KEY (ProductId, ProductBuyerId)
+```
+
+```sql
+-- Surrogate Key
+CredId INT IDENTITY PRIMARY KEY
+```
 
 ---
 
@@ -1256,11 +1351,18 @@ All return the last auto-generated identity value, but scope differs:
 Both return one value from multiple options.
 
 ```sql
--- CASE — ANSI standard, supports multiple branches
-SELECT CASE WHEN expense > 80 THEN 'VIP' ELSE 'Regular' END FROM Customers;
+-- CASE
+SELECT CASE
+         WHEN Expense > 5000 THEN 'VIP'
+         ELSE 'Regular'
+       END
+FROM Customers;
+```
 
--- IIF — SQL Server shorthand for two-branch CASE (since 2012)
-SELECT IIF(expense > 80, 'VIP', 'Regular') FROM Customers;
+```sql
+-- IIF
+SELECT IIF(Expense > 5000, 'VIP', 'Regular')
+FROM Customers;
 ```
 
 Use `CASE` for more than two outcomes; `IIF` for quick binary checks.
@@ -1269,14 +1371,24 @@ Use `CASE` for more than two outcomes; `IIF` for quick binary checks.
 
 **Q42. What is the GO statement?**
 
-`GO` is not a SQL command — it's a **batch separator** used in SQL Server tools (SSMS, sqlcmd). It tells the client to send everything before it as one batch to the server.
+
+`GO` is **not a SQL command**. It is a **batch separator** used by SQL Server tools (SSMS, `sqlcmd`) to execute the previous statements as one batch.
 
 ```sql
-USE PG;
+USE MyDatabase;
 GO
-CREATE TABLE Foo (Id INT);
-GO 5  -- run the preceding batch 5 times
+
+CREATE TABLE Employees (Id INT);
+GO
 ```
+
+#### Advantages
+- Separates SQL scripts into batches.
+- `GO n` executes the previous batch **n** times.
+
+#### Disadvantages
+- Not recognized by ADO.NET or SQL Server itself.
+- Variables declared before `GO` cannot be used after it.
 
 ---
 
@@ -1292,15 +1404,20 @@ GO 5  -- run the preceding batch 5 times
 
 **Q44. What is a Schema?**
 
-A schema is a logical container/namespace for database objects (tables, views, SPs). It groups related objects and lets you control permissions at the schema level.
+A **Schema** is a **logical container (namespace)** that groups database objects like **tables, views, and stored procedures**.
 
 ```sql
 CREATE SCHEMA Sales;
+
 CREATE TABLE Sales.Orders (Id INT);
-SELECT * FROM Sales.Orders;
 ```
 
-Default schema is `dbo`.
+#### Benefits
+- Organizes related objects.
+- Avoids name conflicts.
+- Simplifies permission management.
+
+> **Default schema:** `dbo`
 
 ---
 
@@ -1323,10 +1440,27 @@ FROM Employees e JOIN Employees m ON e.ManagerId = m.Id;
 - **OUTER APPLY** — like LEFT JOIN; rows with no match are kept (NULLs from the right).
 
 ```sql
-SELECT c.customername, p.productname
+SELECT c.CustomerName, p.ProductName
 FROM Customers c
-CROSS APPLY (SELECT TOP 1 productname FROM Products WHERE productbuyerid = c.customerid) p;
+CROSS APPLY (
+    SELECT TOP 1 ProductName
+    FROM Products
+    WHERE ProductBuyerId = c.CustomerId
+) p;
 ```
+
+> Returns **only** customers with at least one matching product.
+
+```sql
+SELECT c.CustomerName, p.ProductName
+FROM Customers c
+OUTER APPLY (
+    SELECT TOP 1 ProductName
+    FROM Products
+    WHERE ProductBuyerId = c.CustomerId
+) p;
+```
+> Returns **all** customers. If no matching product exists, `ProductName` is `NULL`.
 
 ---
 
@@ -1344,16 +1478,39 @@ Prevention:
 - Apply **least privilege** on the DB account.
 
 ```sql
-EXEC sp_executesql N'SELECT * FROM Users WHERE Name = @Name', N'@Name NVARCHAR(100)', @Name = @input;
+DECLARE @Name VARCHAR(40) = 'John';
+
+EXEC sp_executesql
+    N'SELECT * FROM Customers WHERE CustomerName = @Name',
+    N'@Name VARCHAR(40)',
+    @Name = @Name;
 ```
 
 ---
 
 **Q48. What is the difference between ExecuteReader, ExecuteScalar, and ExecuteNonQuery in ADO.NET?**
 
-- **ExecuteReader** — runs a `SELECT` and returns a `SqlDataReader` for reading multiple rows.
-- **ExecuteScalar** — runs a query and returns a **single value** (first column, first row). Good for `COUNT`, `SUM`.
-- **ExecuteNonQuery** — runs `INSERT`, `UPDATE`, `DELETE`, or DDL. Returns the **number of rows affected**.
+| Method | Returns | Used For |
+|--------|---------|----------|
+| **ExecuteReader()** | `SqlDataReader` | Executes a `SELECT` query and reads **multiple rows** one at a time. |
+| **ExecuteScalar()** | Single value (first row, first column) | Used when only **one value** is needed, such as `COUNT`, `SUM`, `MAX`, or an identity value. |
+| **ExecuteNonQuery()** | Number of rows affected (`int`) | Executes `INSERT`, `UPDATE`, `DELETE`, and DDL statements like `CREATE` or `DROP`. |
+
+
+```csharp
+// ExecuteReader
+var reader = cmd.ExecuteReader();    // Read multiple rows
+```
+
+```csharp
+// ExecuteScalar
+int count = (int)cmd.ExecuteScalar();   // e.g., SELECT COUNT(*)
+```
+
+```csharp
+// ExecuteNonQuery
+int rows = cmd.ExecuteNonQuery();       // e.g., UPDATE Employees...
+```
 
 ---
 
@@ -1362,6 +1519,19 @@ EXEC sp_executesql N'SELECT * FROM Users WHERE Name = @Name', N'@Name NVARCHAR(1
 - **BCP** — command-line utility, fast import/export between files and tables.
 - **BULK INSERT** — T-SQL statement that loads a file into a table.
 - **OPENROWSET(BULK ...)** — table-valued function; loads file data as a rowset for queries.
+
+```sql
+BULK INSERT Customers
+FROM 'C:\Data\Customers.csv';
+```
+
+```sql
+SELECT *
+FROM OPENROWSET(
+    BULK 'C:\Data\Customers.csv',
+    FORMAT = 'CSV'
+) AS C;
+```
 
 For very large loads, use minimally-logged BULK INSERT with `TABLOCK` and bulk-logged recovery model.
 
@@ -1830,7 +2000,34 @@ end catch
 
 ---
 
-**Q41. Create a view for high spenders (expense > 80).**
+**Q41. Insert multiple rows in a transaction. If one insert fails, rollback only that part using a savepoint, not the whole transaction.**
+
+```sql
+BEGIN TRY
+    BEGIN TRANSACTION
+
+        INSERT INTO Customers VALUES (101, 'A', 100, '2024-01-01')
+        SAVE TRANSACTION sp1
+
+        INSERT INTO Customers VALUES (102, 'B', 200, '2024-01-01')
+        SAVE TRANSACTION sp2
+
+        -- this will fail
+        INSERT INTO Customers VALUES (101, 'Duplicate', 300, '2024-01-01')
+
+    COMMIT TRANSACTION
+
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION sp2
+
+    SELECT ERROR_MESSAGE() AS ErrorMessage
+END CATCH
+```
+
+---
+
+**Q42. Create a view for high spenders (expense > 80).**
 
 ```sql
 create view vw_HighSpenders as
@@ -1843,7 +2040,7 @@ select * from vw_HighSpenders
 
 ---
 
-**Q42. CTE to list customers above average expense.**
+**Q43. CTE to list customers above average expense.**
 
 ```sql
 with AvgCTE as (
@@ -1857,23 +2054,33 @@ where c.expense > a.AvgExp
 
 ---
 
-**Q43. AFTER-INSERT trigger that logs the new customer id.**
+**Q44. AFTER-INSERT trigger that logs the customer info in Audit table.**
 
 ```sql
-create trigger trig_LogInsert
-on Customers
-after insert
-as
-begin
-    declare @newid int
-    select @newid = customerid from inserted
-    print 'New customer added with ID: ' + cast(@newid as varchar)
-end
+CREATE TABLE CustomerAudit
+(
+    AuditId INT IDENTITY PRIMARY KEY,
+    CustomerId INT,
+    ActionType VARCHAR(20),
+    ActionDate DATETIME
+);
+
+CREATE TRIGGER trg_Customer_Insert
+ON Customers
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO CustomerAudit(CustomerId, ActionType, ActionDate)
+    SELECT CustomerId,
+           'INSERT',
+           GETDATE()
+    FROM inserted;
+END;
 ```
 
 ---
 
-**Q44. Delete duplicate products keeping the one with the highest productid.**
+**Q45. Delete duplicate products keeping the one with the highest productid.**
 
 ```sql
 delete from Products
@@ -1886,28 +2093,29 @@ where productid not in (
 
 ---
 
-**Q45. Add an `email` column to Customers and then drop it.**
+**Q46. Add an `Email` column to `Customers` and make it unique.**
 
 ```sql
-alter table Customers add email varchar(100)
-alter table Customers drop column email
+ALTER TABLE Customers
+ADD Email VARCHAR(100);
+
+ALTER TABLE Customers
+ADD CONSTRAINT UQ_Customers_Email UNIQUE (Email);
 ```
 
 ---
 
-**Q46. Create a clustered index on expense and a non-clustered index on customername.**
+**Q47. Create a filtered index for customers with expense greater than 5000.**
 
 ```sql
-create clustered index    IX_C_Expense on Customers(expense)
-create nonclustered index IX_NC_Name   on Customers(customername)
-
-drop index IX_C_Expense on Customers
-drop index IX_NC_Name   on Customers
+CREATE INDEX IX_Customers_HighExpense
+ON Customers(Expense)
+WHERE Expense > 5000;
 ```
 
 ---
 
-**Q47. Recreate the Products FK with ON DELETE CASCADE.**
+**Q48. Recreate the Products FK with ON DELETE CASCADE.**
 
 ```sql
 alter table Products drop constraint FK_buyer
@@ -1920,37 +2128,34 @@ alter table Products
 
 ---
 
-**Q48. Pivot — show total expense per customer as columns.**
+**Q49. Display the total product price for each buyer as separate columns using `PIVOT`**
 
 ```sql
-select
-    sum(case when customername = 'Rahul1' then expense else 0 end) as Rahul1,
-    sum(case when customername = 'Priya'  then expense else 0 end) as Priya,
-    sum(case when customername = 'Gaurav' then expense else 0 end) as Gaurav
-from Customers
+SELECT *
+FROM (
+    SELECT ProductBuyerId, ProductPrice
+    FROM Products
+) AS SourceTable
+PIVOT (
+    SUM(ProductPrice)
+    FOR ProductBuyerId IN ([1], [2], [3])
+) AS PivotTable;
 ```
 
 ---
 
-**Q49. Compare SCOPE_IDENTITY, @@IDENTITY, and IDENT_CURRENT after a Credentials insert.**
+**Q50. Insert a new credential and retrieve the generated identity value.**
 
 ```sql
-insert into Credentials values ('newuser','pass123')
-select scope_identity()            as ScopeIdentity,
-       @@identity                  as AtAtIdentity,
-       ident_current('Credentials') as IdentCurrent
+INSERT INTO Credentials (CredUsername, CredPassword)
+VALUES ('newuser', 'pass123');
+
+SELECT SCOPE_IDENTITY() AS NewCredentialId;
 ```
 
 ---
 
-**Q50. Comma-separated list of product names per buyer using STRING_AGG (SQL Server 2017+).**
-
-```sql
-select productbuyerid,
-       string_agg(productname, ', ') within group (order by productname) as Products
-from Products
-group by productbuyerid
-```
+>End Of Document
 
 ---
 
