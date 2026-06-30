@@ -1,1004 +1,654 @@
-# Angular & TypeScript — Interview Prep Lookup
-> For .NET Full Stack Developers | 20 TypeScript + 80 Angular Questions
+# Angular Interview Questions — 100 Q&A
+> For a .NET + Angular Full Stack Developer
 
 ---
 
-# PART 1 — TYPESCRIPT BASICS (20 Questions)
-
----
-
-## 🔷 Q1. What is TypeScript and why does Angular use it?
-
-TypeScript is JavaScript with static type checking compiled by `tsc` to plain JS. Angular is written in TypeScript and requires it.
-
-**Benefits:**
-- Catches errors at **compile time**, not runtime
-- IDE autocomplete, go-to-definition, safe refactoring
-- Self-documenting — types describe intent (like C# XML docs)
-- Clean OOP: interfaces, generics, access modifiers, decorators
-
-> 💡 **For .NET devs:** TypeScript feels like C# for the browser — same OOP patterns, same type safety mindset.
-
----
-
-## 🔷 Q2. What are all types in TypeScript?
-
-## 1. Primitive Types
-```typescript
-let name: string = 'Purushottam';
-let age: number = 25;
-let isActive: boolean = true;
-let bigNum: bigint = 9007199254740991n;
-let sym: symbol = Symbol('id');
-```
- 
-## 2. Special Types
-```typescript
-let a: any = 'anything';        // disables type check (avoid)
-let b: unknown = getData();     // safe any — must narrow before use
-let c: null = null;             // intentionally empty
-let d: undefined = undefined;   // not yet assigned
- 
-function log(): void { }        // returns nothing
-function fail(): never { throw new Error(); }  // never returns
-```
- 
-## 3. Complex Types
-```typescript
-let ids: number[] = [1, 2, 3];                    // array
-let point: [number, number] = [10, 20];            // tuple
-let user: { id: number; name: string } = { ... }; // object
-enum Role { Admin = 'ADMIN', User = 'USER' }       // enum
-```
-
----
-
-## 🔷 Q3. What are `any`, `unknown`, `void`, and `never`?
-
-```typescript
-// any — disables type checking (AVOID)
-let data: any = 'hello';
-data = 42;                  // no error, no safety
-
-// unknown — safe version of any (PREFER)
-let input: unknown = getUserInput();
-if (typeof input === 'string') {
-  input.toUpperCase();      // ✅ must narrow first
-}
-
-// void — function returns nothing
-ngOnInit(): void { ... }
-
-// never — function never completes (throws or infinite loop)
-function throwError(msg: string): never {
-  throw new Error(msg);
-}
-```
-
-| Type | Safe? | When to Use |
-|---|---|---|
-| `any` | ❌ | Migrating JS to TS only |
-| `unknown` | ✅ | Type not yet known |
-| `void` | ✅ | Function with no return |
-| `never` | ✅ | Unreachable code / throws |
-
----
-
-## 🔷 Q4. What is the difference between `null` and `undefined`?
-
-```typescript
-let a: undefined = undefined;   // declared, never assigned (JS sets this)
-let b: null = null;             // intentionally empty (you set this)
-
-// Union pattern — common in Angular
-let user: User | null = null;
-let token: string | undefined;
-
-// Nullish coalescing — use default if null/undefined
-let username = user?.name ?? 'Guest';
-```
-
-`null == undefined` → `true` (loose)
-`null === undefined` → `false` (strict)
-
----
-
-## 🔷 Q5. How do you type arrays and tuples?
-
-```typescript
-// Arrays — two equivalent syntaxes
-let ids: number[] = [1, 2, 3];
-let names: Array<string> = ['Alice', 'Bob'];
-
-// Mixed types
-let mixed: (string | number)[] = [1, 'two', 3];
-
-// Readonly array — no push/pop/mutate
-let fixed: readonly number[] = [1, 2, 3];
-fixed.push(4);   // ❌ Error
-
-// Tuple — fixed length, each position typed
-let point: [number, number] = [10, 20];
-let entry: [name: string, age: number] = ['Purushottam', 25];
-
-// Destructure tuple
-const [x, y] = point;
-const [name, age] = entry;
-```
-
----
-
-## 🔷 Q6. What is the difference between `interface` and `type`?
-
-```typescript
-// Interface — preferred for object shapes, can be extended and merged
-interface User {
-  id: number;
-  name: string;
-  email?: string;    // optional
-}
-interface AdminUser extends User {
-  role: string;
-}
-
-// Type — for unions, primitives, intersections, tuples
-type Status = 'active' | 'inactive' | 'pending';
-type ID = string | number;
-type Point = [number, number];
-```
-
-| Feature | `interface` | `type` |
-|---|---|---|
-| Extend | `extends` | `&` intersection |
-| Merge declarations | ✅ Yes | ❌ No |
-| Unions / Tuples | ❌ | ✅ |
-| Preferred for | Object shapes | Everything else |
-
----
-
-## 🔷 Q7. What are Union and Intersection types?
-
-```typescript
-// Union — one OR another
-type Input = string | number;
-
-function format(val: string | number): string {
-  return val.toString();
-}
-
-// Literal union — only specific values
-type Direction = 'up' | 'down' | 'left' | 'right';
-type LoadingState = 'idle' | 'loading' | 'success' | 'error';
-
-// Intersection — must satisfy ALL types
-interface HasName { name: string; }
-interface HasAge  { age: number; }
-type Person = HasName & HasAge;
-
-const p: Person = { name: 'Purushottam', age: 25 };
-```
-
----
-
-## 🔷 Q8. What is an `enum`?
-
-```typescript
-// Numeric enum (default)
-enum Direction { Up, Down, Left, Right }  // 0, 1, 2, 3
-
-// String enum — preferred (readable in logs and API responses)
-enum UserRole {
-  Admin  = 'ADMIN',
-  Editor = 'EDITOR',
-  Viewer = 'VIEWER'
-}
-
-// Usage in Angular component
-role: UserRole = UserRole.Admin;
-if (this.role === UserRole.Admin) { ... }
-```
-
-> 💡 Use **string enums** — easier to debug and read in API JSON.
-
----
-
-## 🔷 Q9. What are access modifiers in TypeScript classes?
-
-```typescript
-export class UserComponent {
-  public username: string = '';      // accessible everywhere (default)
-  private apiUrl: string = '/api';   // only inside this class
-  protected userId: number = 0;      // this class + subclasses
-  readonly MAX: number = 100;        // can't be reassigned after init
-
-  // Constructor shorthand — declares AND assigns in one line
-  constructor(
-    private userService: UserService,    // ← Angular DI pattern
-    public router: Router
-  ) {}
-}
-```
-
-> 💡 **For .NET devs:** Same as C# access modifiers. `private` in constructor is Angular's standard DI pattern.
-
----
-
-## 🔷 Q10. What are Generics in TypeScript?
-
-```typescript
-// Generic function — works with any type, stays type-safe
-function getFirst<T>(arr: T[]): T {
-  return arr[0];
-}
-
-getFirst<string>(['a', 'b']);    // returns string
-getFirst<number>([1, 2, 3]);    // returns number
-
-// Generic with constraint
-function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
-}
-
-// Angular usage — you see <T> everywhere:
-http.get<User[]>('/api/users')          // HttpClient
-new EventEmitter<string>()              // @Output
-Observable<Product[]>                   // RxJS
-signal<number>(0)                       // Angular Signals
-```
-
----
-
-## 🔷 Q11. What is Type Narrowing?
-
-Narrowing means refining a broad type to a specific one inside a condition.
-
-```typescript
-function display(value: string | number) {
-  if (typeof value === 'string') {
-    console.log(value.toUpperCase());   // TypeScript knows: string
-  } else {
-    console.log(value.toFixed(2));      // TypeScript knows: number
-  }
-}
-
-// With objects — use 'in' operator
-interface Circle { radius: number; }
-interface Square { side: number; }
-
-function area(shape: Circle | Square): number {
-  if ('radius' in shape) {
-    return Math.PI * shape.radius ** 2;   // Circle
-  }
-  return shape.side ** 2;               // Square
-}
-```
-
----
-
-## 🔷 Q12. What are Optional Chaining `?.` and Non-Null Assertion `!`?
-
-```typescript
-// Optional chaining — returns undefined if anything in chain is null/undefined
-const city = user?.address?.city;
-const len = user?.name?.length;
-user?.save();                              // safe method call
-
-// Non-null assertion — "trust me, not null" (no runtime check)
-const el = document.getElementById('app')!;
-
-// Angular usage
-@ViewChild('nameInput') nameInput!: ElementRef;   // ← very common
-@Input({ required: true }) product!: Product;
-```
-
-> ⚠️ Prefer `?.` over `!`. Only use `!` when you're certain the value exists (e.g. after `ngAfterViewInit`).
-
----
-
-## 🔷 Q13. What are Utility Types?
-
-Built-in TypeScript helpers that transform existing types.
-
-```typescript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-}
-
-Partial<User>          // all props optional — great for PATCH / edit forms
-Required<User>         // all props required
-Readonly<User>         // nothing can be mutated
-Pick<User, 'id'|'name'>       // select only these props
-Omit<User, 'password'>        // exclude these props
-Record<string, number>        // key-value map: { [key: string]: number }
-ReturnType<typeof myFn>       // infer a function's return type
-```
-
-```typescript
-// Real Angular use cases
-function patchUser(changes: Partial<User>) { ... }         // PATCH body
-type PublicUser = Omit<User, 'password'>;                  // API response
-const roleMap: Record<string, UserRole> = { u1: UserRole.Admin };
-```
-
----
-
-## 🔷 Q14. What are Decorators in TypeScript?
-
-Functions prefixed with `@` that attach metadata to classes, methods, or properties.
-
-```typescript
-@Component({
-  selector: 'app-user',
-  templateUrl: './user.component.html'
-})
-export class UserComponent {
-
-  @Input() userId!: number;
-  @Output() selected = new EventEmitter<number>();
-  @ViewChild('nameInput') nameInput!: ElementRef;
-
-  constructor(
-    @Inject(API_URL) private apiUrl: string,   // @Inject for token-based DI
-    private userService: UserService
-  ) {}
-}
-```
-
-Common Angular decorators: `@Component`, `@Directive`, `@Pipe`, `@Injectable`, `@NgModule`, `@Input`, `@Output`, `@ViewChild`, `@HostListener`, `@HostBinding`.
-
----
-
-## 🔷 Q15. What is Type Inference — where should you annotate vs let TypeScript infer?
-
-```typescript
-// ✅ Let TypeScript infer — obvious from value
-let count = 0;             // inferred: number
-let name = 'Angular';      // inferred: string
-let items = [1, 2, 3];    // inferred: number[]
-
-// ✅ Always annotate — function boundaries and class properties
-getUserById(id: number): Observable<User> { ... }
-users: User[] = [];
-isLoading: boolean = false;
-
-// ✅ Always annotate — when initializing to null/undefined
-let currentUser: User | null = null;
-let selectedId: number | undefined;
-```
-
-> 💡 **Rule:** Annotate at **boundaries** (params, return types, class props). Trust inference for local variables.
-
----
-
-## 🔷 Q16. What are async/await and Promises in TypeScript?
-
-```typescript
-// Promise — a future value
-function fetchUser(id: number): Promise<User> {
-  return fetch(`/api/users/${id}`).then(r => r.json());
-}
-
-// async/await — same thing, reads top-to-bottom (like C# async/await)
-async function loadUser(id: number): Promise<User> {
-  try {
-    const response = await fetch(`/api/users/${id}`);
-    return await response.json() as User;
-  } catch (error) {
-    throw new Error('Failed to load user');
-  }
-}
-
-// In Angular — mostly use Observables, but async/await works with firstValueFrom
-const user = await firstValueFrom(this.userService.getById(id));
-```
-
----
-
-## 🔷 Q17. What is destructuring, spread, and rest in TypeScript?
-
-```typescript
-// Object destructuring
-const { name, age, email = 'default@mail.com' } = user;
-
-// Array destructuring
-const [first, second, ...rest] = items;
-
-// Rename while destructuring
-const { name: userName, id: userId } = user;
-
-// Spread — expand arrays/objects
-const updatedUser = { ...user, name: 'New Name' };
-const combined = [...arr1, ...arr2];
-
-// Rest — collect remaining
-function logAll(first: string, ...others: string[]): void {
-  console.log(first, others);
-}
-
-// Typed destructuring in function params
-function greet({ name, age }: { name: string; age: number }): string {
-  return `${name} is ${age}`;
-}
-```
-
----
-
-## 🔷 Q18. What are arrow functions vs regular functions in TypeScript?
-
-```typescript
-// Regular function — has its own `this`, can be constructor
-function greet(name: string): string {
-  return `Hello, ${name}`;
-}
-
-// Arrow function — inherits `this` from surrounding scope
-const greet = (name: string): string => `Hello, ${name}`;
-
-// Critical in Angular — arrow functions keep component's `this`
-export class ProductComponent {
-  products: Product[] = [];
-
-  // ✅ Arrow: `this` is the component
-  loadProducts = () => {
-    this.productService.getAll().subscribe(p => this.products = p);
-  }
-
-  // ⚠️ Regular function in callbacks can lose `this`
-}
-```
-
----
-
-## 🔷 Q19. What is the `keyof` operator and mapped types?
-
-```typescript
-interface User { id: number; name: string; email: string; }
-
-// keyof — union of property names
-type UserKey = keyof User;    // 'id' | 'name' | 'email'
-
-// Index access type
-type IdType = User['id'];     // number
-
-// Use in functions
-function getField<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
-}
-
-// Mapped type — transform every property
-type Optional<T> = {
-  [K in keyof T]?: T[K];     // same as Partial<T>
-};
-
-type Flags<T> = {
-  [K in keyof T]: boolean;   // all props become boolean
-};
-```
-
----
-
-## 🔷 Q20. What are Type Guards and `instanceof`?
-
-```typescript
-// typeof guard — for primitives
-function process(val: string | number) {
-  if (typeof val === 'string') { val.toUpperCase(); }
-  else { val.toFixed(2); }
-}
-
-// instanceof guard — for classes
-function handleError(err: Error | HttpErrorResponse) {
-  if (err instanceof HttpErrorResponse) {
-    console.log(err.status);
-  } else {
-    console.log(err.message);
-  }
-}
-
-// Custom type guard — using 'is'
-function isUser(obj: any): obj is User {
-  return typeof obj.id === 'number' && typeof obj.name === 'string';
-}
-
-if (isUser(data)) {
-  console.log(data.name);   // TypeScript knows: User
-}
-```
-
----
----
-
-# PART 2 — ANGULAR (80 Questions)
-
----
-
-## 📦 SECTION 1: Angular Fundamentals
-
----
-
-### Q21. What is Angular?
-
-A TypeScript-based front-end framework by Google for building Single-Page Applications (SPAs). Provides components, routing, forms, HTTP client, dependency injection, and tooling out of the box.
-
-> 💡 **For .NET devs:** Angular is to the browser what ASP.NET MVC is to the server — a full opinionated framework, not just a library.
-
----
-
-### Q22. What is the difference between Angular and AngularJS?
+## SECTION 1: Angular Fundamentals
+
+### Q1. What is Angular and why use it?
+- TypeScript-based front-end framework by Google for building SPAs (Single Page Applications)
+- Full framework, not just a library — includes routing, forms, HTTP client, DI, CLI out of the box
+- Component-based architecture — UI is broken into reusable, self-contained pieces
+- Uses Ivy renderer for fast compilation and small bundle sizes
+- Strong typing (via TypeScript) catches errors at compile time
+
+### Q2. What is the difference between AngularJS and Angular?
+- They are NOT backward compatible — Angular 2 was a complete rewrite, not an upgrade
 
 | Feature | AngularJS (v1) | Angular (v2+) |
 |---|---|---|
 | Language | JavaScript | TypeScript |
 | Architecture | MVC with `$scope` | Component-based |
-| Data flow | Two-way digest cycle | Unidirectional + opt-in two-way |
-| Performance | Slower | Ivy renderer, tree shaking |
+| Data flow | Two-way digest cycle | Unidirectional (opt-in two-way) |
+| Performance | Slower | Faster (Ivy renderer) |
 | Tooling | None | Angular CLI |
-| Mobile | Limited | Mobile-first |
+| Mobile support | Limited | Mobile-first |
 
-Not backward compatible — Angular 2+ was a complete rewrite.
-
----
-
-### Q23. What is the Angular CLI and what are the key commands?
+### Q3. What is the Angular CLI? Name common commands.
+- Command-line tool to scaffold, build, test, and deploy Angular apps
+- `ng new` — create new project
+- `ng serve` — run dev server
+- `ng generate component/service/module` (`ng g c/s/m`) — scaffold code
+- `ng build --configuration production` — production build
+- `ng test` / `ng lint` — run tests / linting
 
 ```bash
-ng new my-app                     # create project
-ng serve                          # dev server → localhost:4200
-ng generate component product     # or: ng g c product
-ng generate service user          # ng g s user
-ng generate module admin          # ng g m admin
-ng build                          # dev build
-ng build --configuration production   # prod build (AOT + minified)
-ng test                           # run unit tests
-ng lint                           # lint code
-ng update @angular/core @angular/cli  # upgrade Angular version
+ng new my-app
+ng serve
+ng generate component product       # ng g c product
+ng generate service product         # ng g s product
+ng build --configuration production
+ng test
 ```
 
----
-
-### Q24. What is the Angular project structure?
+### Q4. What is the typical Angular project structure?
+- `src/app/` — components, services, modules (your code)
+- `src/assets/` — static files (images, fonts)
+- `src/environments/` — dev vs prod config
+- `main.ts` — bootstraps the app
+- `index.html` — shell page with `<app-root>`
+- `angular.json` — CLI build configuration
 
 ```
-my-app/
-├── src/
-│   ├── app/
-│   │   ├── app.component.ts/html/css   ← root component
-│   │   ├── app.module.ts               ← root module
-│   │   └── feature/                    ← your feature modules/components
-│   ├── assets/                         ← images, static files
-│   ├── environments/                   ← dev/prod config
-│   ├── index.html                      ← shell HTML (<app-root>)
-│   ├── main.ts                         ← bootstrap entry point
-│   └── styles.css                      ← global styles
-├── angular.json                        ← CLI config
-├── tsconfig.json                       ← TypeScript config
-└── package.json
+src/
+├── app/
+│   ├── app.component.ts
+│   └── feature/
+├── assets/
+├── environments/
+├── index.html
+└── main.ts
 ```
 
----
-
-### Q25. What does `main.ts` do?
-
-It's the entry point that bootstraps the root module or standalone component.
+### Q5. What does `main.ts` do?
+- Entry point of the Angular application
+- Bootstraps the root component (standalone) or root module (`AppModule`)
+- Registers global providers (router, HTTP client) when using standalone bootstrap
+- Angular replaces `<app-root>` in `index.html` with the rendered component tree
 
 ```typescript
-// NgModule-based (Angular < 17)
-platformBrowserDynamic().bootstrapModule(AppModule);
-
-// Standalone (Angular 17+, default)
+// Standalone bootstrap (Angular 17+)
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient()
-  ]
+  providers: [provideRouter(routes), provideHttpClient()]
 });
+
+// Module-based bootstrap (older)
+platformBrowserDynamic().bootstrapModule(AppModule);
 ```
 
-`index.html` has `<app-root></app-root>` — Angular replaces it with `AppComponent`.
-
----
-
-### Q26. What is `NgModule` and what does `AppModule` contain?
-
-An `NgModule` groups related components, directives, pipes, and services.
+### Q6. What is an `NgModule`?
+- A container/organizer that groups related components, directives, pipes, and services
+- Key metadata properties:
+  - `declarations` — components/directives/pipes owned by this module
+  - `imports` — other modules this module depends on
+  - `exports` — what this module shares with others
+  - `providers` — services registered at module level
+  - `bootstrap` — root component (only in root module)
+- Being replaced by standalone components in modern Angular, but still common in existing codebases
 
 ```typescript
 @NgModule({
-  declarations: [AppComponent, ProductCardComponent],   // components/directives/pipes
-  imports: [BrowserModule, FormsModule, HttpClientModule, RouterModule],
+  declarations: [AppComponent, ProductCardComponent],
+  imports: [BrowserModule, FormsModule, HttpClientModule],
   providers: [ProductService],
-  exports: [ProductCardComponent],   // make available to other modules
-  bootstrap: [AppComponent]          // root only
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
 ```
 
----
-
-### Q27. What are standalone components (Angular 17+)?
-
-Components that declare their own imports — no `NgModule` needed. Default in Angular 17+.
+### Q7. What are standalone components (Angular 17+)?
+- Components that declare their own imports directly — no `NgModule` required
+- Reduces boilerplate, simplifies lazy loading and testing
+- Default since Angular 17/Angular CLI generates standalone by default
+- Use `imports: [...]` array directly in the `@Component` decorator
 
 ```typescript
 @Component({
   standalone: true,
   selector: 'app-product-card',
-  imports: [CommonModule, RouterModule, AsyncPipe],
-  template: `<a [routerLink]="['/products', product.id]">{{ product.name }}</a>`
+  imports: [CommonModule, RouterModule],
+  template: `<p>{{ product.name }}</p>`
 })
 export class ProductCardComponent {
   @Input() product!: Product;
 }
 ```
 
+### Q8. What is the difference between `declarations`, `imports`, `exports`, and `providers` in NgModule?
+- Mixing these up causes "X is not a known element" template errors
+
+| Property | Purpose | Direction |
+|---|---|---|
+| `declarations` | Owns components/directives/pipes | Internal to this module |
+| `imports` | Uses other modules' exports | Bringing IN |
+| `exports` | Shares this module's declarations | Giving OUT |
+| `providers` | Registers services at module scope | Module-level DI |
+
+```typescript
+@NgModule({
+  declarations: [ProductListComponent, ProductCardComponent],
+  imports: [CommonModule, ReactiveFormsModule],
+  exports: [ProductCardComponent],
+  providers: [ProductService]
+})
+export class ProductModule { }
+```
+
+### Q9. What is the difference between a Module-based app and a Standalone app?
+- Standalone simplifies lazy loading — use `loadComponent` instead of `loadChildren` + module
+
+| Aspect | Module-based | Standalone |
+|---|---|---|
+| Declared in | `NgModule` `declarations` | Self-contained `imports` array |
+| Bootstrap | `bootstrapModule()` | `bootstrapApplication()` |
+| Lazy loading | `loadChildren` + feature module | `loadComponent` directly |
+| Boilerplate | More | Less |
+| Default since | Pre-Angular 17 style | Angular 17+ default |
+
+### Q10. What is Angular Ivy?
+- Angular's rendering engine (compiler + runtime) since Angular 9
+- Produces smaller bundles via better tree-shaking
+- Faster compilation, better debugging, improved template type checking
+- Enables features like standalone components and improved lazy loading
+
 ---
 
-## 🧩 SECTION 2: Components
+## SECTION 2: Components & Lifecycle
 
----
-
-### Q28. What is a component in Angular?
-
-A self-contained piece of UI — a TypeScript class + HTML template + CSS styles. Everything visible in an Angular app is a component.
+### Q11. What is a Component in Angular?
+- Fundamental building block of the UI
+- Combination of: TypeScript class (logic) + HTML template (view) + CSS (style)
+- Decorated with `@Component({ selector, template/templateUrl, styleUrls })`
+- Every visible piece of an Angular app is rendered by some component
 
 ```typescript
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
-  styleUrls: ['./product.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./product.component.scss']
 })
 export class ProductComponent implements OnInit {
   products: Product[] = [];
-
   constructor(private productService: ProductService) {}
-
   ngOnInit(): void {
     this.productService.getAll().subscribe(p => this.products = p);
   }
 }
 ```
 
----
-
-### Q29. What are the different types of component selectors?
+### Q12. What are the types of component selectors?
+- Element selector: `app-product` → used as `<app-product>`
+- Attribute selector: `[appProduct]` → used as `<div appProduct>`
+- Class selector: `.app-product` → used as `<div class="app-product">`
+- Element selectors are standard for components; attribute selectors for directives
 
 ```typescript
-selector: 'app-product'       // Element:    <app-product>
-selector: '[appProduct]'      // Attribute:  <div appProduct>
-selector: '.app-product'      // Class:      <div class="app-product">
+@Component({ selector: 'app-product' })       // <app-product></app-product>
+@Component({ selector: '[appProduct]' })      // <div appProduct></div>
+@Component({ selector: '.app-product' })      // <div class="app-product"></div>
 ```
 
-Element selectors are most common for components. Attribute selectors are typical for directives.
-
----
-
-### Q30. What is View Encapsulation?
-
-Controls how a component's CSS is scoped.
-
-| Mode | Behavior |
-|---|---|
-| `Emulated` (default) | Angular adds unique attributes; styles scoped to component |
-| `None` | Styles become global — leaks app-wide |
-| `ShadowDom` | Uses native browser Shadow DOM |
+### Q13. What is View Encapsulation?
+- Controls how a component's CSS is scoped to avoid style leaks
+- `Emulated` (default) — Angular adds unique attributes; styles scoped to the component
+- `None` — styles become global, affect the whole app
+- `ShadowDom` — uses native browser Shadow DOM for true isolation
+- Set via `encapsulation: ViewEncapsulation.X` in `@Component`
 
 ```typescript
 @Component({
-  encapsulation: ViewEncapsulation.None  // global styles
+  selector: 'app-widget',
+  encapsulation: ViewEncapsulation.None   // styles become global
 })
+export class WidgetComponent { }
 ```
 
----
-
-### Q31. What are Angular lifecycle hooks in order?
-
-```
-1. ngOnChanges       — @Input changed (fires BEFORE ngOnInit on first run)
-2. ngOnInit          — once after first ngOnChanges; put init logic here
-3. ngDoCheck         — every change detection cycle
-4. ngAfterContentInit    — once after <ng-content> projected
-5. ngAfterContentChecked — after each content check
-6. ngAfterViewInit   — once after view + child views ready (@ViewChild available)
-7. ngAfterViewChecked    — after each view check
-8. ngOnDestroy       — cleanup: unsubscribe, clear timers
-```
-
----
-
-### Q32. What is the difference between `constructor` and `ngOnInit`?
+### Q14. What are Angular lifecycle hooks, in order?
+1. `ngOnChanges` — fires when an `@Input` changes (before first `ngOnInit`)
+2. `ngOnInit` — once, after first `ngOnChanges`; put init logic here
+3. `ngDoCheck` — runs on every change detection cycle
+4. `ngAfterContentInit` — once, after `<ng-content>` is projected
+5. `ngAfterContentChecked` — after every content check
+6. `ngAfterViewInit` — once, after the view and child views are ready
+7. `ngAfterViewChecked` — after every view check
+8. `ngOnDestroy` — cleanup: unsubscribe, clear timers
 
 ```typescript
-// Constructor — only for dependency injection
-constructor(private userService: UserService) {}
+export class DemoComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
+  ngOnChanges(changes: SimpleChanges): void { }
+  ngOnInit(): void { }
+  ngAfterViewInit(): void { }
+  ngOnDestroy(): void { }
+}
+```
 
-// ngOnInit — init logic: API calls, form setup (runs after @Input values set)
-ngOnInit(): void {
+### Q15. What is the difference between `constructor` and `ngOnInit`?
+- Never do heavy logic in the constructor
+
+```typescript
+constructor(private userService: UserService) {}   // DI only
+
+ngOnInit(): void {                                  // init logic
   this.userService.getAll().subscribe(u => this.users = u);
 }
 ```
 
-> 💡 **Rule:** Constructor = DI only. ngOnInit = everything else.
+| Aspect | Constructor | ngOnInit |
+|---|---|---|
+| Purpose | Dependency Injection only | Initialization logic |
+| @Input availability | NOT yet set | Already set |
+| Runs | On class instantiation | After first ngOnChanges |
+| Use for | Injecting services | API calls, form setup, subscriptions |
 
----
-
-### Q33. What does `ngOnChanges` give you?
-
-Fires whenever an `@Input` value changes. Receives a `SimpleChanges` object.
+### Q16. When does `ngOnChanges` fire and what does it receive?
+- Fires every time a parent changes an `@Input` property's reference
+- Receives a `SimpleChanges` object with `previousValue`, `currentValue`, `firstChange`
+- Does NOT fire on object mutation — only when the input reference itself changes
+- Useful for reacting to filter/config changes passed from parent
 
 ```typescript
 @Input() product!: Product;
 
 ngOnChanges(changes: SimpleChanges): void {
   if (changes['product'] && !changes['product'].firstChange) {
-    const prev = changes['product'].previousValue;
-    const curr = changes['product'].currentValue;
-    console.log('Changed from', prev, 'to', curr);
+    console.log('Previous:', changes['product'].previousValue);
+    console.log('Current:', changes['product'].currentValue);
   }
 }
 ```
 
----
+### Q17. What is the difference between `ngOnInit` and `ngAfterViewInit`?
+- Accessing `@ViewChild` in `ngOnInit` will give `undefined`
 
-## 📝 SECTION 3: Templates & Data Binding
+```typescript
+@ViewChild('nameInput') nameInput!: ElementRef<HTMLInputElement>;
 
----
+ngOnInit(): void {
+  console.log(this.nameInput); // undefined ❌
+}
 
-### Q34. What are the 4 types of data binding in Angular?
-
-```html
-<!-- 1. Interpolation — component → template (read only) -->
-<p>Hello {{ user.name }}</p>
-
-<!-- 2. Property binding — component → DOM property -->
-<img [src]="user.photo" [alt]="user.name" />
-<button [disabled]="isSaving">Save</button>
-
-<!-- 3. Event binding — DOM → component -->
-<button (click)="save()">Save</button>
-<input (keyup.enter)="search()" />
-
-<!-- 4. Two-way binding — both directions (needs FormsModule) -->
-<input [(ngModel)]="user.name" />
+ngAfterViewInit(): void {
+  this.nameInput.nativeElement.focus(); // ✅ works
+}
 ```
 
+| Aspect | ngOnInit | ngAfterViewInit |
+|---|---|---|
+| Runs when | After @Input values set | After view + child views rendered |
+| @ViewChild available | ❌ No | ✅ Yes |
+| Use for | Init logic, API calls | DOM manipulation, child component access |
+| Frequency | Once | Once (per creation) |
+
+### Q18. What is `ngOnDestroy` used for?
+- Cleanup hook called just before Angular destroys the component
+- Unsubscribe from manual RxJS subscriptions to prevent memory leaks
+- Clear `setInterval`/`setTimeout` timers
+- Detach event listeners added manually (e.g., on `window` or `document`)
+
+```typescript
+private sub!: Subscription;
+private timerId!: number;
+
+ngOnInit(): void {
+  this.sub = this.service.getData().subscribe(d => this.data = d);
+  this.timerId = setInterval(() => this.refresh(), 5000);
+}
+
+ngOnDestroy(): void {
+  this.sub.unsubscribe();
+  clearInterval(this.timerId);
+}
+```
+
+### Q19. Can a component have multiple `@Input` and `@Output` properties?
+- Yes — a component can declare as many `@Input()` and `@Output()` properties as needed
+- Inputs flow data parent → child; Outputs flow events child → parent
+- Angular 16+ allows marking inputs as required: `@Input({ required: true })`
+- Keeps the component's public API explicit and well-typed
+
+```typescript
+export class ProductCardComponent {
+  @Input() title = '';
+  @Input({ required: true }) product!: Product;
+  @Output() selected = new EventEmitter<Product>();
+  @Output() deleted = new EventEmitter<number>();
+}
+```
+
+### Q20. What is component re-use and why is it important architecturally?
+- Components designed to accept data via `@Input` and emit via `@Output` can be reused across the app
+- Promotes the "Smart vs Dumb component" pattern (see Q90)
+- Reduces duplication, centralizes UI logic, makes testing easier
+- Encourages building a shared/UI component library across features
+
 ---
 
-### Q35. What is the difference between property binding and attribute binding?
+## SECTION 3: Templates & Data Binding
+
+### Q21. What are the 4 types of data binding in Angular?
+1. **Interpolation** `{{ }}` — component → view (read-only)
+2. **Property binding** `[prop]` — component → DOM property
+3. **Event binding** `(event)` — DOM → component
+4. **Two-way binding** `[(ngModel)]` — both directions (needs `FormsModule`)
 
 ```html
-<!-- Property binding — evaluates as TypeScript expression -->
-<button [disabled]="isLoading">Save</button>
+<p>Hello {{ user.name }}</p>                     <!-- interpolation -->
+<button [disabled]="isSaving">Save</button>      <!-- property binding -->
+<button (click)="save()">Save</button>           <!-- event binding -->
+<input [(ngModel)]="user.name" />                <!-- two-way binding -->
+```
 
-<!-- Attribute binding — for HTML attributes that have no DOM property -->
+### Q22. What is the difference between property binding and attribute binding?
+- Common attribute-binding cases: table `colspan`, SVG attributes, ARIA attributes
+
+```html
+<button [disabled]="isLoading">Save</button>
 <td [attr.colspan]="colSpan">Cell</td>
 <th [attr.aria-label]="columnName">Header</th>
 ```
 
----
+| Aspect | Property Binding `[ ]` | Attribute Binding `[attr.]` |
+|---|---|---|
+| Targets | DOM property | HTML attribute |
+| Use when | A matching DOM property exists | No DOM property equivalent (colspan, aria-*) |
+| Default choice | ✅ Preferred | Fallback only |
+| Examples | `[disabled]`, `[src]`, `[value]` | `[attr.colspan]`, `[attr.aria-label]` |
 
-### Q36. What are template reference variables?
-
-Give an element a local name in the template.
+### Q23. What are template reference variables?
+- Local names given to elements using `#` (e.g., `#nameInput`)
+- Used to reference the element/directive elsewhere in the SAME template
+- Can capture directive instances too, e.g., `#emailRef="ngModel"`
+- Different from `@ViewChild`, which accesses the element from the TypeScript class
 
 ```html
 <input #nameInput type="text" />
 <button (click)="greet(nameInput.value)">Greet</button>
 
-<!-- Access Angular directives on the element -->
 <input #emailRef="ngModel" [(ngModel)]="email" name="email" required />
 <p *ngIf="emailRef.invalid && emailRef.touched">Invalid email</p>
 ```
 
----
-
-### Q37. What is `ng-container`, `ng-template`, and `ng-content`?
+### Q24. What is `ng-container` and when do you use it?
+- A grouping element that renders NO actual DOM node
+- Useful when you need `*ngIf` or `*ngFor` on a group of sibling elements without adding a wrapper div
+- Keeps the DOM clean and avoids unnecessary CSS/layout side effects
 
 ```html
-<!-- ng-container — groups elements without adding a DOM node -->
 <ng-container *ngIf="user">
   <h2>{{ user.name }}</h2>
   <p>{{ user.email }}</p>
 </ng-container>
+```
 
-<!-- ng-template — not rendered by default; used by *ngIf else etc. -->
+### Q25. What is `ng-template`?
+- Defines a block of HTML that is NOT rendered by default
+- Rendered conditionally/lazily, commonly used with `*ngIf...else`
+- Also used by structural directives internally (the `*` syntax is sugar for `ng-template`)
+
+```html
 <div *ngIf="user; else loading">{{ user.name }}</div>
 <ng-template #loading><p>Loading...</p></ng-template>
+```
 
-<!-- ng-content — content projection slot (like @RenderFragment in Blazor) -->
-<!-- card.component.html: -->
+### Q26. What is `ng-content` (Content Projection)?
+- Creates a "slot" in a component where the parent can inject custom HTML
+- Similar to `@RenderFragment`/slots in other frameworks
+- Supports multiple named slots using the `select` attribute: `<ng-content select="[header]">`
+- Used heavily in reusable UI components like cards, modals, tabs
+
+```html
+<!-- card.component.html -->
 <div class="card">
   <ng-content select="[header]"></ng-content>
   <ng-content></ng-content>
 </div>
 
-<!-- parent: -->
+<!-- parent usage -->
 <app-card>
   <h2 header>Title</h2>
   <p>Body content</p>
 </app-card>
 ```
 
----
-
-### Q38. What are class and style bindings?
+### Q27. What are class and style bindings?
+- Single class: `[class.active]="isActive"`
+- Multiple classes: `[ngClass]="{ active: isActive, error: hasError }"`
+- Single style: `[style.color]="textColor"`
+- Multiple styles: `[ngStyle]="{ color: textColor, 'font-size': fontSize+'px' }"`
 
 ```html
-<!-- Single class -->
 <div [class.active]="isActive" [class.error]="hasError"></div>
-
-<!-- Multiple classes — ngClass -->
-<div [ngClass]="{ active: isActive, error: hasError, 'text-bold': isBold }"></div>
-<div [ngClass]="['active', 'highlight']"></div>
-
-<!-- Single style -->
+<div [ngClass]="{ active: isActive, error: hasError }"></div>
 <div [style.color]="textColor" [style.font-size.px]="fontSize"></div>
-
-<!-- Multiple styles — ngStyle -->
 <div [ngStyle]="{ color: textColor, 'font-size': fontSize + 'px' }"></div>
 ```
 
----
-
-## 🏗️ SECTION 4: Directives
-
----
-
-### Q39. What are the three types of Angular directives?
-
-- **Component** — directive with a template (`@Component`). Every component is technically a directive.
-- **Structural** — change DOM structure: `*ngIf`, `*ngFor`, `*ngSwitch`. The `*` is syntactic sugar for `<ng-template>`.
-- **Attribute** — change appearance/behavior: `ngClass`, `ngStyle`, or custom `@Directive`.
-
----
-
-### Q40. How does `*ngIf` work including the `else` branch?
+### Q28. What is the safe navigation operator in templates?
+- `?.` (optional chaining) prevents errors when accessing properties of a possibly null/undefined object
+- Example: `{{ user?.address?.city }}`
+- Without it, Angular would throw a runtime error if `user` is null
+- Very common when displaying data while it's still loading
 
 ```html
-<!-- Basic -->
+<p>{{ user?.address?.city }}</p>
+<p>{{ user?.name?.length }}</p>
+```
+
+### Q29. How do event bindings pass data, and what is `$event`?
+- `$event` is the implicit object passed by the DOM event
+- For native DOM events, `$event` is the standard browser `Event` object
+- For custom `@Output` events, `$event` is whatever payload was passed to `.emit()`
+- Example: `(click)="onSave($event)"`, `(productSelected)="onSelect($event)"`
+
+```html
+<button (click)="onSave($event)">Save</button>
+<app-product-card (productSelected)="onSelect($event)"></app-product-card>
+```
+
+### Q30. What is the difference between `[hidden]` and `*ngIf`?
+- Prefer `*ngIf` when the element has heavy logic, child components, or subscriptions
+
+```html
+<div [hidden]="!isVisible">Stays in DOM, just hidden</div>
+<div *ngIf="isVisible">Removed from DOM entirely</div>
+```
+
+| Aspect | `[hidden]` | `*ngIf` |
+|---|---|---|
+| DOM presence | Stays in DOM | Added/removed from DOM |
+| Mechanism | CSS `display:none` | Structural directive |
+| Lifecycle hooks | Not re-triggered | Triggered on create/destroy |
+| Best for | Lightweight toggle | Heavy elements, child components, subscriptions |
+
+---
+
+## SECTION 4: Directives
+
+### Q31. What are the three types of Angular directives?
+1. **Component** — a directive with a template (every `@Component` is technically a directive)
+2. **Structural** — changes DOM structure: `*ngIf`, `*ngFor`, `*ngSwitch`
+3. **Attribute** — changes appearance/behavior without changing structure: `ngClass`, `ngStyle`, custom directives
+
+### Q32. How does `*ngIf` work, including the `else` clause?
+- Adds/removes the element from the DOM based on a boolean condition
+- `*ngIf="condition; else templateRef"` — renders an `ng-template` when false
+- Can use `as` to alias an async value: `*ngIf="user$ | async as user"`
+- Removing from DOM (not just hiding) means child component lifecycles run again on re-creation
+
+```html
 <div *ngIf="isLoggedIn">Welcome back!</div>
 
-<!-- With else -->
 <div *ngIf="user; else loading">Hello {{ user.name }}</div>
 <ng-template #loading><p>Loading...</p></ng-template>
 
-<!-- With local alias -->
 <div *ngIf="user$ | async as user">Hello {{ user.name }}</div>
 ```
 
-`*ngIf` **removes** the element from the DOM when false (not just hides it with CSS).
-
----
-
-### Q41. How does `*ngFor` work and what is `trackBy`?
+### Q33. How does `*ngFor` work, and what is `trackBy`?
+- Repeats a template once per item in a collection
+- Provides local variables: `index`, `first`, `last`, `even`, `odd`
+- Without `trackBy`: Angular destroys & recreates ALL DOM nodes when the array reference changes
+- With `trackBy`: Angular reuses existing DOM nodes by matching a unique key — big performance win for large/dynamic lists
 
 ```html
-<li *ngFor="let item of items; let i = index; let last = last; trackBy: trackById">
+<li *ngFor="let item of items; let i = index; trackBy: trackById">
   {{ i + 1 }}. {{ item.name }}
-  <span *ngIf="last"> (last)</span>
 </li>
 ```
 
 ```typescript
-// Without trackBy: Angular destroys and recreates all DOM nodes when list changes
-// With trackBy: Angular reuses existing DOM nodes — massive performance win
 trackById(index: number, item: Product): number {
   return item.id;
 }
 ```
 
----
-
-### Q42. How does `*ngSwitch` work?
+### Q34. How does `*ngSwitch` work?
+- Renders one of several templates based on matching a value
+- `[ngSwitch]="status"` on the container, `*ngSwitchCase="'value'"` on each option
+- `*ngSwitchDefault` renders if no case matches
+- Cleaner alternative to multiple chained `*ngIf` blocks
 
 ```html
 <div [ngSwitch]="status">
   <p *ngSwitchCase="'loading'">Loading...</p>
   <p *ngSwitchCase="'success'">Done!</p>
-  <p *ngSwitchCase="'error'">Something went wrong</p>
   <p *ngSwitchDefault>Unknown state</p>
 </div>
 ```
 
----
-
-### Q43. How do you create a custom attribute directive?
+### Q35. How do you create a custom attribute directive?
+- Use `@Directive({ selector: '[appHighlight]' })`
+- Inject `ElementRef` (reference to host element) and `Renderer2` (safe DOM manipulation)
+- Use `@HostListener` to react to events on the host (e.g., `mouseenter`)
+- Use `Renderer2.setStyle()`/`addClass()` instead of touching `nativeElement` directly — keeps it SSR-safe
 
 ```typescript
 @Directive({ selector: '[appHighlight]', standalone: true })
 export class HighlightDirective {
   @Input() appHighlight = 'yellow';
-
   constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   @HostListener('mouseenter') onEnter() {
     this.renderer.setStyle(this.el.nativeElement, 'backgroundColor', this.appHighlight);
   }
-
   @HostListener('mouseleave') onLeave() {
     this.renderer.removeStyle(this.el.nativeElement, 'backgroundColor');
   }
 }
 ```
 
-```html
-<p appHighlight="lightblue">Hover me</p>
-```
-
-> 💡 Use `Renderer2` instead of direct DOM manipulation — works with SSR and Web Workers.
-
----
-
-### Q44. What are `@HostListener` and `@HostBinding`?
+### Q36. What are `@HostListener` and `@HostBinding`?
+- `@HostListener('event')` — listens to events fired ON the host element (e.g., click, mouseenter)
+- `@HostBinding('property')` — binds a directive property TO a property/attribute/class of the host element
+- Used together to build directives that both react to and modify their host element
+- Example: a directive that toggles a CSS class on click
 
 ```typescript
 @Directive({ selector: '[appActive]' })
 export class ActiveDirective {
   @HostBinding('class.is-active') isActive = false;
-  @HostBinding('attr.aria-pressed') get ariaPressed() { return this.isActive; }
 
   @HostListener('click') onClick() {
     this.isActive = !this.isActive;
   }
+}
+```
 
-  @HostListener('document:keydown.escape') onEscape() {
-    this.isActive = false;
+### Q37. What is the difference between a structural directive and an attribute directive in terms of DOM impact?
+| Aspect | Structural Directive | Attribute Directive |
+|---|---|---|
+| DOM impact | Adds/removes elements | Modifies existing element |
+| Syntax | Prefixed with `*` | No prefix, used like a normal attribute |
+| Examples | `*ngIf`, `*ngFor`, `*ngSwitch` | `ngClass`, `ngStyle`, custom `[appHighlight]` |
+
+### Q38. Can you have multiple structural directives on the same element?
+- No — Angular does not allow two structural directives (`*ngIf`, `*ngFor`) directly on the same element
+- Solution: wrap one of them in an `ng-container`
+- Example: put `*ngFor` on `ng-container`, and `*ngIf` on the inner element (or vice versa)
+
+```html
+<ng-container *ngFor="let item of items">
+  <div *ngIf="item.isActive">{{ item.name }}</div>
+</ng-container>
+```
+
+### Q39. What is the purpose of `Renderer2` in directives?
+- Provides a safe, abstracted way to manipulate the DOM
+- Works correctly across different rendering contexts (browser, server-side rendering, web workers)
+- Methods: `setStyle`, `removeStyle`, `addClass`, `removeClass`, `setAttribute`, `createElement`
+- Preferred over directly accessing `ElementRef.nativeElement`
+
+```typescript
+constructor(private el: ElementRef, private renderer: Renderer2) {}
+
+ngOnInit(): void {
+  this.renderer.addClass(this.el.nativeElement, 'highlighted');
+  this.renderer.setAttribute(this.el.nativeElement, 'data-id', '101');
+}
+```
+
+### Q40. How would you build a directive that restricts input to numbers only?
+- Create an attribute directive selector like `[numbersOnly]`
+- Use `@HostListener('keypress', ['$event'])` to intercept keystrokes
+- Use a regex check on the key and call `event.preventDefault()` if it doesn't match
+- Apply the directive declaratively on any `<input>` without repeating validation logic
+
+```typescript
+@Directive({ selector: '[numbersOnly]' })
+export class NumbersOnlyDirective {
+  @HostListener('keypress', ['$event'])
+  onKeyPress(event: KeyboardEvent) {
+    if (!/[0-9]/.test(event.key)) {
+      event.preventDefault();
+    }
   }
 }
 ```
 
 ---
 
-## 🔧 SECTION 5: Pipes
+## SECTION 5: Pipes
 
----
-
-### Q45. What are pipes and how do you use them?
-
-Pipes transform values for display in templates using `|`.
+### Q41. What are pipes and how are they used?
+- Transform a value for DISPLAY in the template without changing the underlying data
+- Chained using the pipe `|` operator: `{{ value | pipeName:arg1:arg2 }}`
+- Multiple pipes can be chained: `{{ value | pipe1 | pipe2 }}`
+- The `async` pipe is special — it subscribes to Observables/Promises automatically
 
 ```html
-<p>{{ price | currency:'INR':'symbol':'1.0-0' }}</p>
+<p>{{ price | currency:'INR' }}</p>
 <p>{{ today | date:'dd MMM yyyy' }}</p>
-<p>{{ 'hello world' | titlecase }}</p>
-<p>{{ longText | slice:0:100 }}</p>
-<p>{{ user | json }}</p>                     <!-- debugging -->
-<p>{{ products$ | async }}</p>              <!-- auto-subscribe Observable -->
+<p>{{ products$ | async }}</p>
 ```
 
----
+### Q42. Name some commonly used built-in pipes.
+- `date` — formats dates: `date:'dd MMM yyyy'`
+- `currency` — formats money: `currency:'INR'`
+- `uppercase` / `lowercase` / `titlecase`
+- `slice` — extracts a portion of an array/string
+- `json` — pretty-prints objects (useful for debugging)
+- `async` — unwraps Observable/Promise values
+- `keyvalue` — iterates over object entries
 
-### Q46. What are all the built-in Angular pipes?
+```html
+<p>{{ 'hello world' | titlecase }}</p>      <!-- Hello World -->
+<p>{{ longText | slice:0:100 }}</p>
+<p>{{ user | json }}</p>
+<li *ngFor="let kv of statusMap | keyvalue">{{ kv.key }}: {{ kv.value }}</li>
+```
 
-| Pipe | Example | Output |
-|---|---|---|
-| `date` | `date:'shortDate'` | 6/29/26 |
-| `currency` | `currency:'USD'` | $99.99 |
-| `number` | `number:'1.2-2'` | 1,234.56 |
-| `percent` | `percent:'1.1-1'` | 95.5% |
-| `uppercase` | `'hello' \| uppercase` | HELLO |
-| `lowercase` | `'HELLO' \| lowercase` | hello |
-| `titlecase` | `'hello world' \| titlecase` | Hello World |
-| `slice` | `arr \| slice:0:3` | first 3 items |
-| `json` | `obj \| json` | pretty JSON string |
-| `async` | `obs$ \| async` | unwrapped value |
-| `keyvalue` | `obj \| keyvalue` | `{key, value}` pairs |
-
----
-
-### Q47. How do you create a custom pipe?
+### Q43. How do you create a custom pipe?
+- Decorate a class with `@Pipe({ name: 'pipeName' })`
+- Implement `PipeTransform` interface with a `transform(value, ...args)` method
+- First parameter is always the piped-in value; remaining are arguments passed after `:`
+- Keep it `pure: true` (default) unless you specifically need impure behavior
 
 ```typescript
 @Pipe({ name: 'truncate', standalone: true, pure: true })
 export class TruncatePipe implements PipeTransform {
   transform(value: string, limit: number = 50, suffix: string = '...'): string {
     if (!value) return '';
-    return value.length > limit
-      ? value.substring(0, limit) + suffix
-      : value;
+    return value.length > limit ? value.substring(0, limit) + suffix : value;
   }
 }
 ```
@@ -1007,100 +657,141 @@ export class TruncatePipe implements PipeTransform {
 <p>{{ article.body | truncate:100:'…' }}</p>
 ```
 
----
-
-### Q48. What is the difference between pure and impure pipes?
-
-| | Pure (default) | Impure (`pure: false`) |
-|---|---|---|
-| Runs when | Input **reference** changes | Every CD cycle |
-| Performance | Fast | Potentially slow |
-| Use for | Most transforms | `async` pipe, filtering mutable arrays |
-
-> ⚠️ Avoid impure pipes for sorting/filtering large arrays — do that in the component instead.
-
----
-
-## 📡 SECTION 6: Component Communication
-
----
-
-### Q49. How does `@Input()` work (parent → child)?
+### Q44. What is the difference between pure and impure pipes?
+- `async` pipe is impure internally (it needs to react to stream emissions)
 
 ```typescript
-// child.component.ts
+@Pipe({ name: 'liveFilter', pure: false })   // runs every CD cycle
+export class LiveFilterPipe implements PipeTransform {
+  transform(items: any[], term: string) {
+    return items.filter(i => i.name.includes(term));
+  }
+}
+```
+
+| Aspect | Pure (default) | Impure (`pure: false`) |
+|---|---|---|
+| Runs when | Input reference changes | Every change detection cycle |
+| Performance | Fast, cached | Potentially slow |
+| Use for | Most transforms | `async` pipe, filtering mutable arrays |
+
+### Q45. Why should you avoid using a pipe to filter/sort large data sets directly via an impure pipe?
+- Impure pipes re-execute on every change detection cycle, even unrelated ones
+- For large arrays, this can cause severe performance degradation
+- Better approach: do filtering/sorting in the component class and expose a pre-computed result
+- Or use a pure pipe with explicit, immutable inputs that only change when needed
+
+### Q46. What is the `async` pipe and what problem does it solve?
+- Automatically subscribes to an Observable or Promise in the template
+- Automatically unsubscribes when the component is destroyed — prevents memory leaks
+- Removes the need for manual `subscribe()`/`unsubscribe()` boilerplate
+- Triggers change detection automatically, even with `OnPush` strategy
+
+```typescript
+products$ = this.productService.getAll();
+```
+```html
+<li *ngFor="let p of products$ | async">{{ p.name }}</li>
+```
+
+### Q47. Can pipes accept multiple parameters?
+- Yes, parameters are passed after the pipe name using colons: `value | slice:0:10`
+- Order of parameters matters and must match the `transform()` method signature
+- Useful for configurable transforms, e.g., `truncate:50:'...'`
+
+```html
+<p>{{ items | slice:0:10 }}</p>
+<p>{{ price | currency:'USD':'symbol':'1.2-2' }}</p>
+```
+
+### Q48. What happens if you pass `null` or `undefined` to a built-in pipe like `date` or `currency`?
+- Most built-in pipes handle `null`/`undefined` gracefully and render nothing (empty string)
+- Custom pipes must explicitly guard against `null`/`undefined` in the `transform()` method
+- Always add a null check at the top of a custom pipe's transform function
+
+```typescript
+transform(value: string | null | undefined, limit = 50): string {
+  if (!value) return '';   // guard against null/undefined
+  return value.length > limit ? value.substring(0, limit) + '...' : value;
+}
+```
+
+---
+
+## SECTION 6: Component Communication
+
+### Q49. How does `@Input()` work?
+- Decorator marking a property that the PARENT can pass data into
+- Bound in the parent template using square brackets: `[propName]="value"`
+- Can have a default value or be marked required: `@Input({ required: true })`
+- Can also be defined with a setter to run logic whenever the value changes
+
+```typescript
+// child
 @Input() title: string = '';
 @Input({ required: true }) product!: Product;
 @Input() set config(value: Config) {
   this._config = { ...defaultConfig, ...value };
 }
 ```
-
 ```html
-<!-- parent template -->
+<!-- parent -->
 <app-child [title]="pageTitle" [product]="selectedProduct"></app-child>
 ```
 
----
-
-### Q50. How does `@Output()` and `EventEmitter` work (child → parent)?
+### Q50. How does `@Output()` with `EventEmitter` work?
+- Decorator marking a property as an event source the CHILD can emit
+- Declared as `@Output() eventName = new EventEmitter<T>()`
+- Child calls `.emit(payload)`; parent listens with `(eventName)="handler($event)"`
+- Keeps the child decoupled — it has no knowledge of the parent
 
 ```typescript
-// child.component.ts
+// child
 @Output() productSelected = new EventEmitter<Product>();
-@Output() deleted = new EventEmitter<number>();
-
-selectProduct(p: Product): void {
-  this.productSelected.emit(p);
-}
+selectProduct(p: Product): void { this.productSelected.emit(p); }
 ```
-
 ```html
-<!-- parent template -->
-<app-child
-  (productSelected)="onProductSelected($event)"
-  (deleted)="onDelete($event)">
-</app-child>
+<!-- parent -->
+<app-child (productSelected)="onProductSelected($event)"></app-child>
 ```
 
----
-
-### Q51. What is `@ViewChild` and when do you use it?
+### Q51. What is `@ViewChild` and when can you safely access it?
+- Gives a direct reference to a child component/directive/DOM element in the CURRENT template
+- Safe to access starting from `ngAfterViewInit` (not before — view isn't rendered yet)
+- Common uses: focusing an input, calling a child component's method directly
+- Can target by template reference variable, component type, or directive type
 
 ```typescript
 @ViewChild('nameInput') nameInput!: ElementRef<HTMLInputElement>;
 @ViewChild(ChildComponent) child!: ChildComponent;
-@ViewChild(NgForm) form!: NgForm;
 
-// ✅ Access in ngAfterViewInit (not ngOnInit — view not ready yet)
 ngAfterViewInit(): void {
   this.nameInput.nativeElement.focus();
   this.child.refresh();
 }
 ```
 
----
-
 ### Q52. What is the difference between `@ViewChild` and `@ContentChild`?
-
 ```typescript
-// @ViewChild — element in THIS component's own template
 @ViewChild('myBtn') btn!: ElementRef;
-
-// @ContentChild — content projected INTO this component via <ng-content>
 @ContentChild(TabTitleComponent) tabTitle!: TabTitleComponent;
 
-// Access ContentChild in ngAfterContentInit (not ngAfterViewInit)
 ngAfterContentInit(): void {
   console.log(this.tabTitle.label);
 }
 ```
 
----
+| Aspect | @ViewChild | @ContentChild |
+|---|---|---|
+| Source | Component's own template | Content projected via `<ng-content>` |
+| Available in | `ngAfterViewInit` | `ngAfterContentInit` |
+| Plural version | `@ViewChildren` | `@ContentChildren` |
 
-### Q53. How do you communicate between sibling components (no parent)?
-
-Use a **shared service with a `BehaviorSubject`**:
+### Q53. How do sibling components communicate without a direct parent-child relationship?
+- Cannot pass data directly — there's no binding mechanism between siblings
+- Standard solution: a shared service (often `providedIn: 'root'`) holding a `BehaviorSubject`
+- Component A pushes new data via the service; Component B subscribes and reacts
+- This pattern is also the foundation for simple, lightweight state management
 
 ```typescript
 @Injectable({ providedIn: 'root' })
@@ -1111,22 +802,33 @@ export class CartService {
   addItem(item: CartItem): void {
     this.cartItems.next([...this.cartItems.value, item]);
   }
-
-  removeItem(id: number): void {
-    this.cartItems.next(this.cartItems.value.filter(i => i.id !== id));
-  }
 }
 ```
 
-Component A calls `addItem()`. Component B subscribes to `cartItems$` — automatically gets updates.
+### Q54. What is the difference between `@Input()` and a service for passing data?
+| Aspect | @Input() | Shared Service |
+|---|---|---|
+| Direction | Parent → Child only | Any component → Any component |
+| Use case | Component-local data/API contract | Cross-cutting/global state |
+| Coupling | Tightly coupled (template binding) | Loosely coupled |
+
+### Q55. Can you pass a method/function reference via `@Input`?
+- Yes, technically you can bind a function reference as an input
+- However, it's generally considered bad practice — prefer `@Output` + `EventEmitter` for child-to-parent communication
+- Passing callback functions breaks Angular's clear binding direction conventions
 
 ---
 
-## 📋 SECTION 7: Forms
+## SECTION 7: Forms
 
----
+### Q56. What is the difference between Template-Driven and Reactive forms?
+```html
+<!-- Template-driven -->
+<input name="email" [(ngModel)]="email" required email />
 
-### Q54. What is the difference between Template-Driven and Reactive forms?
+<!-- Reactive -->
+<input formControlName="email" />
+```
 
 | Feature | Template-Driven | Reactive |
 |---|---|---|
@@ -1137,77 +839,60 @@ Component A calls `addItem()`. Component B subscribes to `cartItems$` — automa
 | Validation | HTML attributes | `Validators` in code |
 | Best for | Simple forms | Complex / dynamic / enterprise |
 
----
-
-### Q55. What are `FormGroup`, `FormControl`, and `FormArray`?
+### Q57. What are `FormControl`, `FormGroup`, and `FormArray`?
+- `FormControl` — represents a SINGLE form field (value + validation state)
+- `FormGroup` — a named COLLECTION of controls, representing a form or form section
+- `FormArray` — an ORDERED LIST of controls, used for dynamic repeating fields
+- All three extend `AbstractControl` and share common status properties
 
 ```typescript
-// FormControl — single field
 const nameCtrl = new FormControl('', Validators.required);
 
-// FormGroup — object of named controls
 const loginForm = new FormGroup({
   email: new FormControl('', [Validators.required, Validators.email]),
-  password: new FormControl('', [Validators.required, Validators.minLength(8)])
+  password: new FormControl('', Validators.required)
 });
 
-// FormArray — dynamic list of controls
-const phonesArray = new FormArray([
-  new FormControl(''),
-  new FormControl('')
-]);
+const phonesArray = new FormArray([new FormControl(''), new FormControl('')]);
 ```
 
----
-
-### Q56. What is `FormBuilder` and why use it?
-
-Shorthand service for creating reactive forms — less verbose.
+### Q58. What is `FormBuilder` and why is it preferred?
+- A helper service providing shorthand methods (`.group()`, `.control()`, `.array()`) to build forms
+- Significantly reduces boilerplate compared to manually instantiating `new FormControl()` repeatedly
+- Standard, idiomatic way to build Reactive forms in real projects
+- Injected via constructor: `constructor(private fb: FormBuilder) {}`
 
 ```typescript
 constructor(private fb: FormBuilder) {}
 
 ngOnInit(): void {
   this.form = this.fb.group({
-    name:  ['', [Validators.required, Validators.minLength(2)]],
+    name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    age:   [null, [Validators.min(0), Validators.max(120)]],
-    address: this.fb.group({
-      city:    [''],
-      country: ['']
-    }),
     phones: this.fb.array([this.fb.control('')])
   });
 }
 ```
 
----
-
-### Q57. What are the built-in validators?
+### Q59. What are the commonly used built-in validators?
+- `Validators.required` — field must have a value
+- `Validators.email` — must match email format
+- `Validators.minLength(n)` / `Validators.maxLength(n)`
+- `Validators.min(n)` / `Validators.max(n)` — numeric range
+- `Validators.pattern(regex)` — custom regex validation
 
 ```typescript
-Validators.required
-Validators.requiredTrue          // checkbox must be checked
-Validators.email
-Validators.minLength(8)
-Validators.maxLength(50)
-Validators.min(0)
-Validators.max(100)
-Validators.pattern('^[a-zA-Z]+$')
-Validators.nullValidator         // always valid (placeholder)
+age: [null, [Validators.required, Validators.min(18), Validators.max(60)]],
+username: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]],
 ```
 
----
-
-### Q58. How do you create a custom validator?
+### Q60. How do you write a custom synchronous validator?
+- A function that takes an `AbstractControl` and returns `null` (valid) or a `ValidationErrors` object (invalid)
+- Field-level validators are attached directly to a `FormControl`
+- Group-level (cross-field) validators are attached to a `FormGroup`, useful for things like password confirmation
+- Custom validators can be combined with built-in ones in an array
 
 ```typescript
-// Field-level validator
-function noSpaces(control: AbstractControl): ValidationErrors | null {
-  return /\s/.test(control.value) ? { noSpaces: true } : null;
-}
-
-// Cross-field validator (apply to FormGroup)
 function passwordMatch(group: AbstractControl): ValidationErrors | null {
   const pass = group.get('password')?.value;
   const confirm = group.get('confirmPassword')?.value;
@@ -1215,490 +900,535 @@ function passwordMatch(group: AbstractControl): ValidationErrors | null {
 }
 
 this.form = this.fb.group({
-  username: ['', [Validators.required, noSpaces]],
   password: [''],
   confirmPassword: ['']
 }, { validators: passwordMatch });
 ```
 
----
-
-### Q59. What are the FormControl status flags and when do you use them?
+### Q61. How do you write an asynchronous (async) validator?
+- Same signature as sync validators, but returns an `Observable<ValidationErrors|null>` or `Promise`
+- Commonly used for server-side checks, like "is this username already taken?"
+- While pending, the control's status is `PENDING`
+- Should be debounced to avoid hitting the server on every keystroke
 
 ```typescript
-control.valid       // passes all validators
-control.invalid     // fails at least one
-control.touched     // user has blurred the field
-control.untouched   // user hasn't blurred yet
-control.dirty       // value has changed
-control.pristine    // value hasn't changed
-control.pending     // async validator running
-control.errors      // object of error keys or null
+function uniqueUsernameValidator(api: UserService): AsyncValidatorFn {
+  return (control: AbstractControl) =>
+    api.checkUsername(control.value).pipe(
+      map(isTaken => (isTaken ? { usernameTaken: true } : null))
+    );
+}
 ```
 
+### Q62. What are the FormControl status flags and what do they mean?
+- `valid` / `invalid` — passes/fails validation rules
+- `touched` / `untouched` — whether the user has focused and blurred the field
+- `dirty` / `pristine` — whether the value has changed from its initial value
+- `pending` — an async validator is currently running
+- Standard pattern: show error message only when `invalid && touched`
+
 ```html
-<!-- Show error only after user has interacted -->
 <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
   <span *ngIf="form.get('email')?.hasError('required')">Email is required</span>
-  <span *ngIf="form.get('email')?.hasError('email')">Invalid email format</span>
 </div>
 ```
 
----
-
-### Q60. How do you submit a reactive form?
+### Q63. How do you submit a Reactive form?
+- Bind `(ngSubmit)="onSubmit()"` on the `<form>` element
+- Always guard with `if (this.form.invalid) return;` at the top of the handler
+- Disable the submit button while `form.invalid` or while saving (`isSaving`)
+- Call `form.reset()` after a successful save to clear values and reset dirty/touched flags
 
 ```html
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <input formControlName="email" />
-  <input formControlName="password" type="password" />
-  <button type="submit" [disabled]="form.invalid || isSaving">
-    {{ isSaving ? 'Saving...' : 'Submit' }}
-  </button>
+  <button type="submit" [disabled]="form.invalid || isSaving">Submit</button>
 </form>
 ```
-
 ```typescript
 onSubmit(): void {
   if (this.form.invalid) return;
   this.isSaving = true;
   this.api.save(this.form.value).subscribe({
     next: () => { this.form.reset(); this.isSaving = false; },
-    error: () => { this.isSaving = false; }
+    error: () => this.isSaving = false
   });
 }
 ```
 
+### Q64. How do you dynamically add/remove form fields?
+- Use `FormArray` to represent the dynamic list (e.g., multiple phone numbers)
+- `.push(newControl)` to add a field, `.removeAt(index)` to remove one
+- Iterate over `formArray.controls` in the template with `*ngFor`
+- Common real-world use case: dynamic line items in an order form
+
+```typescript
+get phones(): FormArray { return this.form.get('phones') as FormArray; }
+
+addPhone(): void { this.phones.push(this.fb.control('')); }
+removePhone(i: number): void { this.phones.removeAt(i); }
+```
+```html
+<div *ngFor="let phone of phones.controls; let i = index">
+  <input [formControlName]="i" />
+  <button (click)="removePhone(i)">Remove</button>
+</div>
+```
+
+### Q65. How do you patch or set values on a form programmatically?
+- `form.setValue(obj)` — requires ALL fields to be provided, throws if any are missing
+- `form.patchValue(obj)` — updates only the fields provided, ignores the rest
+- `patchValue` is preferred for partial updates, e.g., pre-filling an edit form with API data
+- Both trigger value/status change events unless `{ emitEvent: false }` is passed
+
+```typescript
+this.form.patchValue({ name: user.name, email: user.email });
+this.form.setValue({ name: '', email: '', age: null }); // must include all fields
+```
+
 ---
 
-## 🗺️ SECTION 8: Routing
+## SECTION 8: Routing
 
----
-
-### Q61. How do you set up routing in Angular?
+### Q66. How do you configure routes in Angular?
+- Define a `Routes` array, mapping each `path` to a `component`
+- Order matters — more specific routes go before generic ones
+- The wildcard route `path: '**'` must always be LAST (catch-all/404 page)
+- Registered via `RouterModule.forRoot(routes)` or `provideRouter(routes)` (standalone)
 
 ```typescript
 const routes: Routes = [
-  { path: '',              component: HomeComponent },
-  { path: 'products',      component: ProductListComponent },
-  { path: 'products/:id',  component: ProductDetailComponent },
-  { path: 'admin',         loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
-  { path: '**',            component: NotFoundComponent }   // wildcard — MUST be last
+  { path: '', component: HomeComponent },
+  { path: 'products', component: ProductListComponent },
+  { path: 'products/:id', component: ProductDetailComponent },
+  { path: '**', component: NotFoundComponent }   // MUST be last
 ];
 ```
 
----
-
-### Q62. What are `router-outlet` and `routerLink`?
+### Q67. What are `router-outlet` and `routerLink`?
+- `<router-outlet>` — placeholder where the matched route's component is rendered
+- `routerLink` — Angular's SPA-friendly equivalent of `<a href>`, avoids full page reloads
+- `routerLinkActive` — applies a CSS class when that link's route is currently active
+- A layout component can have its own nested `<router-outlet>` for child routes
 
 ```html
 <nav>
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+  <a routerLink="/" routerLinkActive="active">Home</a>
   <a [routerLink]="['/products', product.id]">Details</a>
-  <a [routerLink]="['/products']" [queryParams]="{ page: 2 }">Page 2</a>
 </nav>
-
-<!-- Where matched component renders -->
 <router-outlet></router-outlet>
 ```
 
----
-
-### Q63. How do you read route and query parameters?
+### Q68. How do you read route parameters and query parameters?
+- Route params (`/:id`) via `ActivatedRoute.snapshot.params` (one-time) or `.paramMap` (Observable, reactive)
+- Query params (`?page=2`) via `ActivatedRoute.snapshot.queryParams` or `.queryParamMap`
+- Use the snapshot approach when the component is freshly created per navigation
+- Use the Observable approach when the SAME component instance can be reused across navigations to similar routes
 
 ```typescript
 constructor(private route: ActivatedRoute) {}
 
 ngOnInit(): void {
-  // Route param — snapshot (doesn't update if navigating to same route)
-  const id = this.route.snapshot.params['id'];
-
-  // Route param — Observable (updates on every navigation)
-  this.route.paramMap.subscribe(p => this.loadProduct(+p.get('id')!));
-
-  // Query params — ?page=2&size=10
-  this.route.queryParamMap.subscribe(q => {
-    this.page = +q.get('page')! || 1;
-    this.size = +q.get('size')! || 10;
-  });
+  const id = this.route.snapshot.params['id'];                 // one-time
+  this.route.paramMap.subscribe(p => this.loadProduct(+p.get('id')!)); // reactive
+  this.route.queryParamMap.subscribe(q => this.page = +q.get('page')! || 1);
 }
 ```
 
----
-
-### Q64. How do you navigate programmatically?
+### Q69. How do you navigate programmatically?
+- Inject `Router` and call `this.router.navigate(['/path', id])`
+- Pass query params: `{ queryParams: { page: 2 } }`
+- Navigate relative to current route: `{ relativeTo: this.route }`
+- Replace history entry (no back-navigation to previous page): `{ replaceUrl: true }`
 
 ```typescript
 constructor(private router: Router) {}
 
-// Basic navigation
-this.router.navigate(['/products']);
 this.router.navigate(['/products', id]);
-
-// With query params
 this.router.navigate(['/products'], { queryParams: { page: 2 } });
-
-// Relative navigation
-this.router.navigate(['../detail', id], { relativeTo: this.route });
-
-// Replace current history entry
 this.router.navigate(['/home'], { replaceUrl: true });
 ```
 
----
-
-### Q65. How do you set up nested (child) routes?
-
-```typescript
-const routes: Routes = [
-  {
-    path: 'admin',
-    component: AdminLayoutComponent,
-    children: [
-      { path: '',         redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'users',    component: UsersComponent },
-      { path: 'settings', component: SettingsComponent }
-    ]
-  }
-];
-```
-
-Parent `AdminLayoutComponent` must have its own `<router-outlet>` for children to render.
-
----
-
-### Q66. What is lazy loading and why use it?
-
-Loads a feature module only when user navigates to it — reduces initial bundle size.
+### Q70. What is lazy loading and why is it important?
+- Loads a feature module/component only when the user navigates to its route
+- Reduces the INITIAL bundle size, improving first-load performance
+- Configured via `loadChildren` (for modules) or `loadComponent` (for standalone components)
+- Critical performance practice for any non-trivial enterprise Angular app
 
 ```typescript
-// Lazy loading a module
 {
   path: 'admin',
   loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
 }
-
-// Lazy loading a standalone component (Angular 14+)
 {
   path: 'product/:id',
   loadComponent: () => import('./product/product.component').then(m => m.ProductComponent)
 }
 ```
 
----
-
-### Q67. What are route guards?
-
-Guards control whether navigation is allowed.
+### Q71. What are Route Guards? Name the types.
+- Functions/classes that control whether navigation is allowed to proceed
+- `CanActivate` — can the user enter this route? (e.g., authentication check)
+- `CanActivateChild` — same, but for child routes
+- `CanDeactivate` — can the user LEAVE this route? (e.g., unsaved changes warning)
+- `CanMatch` — should a lazy-loaded module even load for this route?
+- `Resolve` — pre-fetch data before the route activates
 
 ```typescript
-// Functional guard (Angular 15+, preferred)
 export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
-
-  if (auth.isLoggedIn()) return true;
-  return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
+  return auth.isLoggedIn() ? true : router.createUrlTree(['/login']);
 };
 
-// Apply to route
 { path: 'admin', component: AdminComponent, canActivate: [authGuard] }
 ```
 
-| Guard | When to Use |
-|---|---|
-| `CanActivate` | Auth check — can user enter route? |
-| `CanActivateChild` | Same for child routes |
-| `CanDeactivate` | Unsaved changes warning — can user leave? |
-| `CanMatch` | Should lazy module even load? |
-| `Resolve` | Pre-fetch data before activation |
+### Q72. What is a functional guard vs a class-based guard?
+- Functional guards (`CanActivateFn`, Angular 15+) are plain functions using `inject()` — less boilerplate, preferred in modern Angular
+- Class-based guards implement an interface (`CanActivate`) and are provided as injectable classes — older style
+- Both achieve the same result; functional guards are now the recommended approach
 
----
+```typescript
+// Functional (modern)
+export const authGuard: CanActivateFn = () => inject(AuthService).isLoggedIn();
 
-### Q68. What is a Resolver?
+// Class-based (older)
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(private auth: AuthService) {}
+  canActivate(): boolean { return this.auth.isLoggedIn(); }
+}
+```
 
-Pre-fetches data before the route component activates — component has data ready in `ngOnInit`.
+### Q73. What is a Route Resolver and why use one?
+- A service that pre-fetches data BEFORE the route's component is activated
+- Avoids a "flash of loading spinner" inside the component — data is ready when the component loads
+- Registered via `resolve: { key: ResolverClass }` in the route config
+- Component reads the resolved data from `route.snapshot.data['key']`
 
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class ProductResolver implements Resolve<Product> {
   constructor(private api: ProductService) {}
-
   resolve(route: ActivatedRouteSnapshot): Observable<Product> {
     return this.api.getById(+route.params['id']);
   }
 }
 
-// Route config
 { path: 'products/:id', component: DetailComponent, resolve: { product: ProductResolver } }
-
-// Component
+```
+```typescript
 ngOnInit(): void {
   this.product = this.route.snapshot.data['product'];
-  // Or: this.route.data.subscribe(d => this.product = d['product']);
 }
+```
+
+### Q74. How do you set up nested (child) routes?
+- Add a `children` array inside a parent route definition
+- The parent component MUST have its own `<router-outlet>` for children to render into
+- URL structure becomes `/parent/child`
+- Common pattern for admin dashboards with a shared sidebar layout
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,    // has its own <router-outlet>
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'users', component: UsersComponent }
+    ]
+  }
+];
+```
+
+### Q75. What is the difference between `forRoot()` and `forChild()` for `RouterModule`?
+- Standalone apps avoid this distinction entirely by using `provideRouter()`
+
+```typescript
+// AppModule — once only
+RouterModule.forRoot(appRoutes)
+
+// Feature module — can repeat
+RouterModule.forChild(adminRoutes)
+```
+
+| Aspect | forRoot() | forChild() |
+|---|---|---|
+| Called in | Root module (once) | Feature modules (many times) |
+| Registers Router service | ✅ Yes | ❌ No |
+| Adds routes | ✅ Yes | ✅ Yes |
+| Risk if misused | Duplicate router breaks navigation | Safe to repeat |
+
+### Q76. How would you implement a "confirm before leaving with unsaved changes" feature?
+- Implement a `CanDeactivate<T>` guard (or functional equivalent)
+- Inside the guard, check the component's dirty/unsaved state
+- Return `false` (or a confirmation dialog result) to block navigation
+- Attach the guard via `canDeactivate: [unsavedChangesGuard]` on the route
+
+```typescript
+export const unsavedChangesGuard: CanDeactivateFn<EditFormComponent> = (component) => {
+  if (component.form.dirty) {
+    return confirm('You have unsaved changes. Leave anyway?');
+  }
+  return true;
+};
+
+{ path: 'edit/:id', component: EditFormComponent, canDeactivate: [unsavedChangesGuard] }
 ```
 
 ---
 
-## 💉 SECTION 9: Services & Dependency Injection
+## SECTION 9: Services & Dependency Injection
 
----
-
-### Q69. What is a service in Angular?
-
-A class holding reusable business logic, data access, or shared state — separated from components.
+### Q77. What is a Service in Angular?
+- A class decorated with `@Injectable()` containing reusable logic, data access, or shared state
+- Keeps business/API logic OUT of components — components should only manage UI concerns
+- Typically injected into components or other services via the constructor
+- Returns Observables (commonly) when interacting with HTTP APIs
 
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrl = `${environment.apiUrl}/products`;
-
   constructor(private http: HttpClient) {}
-
   getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl);
-  }
-
-  getById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`);
-  }
-
-  create(product: Omit<Product, 'id'>): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
+    return this.http.get<Product[]>('/api/products');
   }
 }
 ```
 
----
-
-### Q70. What is Dependency Injection in Angular?
-
-Angular's DI system provides instances of services automatically. When Angular sees a typed parameter in a constructor, it finds/creates that instance.
+### Q78. What is Dependency Injection (DI) in Angular?
+- A design pattern where a class receives its dependencies from an external injector rather than creating them itself
+- Angular's DI container automatically resolves and provides instances based on constructor parameter types
+- Promotes loose coupling and easier unit testing (dependencies can be mocked/swapped)
+- Configured via `providers` and consumed via constructor injection or the `inject()` function
 
 ```typescript
-// Angular creates UserService and injects it automatically
 constructor(
   private userService: UserService,
-  private router: Router,
-  private fb: FormBuilder
+  private router: Router
 ) {}
+
+// Alternative (function-based DI, Angular 14+)
+const userService = inject(UserService);
 ```
 
-> 💡 **For .NET devs:** Same concept as .NET's built-in DI container (`IServiceCollection`). `providedIn: 'root'` = `AddSingleton`.
-
----
-
-### Q71. What are the different ways to provide services?
+### Q79. What are the different ways to provide a service, and what scope does each create?
+- `providedIn: 'root'` — single app-wide singleton (most common, tree-shakable)
+- Module-level providers — scoped to that feature module
+- Component-level `providers` array — NEW instance created per component instance
+- Choice of scope affects whether state is shared globally or isolated per component
 
 ```typescript
-// 1. Root-level singleton (preferred — tree-shakable)
 @Injectable({ providedIn: 'root' })
 export class AuthService { }
 
-// 2. Module-level (shared within feature module)
-@Injectable({ providedIn: UserModule })
-export class UserHelperService { }
-
-// 3. Component-level (new instance per component)
 @Component({
-  providers: [FormStateService]   // each instance gets its own
+  selector: 'app-order-form',
+  providers: [FormStateService]   // new instance per component
 })
 export class OrderFormComponent { }
+```
 
-// 4. In NgModule providers array
-@NgModule({ providers: [LoggingService] })
+### Q80. What is the Hierarchical Injector in Angular?
+- Angular maintains a tree of injectors that mirrors the component tree
+- When a service is requested, Angular walks UP the tree looking for the nearest provider
+- A component-level provider OVERRIDES a parent/root provider for that component's subtree
+- This allows different instances of the same service to exist in different parts of the app
+
+### Q81. What is the difference between `providedIn: 'root'` and adding a service to a module's `providers` array?
+| Aspect | `providedIn: 'root'` | NgModule `providers` array |
+|---|---|---|
+| Tree-shakable | ✅ Yes | ❌ Not in the same way |
+| Scope | App-wide singleton | Tied to module lifetime |
+| Recommended approach | ✅ Modern standard | Legacy/module-scoped use cases |
+
+### Q82. What is `useClass`, `useValue`, `useFactory`, and `useExisting` in a provider configuration?
+- `useClass` — provide a (possibly different) class implementation for a token
+- `useValue` — provide a static, pre-built value/object instead of a class instance
+- `useFactory` — provide a value generated by calling a factory function (can use `deps` for its own dependencies)
+- `useExisting` — alias one token to an existing provider, avoiding duplicate instances
+
+```typescript
+{ provide: LoggerService, useClass: ConsoleLoggerService },
+{ provide: APP_CONFIG, useValue: { apiUrl: 'https://api.example.com' } },
+{ provide: AuthService, useFactory: (http: HttpClient) => new AuthService(http), deps: [HttpClient] },
+{ provide: OldService, useExisting: NewService }
+```
+
+### Q83. What is an Injection Token and when would you use one?
+- `InjectionToken` is used to inject values that AREN'T classes — like config objects, strings, or constants
+- Avoids naming collisions that could happen with plain strings as DI tokens
+- Example: `export const API_URL = new InjectionToken<string>('apiUrl')`
+- Injected like any service: `constructor(@Inject(API_URL) private apiUrl: string)`
+
+```typescript
+export const API_URL = new InjectionToken<string>('apiUrl');
+
+{ provide: API_URL, useValue: 'https://api.example.com' }
+
+constructor(@Inject(API_URL) private apiUrl: string) {}
 ```
 
 ---
 
-### Q72. What is the hierarchical injector?
+## SECTION 10: HTTP Client
 
-Angular has a tree of injectors mirroring the component tree. When a service is requested, Angular walks **up** the tree looking for a provider. Component-level providers override parent providers for that subtree.
-
----
-
-## 🌐 SECTION 10: HTTP Client
-
----
-
-### Q73. How do you set up and use `HttpClient`?
+### Q84. How do you set up and use `HttpClient`?
+- Provided via `provideHttpClient()` (standalone) or `HttpClientModule` (module-based)
+- All methods (`get`, `post`, `put`, `patch`, `delete`) return Observables
+- Strongly typed via generics: `http.get<Product[]>('/api/products')`
+- Always injected into a SERVICE, not directly into components
 
 ```typescript
-// main.ts (standalone)
-bootstrapApplication(AppComponent, {
-  providers: [provideHttpClient(withInterceptorsFromDi())]
-});
+bootstrapApplication(AppComponent, { providers: [provideHttpClient()] });
 
-// Service usage
 constructor(private http: HttpClient) {}
-
-// All methods return Observables
-this.http.get<Product[]>('/api/products')
-this.http.get<Product>(`/api/products/${id}`)
-this.http.post<Product>('/api/products', body)
-this.http.put<Product>(`/api/products/${id}`, body)
-this.http.patch<Product>(`/api/products/${id}`, partial)
-this.http.delete<void>(`/api/products/${id}`)
+this.http.get<Product[]>('/api/products');
+this.http.post<Product>('/api/products', body);
+this.http.delete<void>(`/api/products/${id}`);
 ```
 
----
-
-### Q74. How do you send headers and query params?
+### Q85. How do you send custom headers and query parameters with HTTP requests?
+- `HttpHeaders` — immutable builder object for setting request headers (e.g., Authorization)
+- `HttpParams` — immutable builder object for query string parameters
+- Both are passed as part of the options object: `http.get(url, { headers, params })`
+- Each `.set()` call returns a NEW instance (immutability)
 
 ```typescript
-const headers = new HttpHeaders({
-  'Authorization': `Bearer ${this.authService.getToken()}`,
-  'Content-Type': 'application/json'
-});
+const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+const params = new HttpParams().set('page', '1').set('size', '20');
 
-const params = new HttpParams()
-  .set('page', page.toString())
-  .set('size', '20')
-  .set('sort', 'name,asc');
-
-return this.http.get<PagedResult<Product>>('/api/products', { headers, params });
+this.http.get<PagedResult<Product>>('/api/products', { headers, params });
 ```
 
----
-
-### Q75. What are HTTP Interceptors?
-
-Middleware that runs on every request/response. Common uses: attach auth token, global error handling, loading spinner, logging.
+### Q86. What are HTTP Interceptors and what are common use cases?
+- Middleware functions/classes that run on every outgoing request and incoming response
+- Common uses: attaching auth tokens automatically, global error handling (e.g., redirect on 401), logging, showing/hiding a global loading spinner
+- Registered via `HTTP_INTERCEPTORS` (multi-provider) or `withInterceptors()` (standalone, functional style)
+- Centralizes cross-cutting concerns instead of repeating logic in every service call
 
 ```typescript
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private auth: AuthService, private router: Router) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  constructor(private auth: AuthService) {}
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
     const token = this.auth.getToken();
-    const authReq = token
-      ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-      : req;
-
-    return next.handle(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) this.router.navigate(['/login']);
-        return throwError(() => error);
-      })
-    );
+    const authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    return next.handle(authReq);
   }
 }
 
-// Register in AppModule or providers
 { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
 ```
 
----
-
-### Q76. How do you handle HTTP errors?
+### Q87. How do you handle HTTP errors in Angular?
+- Service level: use the `catchError` RxJS operator to log the error and return a fallback value
+- Component level: use the `error` callback inside `.subscribe({ next, error, complete })`
+- Global level: handle common errors (like 401/403) centrally in an interceptor
+- `retry(n)` operator can automatically retry a failed request a set number of times
 
 ```typescript
-// In service — provide fallback
 getProducts(): Observable<Product[]> {
   return this.http.get<Product[]>('/api/products').pipe(
     retry(2),
     catchError((err: HttpErrorResponse) => {
-      console.error('API error:', err.status, err.message);
-      return of([]);   // return empty array as fallback
+      console.error(err.status, err.message);
+      return of([]);
     })
   );
 }
+```
 
-// In component — handle in subscribe
-this.productService.getAll().subscribe({
-  next: (products) => this.products = products,
-  error: (err) => this.errorMessage = err.message,
-  complete: () => this.isLoading = false
+### Q88. What is the difference between `HttpClient` and the native `fetch` API?
+- `HttpClient` is Angular's recommended, idiomatic approach for all API calls
+
+| Aspect | HttpClient | fetch |
+|---|---|---|
+| Return type | Observable | Promise |
+| JSON parsing | Automatic | Manual `.json()` |
+| Interceptors | ✅ Supported | ❌ Not built-in |
+| Cancellation | `.unsubscribe()` | `AbortController` needed |
+
+### Q89. How would you cancel an in-flight HTTP request?
+- Since `HttpClient` returns Observables, simply calling `.unsubscribe()` on the subscription cancels the underlying request
+- Using `switchMap` in a stream (e.g., search-as-you-type) automatically cancels the PREVIOUS request when a new one starts
+- The `async` pipe also auto-unsubscribes (and thus cancels) when the component is destroyed
+
+```typescript
+const sub = this.http.get('/api/data').subscribe();
+sub.unsubscribe();   // cancels the HTTP request
+```
+
+### Q90. How do you upload a file using `HttpClient`?
+- Use the `FormData` API to build a multipart payload
+- `formData.append('file', fileObject)`
+- POST it via `http.post(url, formData)` — Angular automatically sets the correct `Content-Type` (multipart/form-data) when you don't explicitly set headers
+- Track upload progress using `{ reportProgress: true, observe: 'events' }`
+
+```typescript
+const formData = new FormData();
+formData.append('file', file);
+
+this.http.post('/api/upload', formData, {
+  reportProgress: true,
+  observe: 'events'
+}).subscribe(event => {
+  if (event.type === HttpEventType.UploadProgress) {
+    console.log(Math.round(100 * event.loaded / (event.total ?? 1)));
+  }
 });
 ```
 
 ---
 
-## 🔁 SECTION 11: RxJS & Observables
+## SECTION 11: RxJS & Observables
 
----
-
-### Q77. What is the difference between a Promise and an Observable?
+### Q91. What is the difference between a Promise and an Observable?
+```typescript
+const promise = fetch('/api/data');                 // starts immediately
+const observable = this.http.get('/api/data');       // does nothing until subscribed
+observable.subscribe(data => console.log(data));      // NOW it executes
+```
 
 | Feature | Promise | Observable |
 |---|---|---|
 | Values | Single value | Stream of 0 to many values |
 | Execution | Eager (starts immediately) | Lazy (starts on subscribe) |
-| Cancellable | ❌ | ✅ unsubscribe() |
+| Cancellable | ❌ | ✅ `.unsubscribe()` |
 | Operators | `.then`, `.catch` | Full RxJS pipeline |
-| Multi-cast | Always | By default unicast |
 
----
-
-### Q78. How do you subscribe and prevent memory leaks?
+### Q92. How do you prevent memory leaks from RxJS subscriptions?
+- Prefer the `async` pipe — it auto-subscribes and auto-unsubscribes with the component lifecycle
+- For manual subscriptions, use `takeUntilDestroyed(this.destroyRef)` (Angular 16+, preferred)
+- Older pattern: a `Subject` combined with `takeUntil()`, completed in `ngOnDestroy`
+- NEVER leave a manual `.subscribe()` without a corresponding cleanup strategy
 
 ```typescript
-// Option 1 — async pipe (BEST — auto-unsubscribes)
-products$ = this.productService.getAll();
-// template: *ngFor="let p of products$ | async"
-
-// Option 2 — takeUntilDestroyed (Angular 16+, PREFERRED for manual subscriptions)
+// Preferred (Angular 16+)
 private destroyRef = inject(DestroyRef);
-
 ngOnInit(): void {
-  this.service.getData()
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe(data => this.data = data);
+  this.service.getData().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(d => this.data = d);
 }
 
-// Option 3 — takeUntil with Subject
+// Older pattern
 private destroy$ = new Subject<void>();
-
 ngOnInit(): void {
-  this.service.getData()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(data => this.data = data);
+  this.service.getData().pipe(takeUntil(this.destroy$)).subscribe(d => this.data = d);
 }
-
-ngOnDestroy(): void {
-  this.destroy$.next();
-  this.destroy$.complete();
-}
+ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
 ```
 
----
-
-### Q79. What are the most useful RxJS operators?
-
+### Q93. What is the difference between `switchMap`, `mergeMap`, `concatMap`, and `exhaustMap`?
 ```typescript
-// Transformation
-map(user => user.name)                 // transform each value
-pluck('name')                          // shorthand: pick a property
-scan((acc, val) => [...acc, val], [])  // like reduce but emits each step
+// switchMap — cancels previous request
+search$.pipe(switchMap(term => this.api.search(term))).subscribe(res => this.results = res);
 
-// Filtering
-filter(user => user.isActive)          // keep matching values
-distinctUntilChanged()                 // skip if value didn't change
-debounceTime(300)                      // wait for pause (search input)
-throttleTime(1000)                     // emit max once per time window
-take(5)                                // take first 5 then complete
-
-// Side effects
-tap(val => console.log(val))           // side effects without changing stream
-
-// Error handling
-catchError(err => of([]))              // handle error, return fallback
-retry(3)                               // retry on error
-
-// Combination
-forkJoin([obs1$, obs2$])              // wait for ALL to complete
-combineLatest([obs1$, obs2$])         // emit when ANY emits
-merge(obs1$, obs2$)                   // emit from all simultaneously
+// exhaustMap — ignores clicks while login request is in flight
+loginClick$.pipe(exhaustMap(() => this.auth.login())).subscribe();
 ```
-
----
-
-### Q80. What is the difference between `switchMap`, `mergeMap`, `concatMap`, and `exhaustMap`?
-
-All map each emission to a new Observable.
 
 | Operator | Behavior | Use Case |
 |---|---|---|
@@ -1707,451 +1437,140 @@ All map each emission to a new Observable.
 | `concatMap` | Queue and run in order | Sequential file uploads |
 | `exhaustMap` | Ignores new while one is in flight | Login button (prevent double-submit) |
 
+### Q94. What is the difference between `Subject`, `BehaviorSubject`, `ReplaySubject`, and `AsyncSubject`?
 ```typescript
-// Search example — switchMap cancels the previous HTTP request
+const bs = new BehaviorSubject<number>(0);
+bs.subscribe(v => console.log(v));   // immediately gets 0
+bs.next(5);
+console.log(bs.value);               // synchronous current-value read
+```
+
+| Type | Initial Value? | Replays to New Subscribers | Common Use |
+|---|---|---|---|
+| `Subject` | ❌ No | Nothing | Simple event bus |
+| `BehaviorSubject` | ✅ Required | Current value | Shared state in services |
+| `ReplaySubject(n)` | ❌ No | Last `n` values | Caching recent history |
+| `AsyncSubject` | ❌ No | Only last value, on complete | Rarely used |
+
+### Q95. What are some of the most useful RxJS operators and what do they do?
+- `map` — transform each emitted value
+- `filter` — only let through values matching a condition
+- `debounceTime(ms)` — wait for a pause before emitting (search input)
+- `distinctUntilChanged()` — skip consecutive duplicate values
+- `tap` — perform a side effect without altering the stream
+- `catchError` — gracefully handle errors and return a fallback
+- `forkJoin` — wait for multiple observables to ALL complete (like `Promise.all`)
+- `combineLatest` — emit whenever ANY source observable emits
+
+```typescript
 this.searchControl.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged(),
-  switchMap(term => this.api.search(term))
-).subscribe(results => this.results = results);
+  map(term => term.trim()),
+  tap(term => console.log('Searching for:', term))
+).subscribe();
+
+forkJoin([this.api.getUser(), this.api.getOrders()]).subscribe(([user, orders]) => { });
 ```
 
----
-
-### Q81. What is the difference between `Subject`, `BehaviorSubject`, `ReplaySubject`, `AsyncSubject`?
-
-All are both Observable and Observer (you can push and subscribe).
-
-```typescript
-// Subject — no initial value, no memory
-const s = new Subject<number>();
-s.subscribe(v => console.log(v));
-s.next(1);   // subscriber gets 1
-
-// BehaviorSubject — holds current value, new subscribers get it immediately
-const bs = new BehaviorSubject<number>(0);   // 0 is initial value
-bs.subscribe(v => console.log(v));           // immediately gets 0
-bs.next(5);                                  // gets 5
-console.log(bs.value);                       // read current synchronously
-
-// ReplaySubject(n) — replays last n values to new subscribers
-const rs = new ReplaySubject<number>(3);
-
-// AsyncSubject — emits only last value, only on complete
-const as = new AsyncSubject<number>();
-```
-
-> 💡 `BehaviorSubject` is the most useful for **shared state** in services.
-
----
-
-### Q82. How do you implement search-as-you-type with RxJS?
+### Q96. How would you implement search-as-you-type using RxJS?
+- Bind input changes to a `FormControl.valueChanges` Observable
+- Pipe through `debounceTime(300)` to wait for the user to pause typing
+- `distinctUntilChanged()` to avoid duplicate searches for the same term
+- `switchMap` into the API call so a NEW keystroke cancels the PREVIOUS pending request
+- Wrap the inner API call with `catchError` so one failed search doesn't break the whole stream
 
 ```typescript
-// Component
 searchControl = new FormControl('');
 
 results$ = this.searchControl.valueChanges.pipe(
   debounceTime(300),
   distinctUntilChanged(),
-  filter(term => (term ?? '').length >= 2),
-  switchMap(term =>
-    this.productService.search(term!).pipe(
-      catchError(() => of([]))   // don't break stream on error
-    )
-  )
+  switchMap(term => this.productService.search(term!).pipe(catchError(() => of([]))))
 );
 ```
-
 ```html
-<input [formControl]="searchControl" placeholder="Search..." />
-<ul>
-  <li *ngFor="let r of results$ | async">{{ r.name }}</li>
-</ul>
+<input [formControl]="searchControl" />
+<li *ngFor="let r of results$ | async">{{ r.name }}</li>
 ```
 
----
-
-### Q83. What is the `async` pipe and why prefer it over manual subscribe?
+### Q97. What is the `async` pipe and why is it preferred over manual subscriptions?
+- Subscribes to an Observable/Promise directly in the TEMPLATE
+- Automatically unsubscribes when the component is destroyed — no manual cleanup needed
+- Works correctly with `OnPush` change detection (triggers update on emission automatically)
+- Reduces boilerplate compared to subscribing in the component class and storing the result in a property
 
 ```typescript
-// In component — no subscribe, no unsubscribe needed
 products$ = this.productService.getAll();
-user$ = this.userService.getCurrentUser();
 ```
-
 ```html
-<!-- Auto-subscribes AND auto-unsubscribes on destroy -->
 <div *ngIf="user$ | async as user">Hello {{ user.name }}</div>
-<li *ngFor="let p of products$ | async">{{ p.name }}</li>
 ```
 
-**Benefits:** No `ngOnDestroy` cleanup, no memory leaks, triggers OnPush CD automatically.
+### Q98. What does "hot" vs "cold" Observable mean?
+- **Cold** Observable — execution starts fresh for EACH subscriber (e.g., a typical `HttpClient` call); each subscriber triggers its own HTTP request
+- **Hot** Observable — execution is shared; subscribers receive the SAME ongoing stream of emissions (e.g., a `Subject`)
+- Understanding this matters to avoid accidentally triggering duplicate API calls by subscribing multiple times to a cold Observable
+
+```typescript
+const data$ = this.http.get('/api/data');  // cold
+data$.subscribe();   // triggers HTTP call #1
+data$.subscribe();   // triggers HTTP call #2 (separate request!)
+```
 
 ---
 
-## ⚡ SECTION 12: Performance & Optimization
+## SECTION 12: Change Detection & Performance
 
----
+### Q99. How does Angular's default Change Detection work?
+- Angular uses Zone.js to "patch" async browser APIs (clicks, timers, HTTP, promises)
+- Whenever any async operation completes, Angular triggers a change detection pass
+- By default, this checks the ENTIRE component tree top-down on every such event
+- This is simple and safe, but can become a performance bottleneck in large applications
 
-### Q84. How does Angular change detection work?
-
-Angular checks every component on every async event (click, HTTP response, timer) to see what changed and update the DOM. **Zone.js** patches async APIs (setTimeout, Promises, XHR) and notifies Angular to run change detection.
-
-Default: entire component tree is checked top-down on every event.
-
----
-
-### Q85. What is `ChangeDetectionStrategy.OnPush`?
-
-Angular **skips** the component during CD unless:
-- An `@Input` received a **new reference** (not a mutated object)
-- An event fired inside the component
-- An Observable with `async` pipe emits
-- `markForCheck()` or `detectChanges()` is called manually
+### Q100. What is `ChangeDetectionStrategy.OnPush` and what are Angular's other key performance practices?
+- `OnPush` tells Angular to SKIP checking a component unless:
+  - An `@Input` reference changes (not just a mutated property)
+  - An event fires inside the component itself
+  - An `async`-piped Observable emits
+  - `markForCheck()` / `detectChanges()` is called manually
+- Other key performance practices for interviews:
+  - Always use `trackBy` with `*ngFor` for dynamic lists
+  - Lazy load feature modules/components
+  - Prefer the `async` pipe over manual subscriptions
+  - Use virtual scrolling (`@angular/cdk/scrolling`) for very large lists
+  - Avoid heavy computation directly inside templates
+  - Keep custom pipes pure so Angular can cache results
+  - Use AOT compilation in production builds (smaller bundle, faster startup, compile-time error checking)
 
 ```typescript
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  // ...
+  selector: 'app-product-card',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductCardComponent {
-  @Input() product!: Product;    // must pass new reference to trigger update
-}
-```
-
-> 💡 Use OnPush on all leaf/display components (cards, list items). It dramatically reduces CD work.
-
----
-
-### Q86. What is the difference between AOT and JIT compilation?
-
-| | JIT (Just-In-Time) | AOT (Ahead-Of-Time) |
-|---|---|---|
-| When | Browser at runtime | Build time |
-| Bundle | Larger (includes compiler) | Smaller |
-| Startup | Slower | Faster |
-| Errors | Caught at runtime | Caught at build time |
-| Default | Dev mode | Production build |
-
----
-
-### Q87. What are some Angular performance best practices?
-
-- Use `OnPush` change detection on display components
-- Use `trackBy` on `*ngFor` for large lists
-- Lazy load feature modules/components
-- Use `async` pipe instead of manual subscribe
-- Use `takeUntilDestroyed` to prevent memory leaks
-- Avoid heavy computation in templates
-- Use virtual scrolling (`@angular/cdk/scrolling`) for large lists
-- Use `ng-container` instead of wrapper divs
-- Memoize expensive pipe transforms (keep pipes pure)
-
----
-
-### Q88. What is Tree Shaking?
-
-Build step that removes unused code from the final bundle. Angular CLI (esbuild/Webpack) analyzes imports and drops everything not used.
-
-```typescript
-// ✅ Named imports — tree-shakable
-import { map, filter } from 'rxjs/operators';
-
-// ❌ Avoid barrel imports of large libraries
-import * as _ from 'lodash';   // imports everything
-```
-
----
-
-## 🔐 SECTION 13: Security
-
----
-
-### Q89. How does Angular protect against XSS?
-
-Angular automatically sanitizes all values bound via `{{ }}` interpolation and property bindings — dangerous HTML is escaped.
-
-```typescript
-// ✅ Safe — Angular escapes HTML
-this.content = '<script>alert("xss")</script>';
-// template: {{ content }} → renders as text, not script
-
-// ⚠️ Bypass only for trusted content YOU control (never user input)
-constructor(private sanitizer: DomSanitizer) {}
-
-getSafeHtml(html: string): SafeHtml {
-  return this.sanitizer.bypassSecurityTrustHtml(html);
+  @Input() product!: Product;   // must pass a NEW object reference to trigger update
 }
 ```
 
 ---
 
-### Q90. How does Angular handle CSRF?
+## 📋 QUICK RECALL TABLE
 
-Angular's `HttpClient` reads the `XSRF-TOKEN` cookie and sends it as `X-XSRF-TOKEN` header on non-GET requests automatically. The server validates it.
-
-With stateless JWT auth (tokens in headers, not cookies), CSRF is not a concern.
-
----
-
-## 🏗️ SECTION 14: Signals (Angular 16+)
-
----
-
-### Q91. What are Angular Signals?
-
-A reactive primitive for state management — a simpler alternative to Observables for component state.
-
-```typescript
-import { signal, computed, effect } from '@angular/core';
-
-// Signal — reactive state variable
-count = signal(0);
-name = signal<string>('Purushottam');
-
-// Read
-console.log(this.count());         // call as function
-
-// Write
-this.count.set(5);
-this.count.update(c => c + 1);
-
-// Computed — derived signal (lazy, memoized)
-doubled = computed(() => this.count() * 2);
-
-// Effect — side effect when signal changes
-effect(() => {
-  console.log('Count changed to:', this.count());
-});
-```
-
----
-
-### Q92. What is the difference between Signals and Observables?
-
-| | Signals | Observables |
-|---|---|---|
-| Concept | Reactive state value | Stream of events |
-| Read | `signal()` — synchronous | `.subscribe()` — async |
-| Change detection | Automatic, fine-grained | Needs `async` pipe or manual |
-| Best for | Component state, UI state | Async events, HTTP, streams |
-| Interop | `toObservable(signal)` / `toSignal(obs$)` | ← |
-
----
-
-## 📦 SECTION 15: State Management & Architecture
-
----
-
-### Q93. When should you use a shared service vs NgRx?
-
-**Shared Service with BehaviorSubject** — good for:
-- Small/medium apps
-- State scoped to a feature
-- Simple cart, auth state, theme
-
-**NgRx** — good for:
-- Large, complex apps with lots of shared state
-- Redux DevTools time-travel debugging
-- Team needing strict conventions
-
----
-
-### Q94. What is NgRx and what are its core pieces?
-
-Redux-style state management for Angular.
-
-```
-Action → Reducer → Store → Selector → Component
-           ↑                              ↓
-         Effect ←————————————————— (async side effects)
-```
-
-```typescript
-// Action
-export const loadProducts = createAction('[Products] Load');
-export const loadProductsSuccess = createAction('[Products] Load Success',
-  props<{ products: Product[] }>());
-
-// Reducer
-const reducer = createReducer(initialState,
-  on(loadProductsSuccess, (state, { products }) => ({ ...state, products }))
-);
-
-// Selector
-export const selectProducts = createSelector(
-  selectProductsState, state => state.products
-);
-
-// Effect
-loadProducts$ = createEffect(() =>
-  this.actions$.pipe(
-    ofType(loadProducts),
-    switchMap(() => this.api.getAll().pipe(
-      map(products => loadProductsSuccess({ products }))
-    ))
-  )
-);
-```
-
----
-
-### Q95. What is a Smart vs Dumb (Presentational) component pattern?
-
-```
-Smart Component (Container)        Dumb Component (Presentational)
-─────────────────────────          ──────────────────────────────
-Knows about services               No service injection
-Fetches data                       Receives data via @Input only
-Handles business logic             Emits events via @Output only
-Passes data to children            Pure UI — easily testable
-Uses OnPush with Observables       Always use OnPush
-```
-
-This separation makes components reusable and testable.
-
----
-
-## 🔧 SECTION 16: Build, Environments & Upgrade
-
----
-
-### Q96. How do you use environment files?
-
-```typescript
-// src/environments/environment.ts (dev)
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5001/api'
-};
-
-// src/environments/environment.prod.ts
-export const environment = {
-  production: true,
-  apiUrl: 'https://api.myapp.com'
-};
-
-// Usage in service
-import { environment } from '../environments/environment';
-
-private apiUrl = environment.apiUrl;  // Angular CLI swaps file at build time
-```
-
-```bash
-ng build                              # uses environment.ts
-ng build --configuration production   # uses environment.prod.ts
-```
-
----
-
-### Q97. What does `ng build --configuration production` do?
-
-- **AOT compilation** — templates compiled at build time
-- **Tree shaking** — unused code removed
-- **Minification + uglification** — smaller bundle
-- **File replacement** — environment.prod.ts swapped in
-- **Source maps** — optional for debugging prod
-- Output goes to `dist/` — deploy to any static host (Nginx, Azure Static Web Apps, S3, IIS)
-
----
-
-## 🧪 SECTION 17: Testing Basics
-
----
-
-### Q98. What is the difference between unit tests and integration tests in Angular?
-
-```typescript
-// Unit test — test class in isolation with mocks
-it('should add item to cart', () => {
-  const service = new CartService();
-  service.addItem({ id: 1, name: 'Test', price: 10 });
-  expect(service.cartItems.length).toBe(1);
-});
-
-// Integration test — test with Angular TestBed
-beforeEach(async () => {
-  await TestBed.configureTestingModule({
-    declarations: [ProductCardComponent],
-    imports: [RouterTestingModule]
-  }).compileComponents();
-});
-
-it('should display product name', () => {
-  const fixture = TestBed.createComponent(ProductCardComponent);
-  fixture.componentInstance.product = mockProduct;
-  fixture.detectChanges();
-  const el = fixture.nativeElement.querySelector('h2');
-  expect(el.textContent).toContain('Test Product');
-});
-```
-
----
-
-### Q99. How do you mock a service in Angular tests?
-
-```typescript
-// Create spy object — all methods are automatically spied
-const productServiceSpy = jasmine.createSpyObj('ProductService', ['getAll', 'getById']);
-productServiceSpy.getAll.and.returnValue(of([mockProduct]));
-
-await TestBed.configureTestingModule({
-  declarations: [ProductListComponent],
-  providers: [
-    { provide: ProductService, useValue: productServiceSpy }
-  ]
-}).compileComponents();
-```
-
----
-
-### Q100. What is the difference between `detectChanges()` and `fixture.autoDetectChanges()`?
-
-```typescript
-// Manual change detection — you control when DOM updates
-fixture.detectChanges();
-
-// After input change — trigger manually
-fixture.componentInstance.product = newProduct;
-fixture.detectChanges();   // DOM updates now
-const title = fixture.nativeElement.querySelector('h1').textContent;
-
-// Auto detect — Angular triggers CD automatically (closer to real app)
-fixture.autoDetectChanges(true);
-```
-
----
-
-## 📋 QUICK REFERENCE CARD
-
-### TypeScript Cheatsheet
-
-| Concept | Syntax | Angular Usage |
-|---|---|---|
-| Interface | `interface User {}` | API models, form shapes |
-| Type alias | `type Status = 'a' \| 'b'` | Unions, enums |
-| Enum | `enum Role { Admin = 'ADMIN' }` | Fixed constants |
-| Generic | `<T>` | Services, HTTP, Signals |
-| Utility types | `Partial<T>`, `Omit<T, 'k'>` | Forms, DTOs |
-| Optional chain | `user?.name` | Templates, components |
-| Non-null | `el!` | `@ViewChild`, `@Input` |
-| Access mods | `private`, `public`, `readonly` | Class members |
-| Async/await | `async fn(): Promise<T>` | Rarely; prefer Observables |
-
-### Angular Cheatsheet
-
-| Topic | Key Point |
+| Topic | One-Line Memory Hook |
 |---|---|
 | Constructor vs ngOnInit | Constructor = DI only; ngOnInit = logic |
-| @Input / @Output | Parent→Child / Child→Parent |
-| @ViewChild | Access after `ngAfterViewInit` |
-| async pipe | Always prefer over manual subscribe |
-| OnPush | Use on all display components |
-| trackBy | Required on *ngFor with dynamic data |
-| Lazy loading | `loadChildren` / `loadComponent` |
-| Guards | Functional guards preferred (Angular 15+) |
-| BehaviorSubject | Standard for shared state in services |
-| switchMap | Search; mergeMap = parallel; exhaustMap = login btn |
-| Signals | Use for component state (Angular 16+) |
-| providedIn: 'root' | Singleton service (like AddSingleton in .NET) |
+| @Input vs @Output | Input = parent→child; Output = child→parent |
+| @ViewChild vs @ContentChild | ViewChild = own template; ContentChild = projected content |
+| *ngIf vs [hidden] | *ngIf removes from DOM; [hidden] just hides with CSS |
+| trackBy | Prevents full DOM recreation on *ngFor list changes |
+| Reactive vs Template-driven forms | Reactive = TS class logic; Template-driven = HTML logic |
+| Lazy loading | loadChildren (modules) / loadComponent (standalone) |
+| Guards | Functional guards (CanActivateFn) preferred since Angular 15 |
+| providedIn: 'root' | App-wide singleton, tree-shakable |
+| BehaviorSubject | Standard pattern for shared state across components |
+| switchMap / mergeMap / concatMap / exhaustMap | Cancel-new / Parallel / Sequential / Ignore-while-busy |
+| async pipe | Auto subscribe + auto unsubscribe, works with OnPush |
+| OnPush | Skips CD unless input ref changes, event fires, or async emits |
+| Resolver | Pre-fetches data before route activates |
+| forRoot vs forChild | forRoot once in AppModule; forChild in feature modules |
