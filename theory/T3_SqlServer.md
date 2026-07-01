@@ -1657,7 +1657,7 @@ select sum(expense) as TotalExpense from Customers
 **Q12. Get the average expense per customer.**
 
 ```sql
-select avg(expense) as AvgExpense from Customers
+select customername,avg(expense) as AvgExpense from customers group by customername
 ```
 
 ---
@@ -1686,7 +1686,7 @@ select top 1 * from Customers order by createdate desc
 
 ---
 
-**Q16. List customers along with the products they purchased (INNER JOIN).**
+**Q16. List customers along with the products they purchased.**
 
 ```sql
 select c.customername, p.productname, p.productprice
@@ -1696,14 +1696,13 @@ inner join Products p on c.customerid = p.productbuyerid
 
 ---
 
-**Q17. List ALL customers, including those without any product (LEFT JOIN).**
+**Q17. List ALL customers, including those without any product.**
 
 ```sql
 select c.customername, p.productname
 from Customers c
 left join Products p on c.customerid = p.productbuyerid
 ```
-
 ---
 
 **Q18. Find customers who have NOT bought any product.**
@@ -1774,7 +1773,7 @@ select distinct expense from Ranked where rnk = 3
 
 ---
 
-**Q24. Categorize customers by expense (High / Medium / Low) using CASE.**
+**Q24. Categorize customers by expense (High / Medium / Low).**
 
 ```sql
 select customername,
@@ -1801,7 +1800,7 @@ from Customers
 
 ---
 
-**Q26. Show each customer's expense and the previous customer's expense using LAG.**
+**Q26. Show each customer's expense and the previous customer's expense in a single row.**
 
 ```sql
 select customername,
@@ -1835,13 +1834,10 @@ from Customers
 
 ---
 
-**Q29. Find customers who share the same expense amount (duplicates).**
+**Q29. Find customers who share the same expense amount.**
 
 ```sql
-select expense, count(*) as Count
-from Customers
-group by expense
-having count(*) > 1
+select * from customers where expense in ( select expense from Customers group by expense having count(*) > 1 )
 ```
 
 ---
@@ -2128,18 +2124,15 @@ alter table Products
 
 ---
 
-**Q49. Display the total product price for each buyer as separate columns using `PIVOT`**
+**Q49. Display each product along with the total amount spent by its buyer using a window function.**
 
-```sql
-SELECT *
-FROM (
-    SELECT ProductBuyerId, ProductPrice
-    FROM Products
-) AS SourceTable
-PIVOT (
-    SUM(ProductPrice)
-    FOR ProductBuyerId IN ([1], [2], [3])
-) AS PivotTable;
+```
+SELECT ProductId,
+       ProductName,
+       ProductBuyerId,
+       ProductPrice,
+       SUM(ProductPrice) OVER(PARTITION BY ProductBuyerId) AS BuyerTotal
+FROM Products;
 ```
 
 ---
