@@ -2367,7 +2367,7 @@ var result = employees
     .OrderBy(e => e.Name)
     .ToList();
 ```
-
+  
 ---
 
 ### Q154. Calculate Total Salary by Department
