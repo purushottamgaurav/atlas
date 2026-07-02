@@ -39,26 +39,7 @@ ng build --configuration production
 ng test
 ```
 
-### Q4. What is the typical Angular project structure?
-- `src/app/` — components, services, modules (your code)
-- `src/assets/` — static files (images, fonts)
-- `src/environments/` — dev vs prod config
-- `main.ts` — bootstraps the app
-- `index.html` — shell page with `<app-root>`
-- `angular.json` — CLI build configuration
-
-```
-src/
-├── app/
-│   ├── app.component.ts
-│   └── feature/
-├── assets/
-├── environments/
-├── index.html
-└── main.ts
-```
-
-### Q5. What are the important Angular project files?
+### Q4. What are the important Angular project files?
 #### `angular.json`
 - Configuration file for the Angular CLI.
 - Controls how the application is built, served, tested, and deployed.
