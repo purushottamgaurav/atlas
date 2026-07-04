@@ -39,7 +39,7 @@ ng build --configuration production
 ng test
 ```
 
-### Q4. What are the important Angular project files?
+### Q4. Explain angular.json, package.json & package-lock.json?
 #### `angular.json`
 - Configuration file for the Angular CLI.
 - Controls how the application is built, served, tested, and deployed.
@@ -55,20 +55,6 @@ ng test
 - Stores the **exact versions** of installed packages.
 - Ensures every developer and CI/CD pipeline installs identical dependency versions.
 
-#### `tsconfig.json`
-- TypeScript compiler configuration.
-- Defines compiler options such as target JavaScript version, strict mode, decorators, path aliases, and module resolution.
-
-#### `tsconfig.app.json`
-- TypeScript configuration specific to the Angular application.
-- Extends `tsconfig.json`.
-
-#### `tsconfig.spec.json`
-- TypeScript configuration used for unit tests.
-
-#### `karma.conf.js`
-- Configuration for the Karma test runner.
-- Used when executing Angular unit tests.
 
 
 ### Q5. What does `main.ts` do?
@@ -828,16 +814,11 @@ export class CartService {
 | Use case | Component-local data/API contract | Cross-cutting/global state |
 | Coupling | Tightly coupled (template binding) | Loosely coupled |
 
-### Q55. Can you pass a method/function reference via `@Input`?
-- Yes, technically you can bind a function reference as an input
-- However, it's generally considered bad practice — prefer `@Output` + `EventEmitter` for child-to-parent communication
-- Passing callback functions breaks Angular's clear binding direction conventions
-
 ---
 
 ## SECTION 7: Forms
 
-### Q56. What is the difference between Template-Driven and Reactive forms?
+### Q55. What is the difference between Template-Driven and Reactive forms?
 ```html
 <!-- Template-driven -->
 <input name="email" [(ngModel)]="email" required email />
@@ -855,7 +836,7 @@ export class CartService {
 | Validation | HTML attributes | `Validators` in code |
 | Best for | Simple forms | Complex / dynamic / enterprise |
 
-### Q57. What are `FormControl`, `FormGroup`, and `FormArray`?
+### Q56. What are `FormControl`, `FormGroup`, and `FormArray`?
 - `FormControl` — represents a SINGLE form field (value + validation state)
 - `FormGroup` — a named COLLECTION of controls, representing a form or form section
 - `FormArray` — an ORDERED LIST of controls, used for dynamic repeating fields
@@ -872,7 +853,7 @@ const loginForm = new FormGroup({
 const phonesArray = new FormArray([new FormControl(''), new FormControl('')]);
 ```
 
-### Q58. What is `FormBuilder` and why is it preferred?
+### Q57. What is `FormBuilder` and why is it preferred?
 - A helper service providing shorthand methods (`.group()`, `.control()`, `.array()`) to build forms
 - Significantly reduces boilerplate compared to manually instantiating `new FormControl()` repeatedly
 - Standard, idiomatic way to build Reactive forms in real projects
@@ -890,7 +871,7 @@ ngOnInit(): void {
 }
 ```
 
-### Q59. What are the commonly used built-in validators?
+### Q58. What are the commonly used built-in validators?
 - `Validators.required` — field must have a value
 - `Validators.email` — must match email format
 - `Validators.minLength(n)` / `Validators.maxLength(n)`
@@ -902,7 +883,7 @@ age: [null, [Validators.required, Validators.min(18), Validators.max(60)]],
 username: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]],
 ```
 
-### Q60. How do you write a custom synchronous validator?
+### Q59. How do you write a custom synchronous validator?
 - A function that takes an `AbstractControl` and returns `null` (valid) or a `ValidationErrors` object (invalid)
 - Field-level validators are attached directly to a `FormControl`
 - Group-level (cross-field) validators are attached to a `FormGroup`, useful for things like password confirmation
@@ -921,7 +902,7 @@ this.form = this.fb.group({
 }, { validators: passwordMatch });
 ```
 
-### Q61. How do you write an asynchronous (async) validator?
+### Q60. How do you write an asynchronous (async) validator?
 - Same signature as sync validators, but returns an `Observable<ValidationErrors|null>` or `Promise`
 - Commonly used for server-side checks, like "is this username already taken?"
 - While pending, the control's status is `PENDING`
@@ -936,7 +917,7 @@ function uniqueUsernameValidator(api: UserService): AsyncValidatorFn {
 }
 ```
 
-### Q62. What are the FormControl status flags and what do they mean?
+### Q61. What are the FormControl status flags and what do they mean?
 - `valid` / `invalid` — passes/fails validation rules
 - `touched` / `untouched` — whether the user has focused and blurred the field
 - `dirty` / `pristine` — whether the value has changed from its initial value
@@ -949,7 +930,7 @@ function uniqueUsernameValidator(api: UserService): AsyncValidatorFn {
 </div>
 ```
 
-### Q63. How do you submit a Reactive form?
+### Q62. How do you submit a Reactive form?
 - Bind `(ngSubmit)="onSubmit()"` on the `<form>` element
 - Always guard with `if (this.form.invalid) return;` at the top of the handler
 - Disable the submit button while `form.invalid` or while saving (`isSaving`)
@@ -972,7 +953,7 @@ onSubmit(): void {
 }
 ```
 
-### Q64. How do you dynamically add/remove form fields?
+### Q63. How do you dynamically add/remove form fields?
 - Use `FormArray` to represent the dynamic list (e.g., multiple phone numbers)
 - `.push(newControl)` to add a field, `.removeAt(index)` to remove one
 - Iterate over `formArray.controls` in the template with `*ngFor`
@@ -991,7 +972,7 @@ removePhone(i: number): void { this.phones.removeAt(i); }
 </div>
 ```
 
-### Q65. How do you patch or set values on a form programmatically?
+### Q64. How do you patch or set values on a form programmatically?
 - `form.setValue(obj)` — requires ALL fields to be provided, throws if any are missing
 - `form.patchValue(obj)` — updates only the fields provided, ignores the rest
 - `patchValue` is preferred for partial updates, e.g., pre-filling an edit form with API data
@@ -1006,7 +987,7 @@ this.form.setValue({ name: '', email: '', age: null }); // must include all fiel
 
 ## SECTION 8: Routing
 
-### Q66. How do you configure routes in Angular?
+### Q65. How do you configure routes in Angular?
 - Define a `Routes` array, mapping each `path` to a `component`
 - Order matters — more specific routes go before generic ones
 - The wildcard route `path: '**'` must always be LAST (catch-all/404 page)
@@ -1021,7 +1002,7 @@ const routes: Routes = [
 ];
 ```
 
-### Q67. What are `router-outlet` and `routerLink`?
+### Q66. What are `router-outlet` and `routerLink`?
 - `<router-outlet>` — placeholder where the matched route's component is rendered
 - `routerLink` — Angular's SPA-friendly equivalent of `<a href>`, avoids full page reloads
 - `routerLinkActive` — applies a CSS class when that link's route is currently active
@@ -1035,7 +1016,7 @@ const routes: Routes = [
 <router-outlet></router-outlet>
 ```
 
-### Q68. How do you read route parameters and query parameters?
+### Q67. How do you read route parameters and query parameters?
 - Route params (`/:id`) via `ActivatedRoute.snapshot.params` (one-time) or `.paramMap` (Observable, reactive)
 - Query params (`?page=2`) via `ActivatedRoute.snapshot.queryParams` or `.queryParamMap`
 - Use the snapshot approach when the component is freshly created per navigation
@@ -1051,7 +1032,7 @@ ngOnInit(): void {
 }
 ```
 
-### Q69. How do you navigate programmatically?
+### Q68. How do you navigate programmatically?
 - Inject `Router` and call `this.router.navigate(['/path', id])`
 - Pass query params: `{ queryParams: { page: 2 } }`
 - Navigate relative to current route: `{ relativeTo: this.route }`
@@ -1065,7 +1046,7 @@ this.router.navigate(['/products'], { queryParams: { page: 2 } });
 this.router.navigate(['/home'], { replaceUrl: true });
 ```
 
-### Q70. What is lazy loading and why is it important?
+### Q69. What is lazy loading and why is it important?
 - Loads a feature module/component only when the user navigates to its route
 - Reduces the INITIAL bundle size, improving first-load performance
 - Configured via `loadChildren` (for modules) or `loadComponent` (for standalone components)
@@ -1082,7 +1063,7 @@ this.router.navigate(['/home'], { replaceUrl: true });
 }
 ```
 
-### Q71. What are Route Guards? Name the types.
+### Q70. What are Route Guards? Name the types.
 - Functions/classes that control whether navigation is allowed to proceed
 - `CanActivate` — can the user enter this route? (e.g., authentication check)
 - `CanActivateChild` — same, but for child routes
@@ -1100,7 +1081,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 { path: 'admin', component: AdminComponent, canActivate: [authGuard] }
 ```
 
-### Q72. What is a functional guard vs a class-based guard?
+### Q71. What is a functional guard vs a class-based guard?
 - Functional guards (`CanActivateFn`, Angular 15+) are plain functions using `inject()` — less boilerplate, preferred in modern Angular
 - Class-based guards implement an interface (`CanActivate`) and are provided as injectable classes — older style
 - Both achieve the same result; functional guards are now the recommended approach
@@ -1117,7 +1098,7 @@ export class AuthGuard implements CanActivate {
 }
 ```
 
-### Q73. What is a Route Resolver and why use one?
+### Q72. What is a Route Resolver and why use one?
 - A service that pre-fetches data BEFORE the route's component is activated
 - Avoids a "flash of loading spinner" inside the component — data is ready when the component loads
 - Registered via `resolve: { key: ResolverClass }` in the route config
@@ -1140,7 +1121,7 @@ ngOnInit(): void {
 }
 ```
 
-### Q74. How do you set up nested (child) routes?
+### Q73. How do you set up nested (child) routes?
 - Add a `children` array inside a parent route definition
 - The parent component MUST have its own `<router-outlet>` for children to render into
 - URL structure becomes `/parent/child`
@@ -1160,7 +1141,7 @@ const routes: Routes = [
 ];
 ```
 
-### Q75. What is the difference between `forRoot()` and `forChild()` for `RouterModule`?
+### Q74. What is the difference between `forRoot()` and `forChild()` for `RouterModule`?
 - Standalone apps avoid this distinction entirely by using `provideRouter()`
 
 ```typescript
@@ -1178,7 +1159,7 @@ RouterModule.forChild(adminRoutes)
 | Adds routes | ✅ Yes | ✅ Yes |
 | Risk if misused | Duplicate router breaks navigation | Safe to repeat |
 
-### Q76. How would you implement a "confirm before leaving with unsaved changes" feature?
+### Q75. How would you implement a "confirm before leaving with unsaved changes" feature?
 - Implement a `CanDeactivate<T>` guard (or functional equivalent)
 - Inside the guard, check the component's dirty/unsaved state
 - Return `false` (or a confirmation dialog result) to block navigation
@@ -1199,7 +1180,7 @@ export const unsavedChangesGuard: CanDeactivateFn<EditFormComponent> = (componen
 
 ## SECTION 9: Services & Dependency Injection
 
-### Q77. What is a Service in Angular?
+### Q76. What is a Service in Angular?
 - A class decorated with `@Injectable()` containing reusable logic, data access, or shared state
 - Keeps business/API logic OUT of components — components should only manage UI concerns
 - Typically injected into components or other services via the constructor
@@ -1215,7 +1196,7 @@ export class ProductService {
 }
 ```
 
-### Q78. What is Dependency Injection (DI) in Angular?
+### Q77. What is Dependency Injection (DI) in Angular?
 - A design pattern where a class receives its dependencies from an external injector rather than creating them itself
 - Angular's DI container automatically resolves and provides instances based on constructor parameter types
 - Promotes loose coupling and easier unit testing (dependencies can be mocked/swapped)
@@ -1231,7 +1212,7 @@ constructor(
 const userService = inject(UserService);
 ```
 
-### Q79. What are the different ways to provide a service, and what scope does each create?
+### Q78. What are the different ways to provide a service, and what scope does each create?
 - `providedIn: 'root'` — single app-wide singleton (most common, tree-shakable)
 - Module-level providers — scoped to that feature module
 - Component-level `providers` array — NEW instance created per component instance
@@ -1248,20 +1229,20 @@ export class AuthService { }
 export class OrderFormComponent { }
 ```
 
-### Q80. What is the Hierarchical Injector in Angular?
+### Q79. What is the Hierarchical Injector in Angular?
 - Angular maintains a tree of injectors that mirrors the component tree
 - When a service is requested, Angular walks UP the tree looking for the nearest provider
 - A component-level provider OVERRIDES a parent/root provider for that component's subtree
 - This allows different instances of the same service to exist in different parts of the app
 
-### Q81. What is the difference between `providedIn: 'root'` and adding a service to a module's `providers` array?
+### Q80. What is the difference between `providedIn: 'root'` and adding a service to a module's `providers` array?
 | Aspect | `providedIn: 'root'` | NgModule `providers` array |
 |---|---|---|
 | Tree-shakable | ✅ Yes | ❌ Not in the same way |
 | Scope | App-wide singleton | Tied to module lifetime |
 | Recommended approach | ✅ Modern standard | Legacy/module-scoped use cases |
 
-### Q82. What is `useClass`, `useValue`, `useFactory`, and `useExisting` in a provider configuration?
+### Q81. What is `useClass`, `useValue`, `useFactory`, and `useExisting` in a provider configuration?
 - `useClass` — provide a (possibly different) class implementation for a token
 - `useValue` — provide a static, pre-built value/object instead of a class instance
 - `useFactory` — provide a value generated by calling a factory function (can use `deps` for its own dependencies)
@@ -1278,7 +1259,7 @@ export class OrderFormComponent { }
 
 ## SECTION 10: HTTP Client
 
-### Q83. How do you set up and use `HttpClient`?
+### Q82. How do you set up and use `HttpClient`?
 - Provided via `provideHttpClient()` (standalone) or `HttpClientModule` (module-based)
 - All methods (`get`, `post`, `put`, `patch`, `delete`) return Observables
 - Strongly typed via generics: `http.get<Product[]>('/api/products')`
@@ -1293,7 +1274,7 @@ this.http.post<Product>('/api/products', body);
 this.http.delete<void>(`/api/products/${id}`);
 ```
 
-### Q84. How do you send custom headers and query parameters with HTTP requests?
+### Q83. How do you send custom headers and query parameters with HTTP requests?
 - `HttpHeaders` — immutable builder object for setting request headers (e.g., Authorization)
 - `HttpParams` — immutable builder object for query string parameters
 - Both are passed as part of the options object: `http.get(url, { headers, params })`
@@ -1306,7 +1287,7 @@ const params = new HttpParams().set('page', '1').set('size', '20');
 this.http.get<PagedResult<Product>>('/api/products', { headers, params });
 ```
 
-### Q85. What are HTTP Interceptors and what are common use cases?
+### Q84. What are HTTP Interceptors and what are common use cases?
 - Middleware functions/classes that run on every outgoing request and incoming response
 - Common uses: attaching auth tokens automatically, global error handling (e.g., redirect on 401), logging, showing/hiding a global loading spinner
 - Registered via `HTTP_INTERCEPTORS` (multi-provider) or `withInterceptors()` (standalone, functional style)
@@ -1326,7 +1307,7 @@ export class AuthInterceptor implements HttpInterceptor {
 { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
 ```
 
-### Q86. How do you handle HTTP errors in Angular?
+### Q85. How do you handle HTTP errors in Angular?
 - Service level: use the `catchError` RxJS operator to log the error and return a fallback value
 - Component level: use the `error` callback inside `.subscribe({ next, error, complete })`
 - Global level: handle common errors (like 401/403) centrally in an interceptor
@@ -1344,7 +1325,7 @@ getProducts(): Observable<Product[]> {
 }
 ```
 
-### Q87. What is the difference between `HttpClient` and the native `fetch` API?
+### Q86. What is the difference between `HttpClient` and the native `fetch` API?
 - `HttpClient` is Angular's recommended, idiomatic approach for all API calls
 
 | Aspect | HttpClient | fetch |
@@ -1354,7 +1335,7 @@ getProducts(): Observable<Product[]> {
 | Interceptors | ✅ Supported | ❌ Not built-in |
 | Cancellation | `.unsubscribe()` | `AbortController` needed |
 
-### Q88. How would you cancel an in-flight HTTP request?
+### Q87. How would you cancel an in-flight HTTP request?
 - Since `HttpClient` returns Observables, simply calling `.unsubscribe()` on the subscription cancels the underlying request
 - Using `switchMap` in a stream (e.g., search-as-you-type) automatically cancels the PREVIOUS request when a new one starts
 - The `async` pipe also auto-unsubscribes (and thus cancels) when the component is destroyed
@@ -1364,7 +1345,7 @@ const sub = this.http.get('/api/data').subscribe();
 sub.unsubscribe();   // cancels the HTTP request
 ```
 
-### Q89. How do you upload a file using `HttpClient`?
+### Q88. How do you upload a file using `HttpClient`?
 - Use the `FormData` API to build a multipart payload
 - `formData.append('file', fileObject)`
 - POST it via `http.post(url, formData)` — Angular automatically sets the correct `Content-Type` (multipart/form-data) when you don't explicitly set headers
@@ -1388,7 +1369,7 @@ this.http.post('/api/upload', formData, {
 
 ## SECTION 11: RxJS & Observables
 
-### Q90. What is the difference between a Promise and an Observable?
+### Q89. What is the difference between a Promise and an Observable?
 ```typescript
 const promise = fetch('/api/data');                 // starts immediately
 const observable = this.http.get('/api/data');       // does nothing until subscribed
@@ -1402,7 +1383,44 @@ observable.subscribe(data => console.log(data));      // NOW it executes
 | Cancellable | ❌ | ✅ `.unsubscribe()` |
 | Operators | `.then`, `.catch` | Full RxJS pipeline |
 
-### Q91. How do you prevent memory leaks from RxJS subscriptions?
+### Q90. What is the difference between aObservable and a Subject?
+
+```typescript
+const observable = new Observable(subscriber => {
+  subscriber.next(Math.random());          // each subscriber gets its OWN execution
+});
+observable.subscribe(val => console.log('A:', val));
+observable.subscribe(val => console.log('B:', val));   // different random value than A
+ 
+const subject = new Subject<number>();
+subject.subscribe(val => console.log('A:', val));
+subject.subscribe(val => console.log('B:', val));       // same values as A
+subject.next(Math.random());                            // both A and B log the SAME value
+```
+ 
+| Feature | Observable | Subject |
+|---|---|---|
+| Execution | Unicast — each subscriber triggers its own independent execution | Multicast — all subscribers share the same execution |
+| Values | Producer defined inside the Observable itself | Values pushed manually from outside via `.next()` |
+| Also an Observer? | ❌ No | ✅ Yes — a Subject is both an Observable *and* an Observer |
+| Common use | HTTP calls, timers, wrapping async APIs | Event buses, sharing data between components/services |
+
+### Q91. What is the difference between `Subject`, `BehaviorSubject`, `ReplaySubject`, and `AsyncSubject`?
+```typescript
+const bs = new BehaviorSubject<number>(0);
+bs.subscribe(v => console.log(v));   // immediately gets 0
+bs.next(5);
+console.log(bs.value);               // synchronous current-value read
+```
+
+| Type | Initial Value? | Replays to New Subscribers | Common Use |
+|---|---|---|---|
+| `Subject` | ❌ No | Nothing | Simple event bus |
+| `BehaviorSubject` | ✅ Required | Current value | Shared state in services |
+| `ReplaySubject(n)` | ❌ No | Last `n` values | Caching recent history |
+| `AsyncSubject` | ❌ No | Only last value, on complete | Rarely used |
+
+### Q92. How do you prevent memory leaks from RxJS subscriptions?
 - Prefer the `async` pipe — it auto-subscribes and auto-unsubscribes with the component lifecycle
 - For manual subscriptions, use `takeUntilDestroyed(this.destroyRef)` (Angular 16+, preferred)
 - Older pattern: a `Subject` combined with `takeUntil()`, completed in `ngOnDestroy`
@@ -1423,7 +1441,7 @@ ngOnInit(): void {
 ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
 ```
 
-### Q92. What is the difference between `switchMap`, `mergeMap`, `concatMap`, and `exhaustMap`?
+### Q93. What is the difference between `switchMap`, `mergeMap`, `concatMap`, and `exhaustMap`?
 ```typescript
 // switchMap — cancels previous request
 search$.pipe(switchMap(term => this.api.search(term))).subscribe(res => this.results = res);
@@ -1439,20 +1457,6 @@ loginClick$.pipe(exhaustMap(() => this.auth.login())).subscribe();
 | `concatMap` | Queue and run in order | Sequential file uploads |
 | `exhaustMap` | Ignores new while one is in flight | Login button (prevent double-submit) |
 
-### Q93. What is the difference between `Subject`, `BehaviorSubject`, `ReplaySubject`, and `AsyncSubject`?
-```typescript
-const bs = new BehaviorSubject<number>(0);
-bs.subscribe(v => console.log(v));   // immediately gets 0
-bs.next(5);
-console.log(bs.value);               // synchronous current-value read
-```
-
-| Type | Initial Value? | Replays to New Subscribers | Common Use |
-|---|---|---|---|
-| `Subject` | ❌ No | Nothing | Simple event bus |
-| `BehaviorSubject` | ✅ Required | Current value | Shared state in services |
-| `ReplaySubject(n)` | ❌ No | Last `n` values | Caching recent history |
-| `AsyncSubject` | ❌ No | Only last value, on complete | Rarely used |
 
 ### Q94. What are some of the most useful RxJS operators and what do they do?
 - `map` — transform each emitted value
