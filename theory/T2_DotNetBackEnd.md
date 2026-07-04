@@ -2096,12 +2096,18 @@ A leave request is submitted → Send approval email → Manager approves → Up
 ```csharp
 public class DailyReportFunction
 {
-    [FunctionName("DailyReport")]
-    public void Run(
-        [TimerTrigger("0 0 8 * * *")] TimerInfo timer, // runs at 8 AM daily
-        ILogger log)
+    private readonly ILogger<DailyReportFunction> _logger;
+
+    public DailyReportFunction(ILogger<DailyReportFunction> logger)
     {
-        log.LogInformation($"Daily report triggered at: {DateTime.UtcNow}");
+        _logger = logger;
+    }
+
+    [Function("DailyReport")]
+    public void Run(
+        [TimerTrigger("0 0 8 * * *")] TimerInfo timer) // runs at 8 AM daily
+    {
+        _logger.LogInformation($"Daily report triggered at: {DateTime.UtcNow}");
         // generate and send report
     }
 }
@@ -2116,12 +2122,20 @@ The CRON expression format in Azure Functions is: `{second} {minute} {hour} {day
 ```csharp
 public class GetProductFunction
 {
-    [FunctionName("GetProduct")]
+    private readonly IProductService _productService;
+    private readonly ILogger<GetProductFunction> _logger;
+
+    public GetProductFunction(IProductService productService, ILogger<GetProductFunction> logger)
+    {
+        _productService = productService;
+        _logger = logger;
+    }
+
+    [Function("GetProduct")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{id}")]
         HttpRequest req,
-        int id,
-        ILogger log)
+        int id)
     {
         var product = await _productService.GetByIdAsync(id);
         if (product == null) return new NotFoundResult();
@@ -2144,36 +2158,59 @@ Durable Functions is an extension of Azure Functions that allows writing statefu
 - Client(Timer/Http/&c) -> Orchestrator -> Activity 
 
 ```csharp
-[FunctionName("OrderWorkflow")]
+[Function("OrderWorkflow")]
 public static async Task RunOrchestrator(
-    [OrchestrationTrigger] IDurableOrchestrationContext context)
+    [OrchestrationTrigger] TaskOrchestrationContext context)
 {
-    await context.CallActivityAsync("ValidateOrder", context.GetInput<Order>());
-    await context.CallActivityAsync("ChargePayment", context.GetInput<Order>());
-    await context.CallActivityAsync("SendConfirmation", context.GetInput<Order>());
+    var order = context.GetInput<Order>();
+    var completedSteps = new Stack<string>();
+ 
+    try
+    {
+        await context.CallActivityAsync("ChargePayment", order);
+        completedSteps.Push("ChargePayment");
+ 
+        await context.CallActivityAsync("ReserveInventory", order);
+        completedSteps.Push("ReserveInventory");
+ 
+        await context.CallActivityAsync("SendConfirmation", order);
+    }
+    catch
+    {
+        // Roll back completed steps in reverse order (compensation)
+        while (completedSteps.Count > 0)
+        {
+            var step = completedSteps.Pop();
+            if (step == "ChargePayment")
+                await context.CallActivityAsync("RefundPayment", order);
+            if (step == "ReserveInventory")
+                await context.CallActivityAsync("ReleaseInventory", order);
+        }
+        throw;
+    }
 }
 ```
 
 ---
 **Q90. What are entity function in durable function?**
-
-A **stateful object in the cloud** — persists state across calls, any function can read/update it.
  
-| Use case | Example |
-|----------|---------|
-| Counter | API call count per user |
-| Shopping cart | Add/remove items across requests |
-| Rate limiter | Requests per user per minute |
- 
+- Stateful object in the cloud, keyed by ID (`Counter/user123`) — no DB needed.
+- Azure handles storage + concurrency (one operation at a time per entity).
 ```csharp
-[FunctionName("Counter")]
-public static void Counter([EntityTrigger] IDurableEntityContext ctx)
+[Function("Counter")]
+public static void Counter([EntityTrigger] TaskEntityContext ctx)
 {
     int count = ctx.GetState<int>();
     if (ctx.OperationName == "increment") ctx.SetState(count + 1);
     if (ctx.OperationName == "get") ctx.Return(count);
 }
 ```
+ 
+| Use case | Example |
+|---|---|
+| Counter | API calls per user |
+| Cart | Add/remove items |
+| Rate limiter | Requests per minute |
  
 > Use when multiple functions share state — without managing a DB.
 
