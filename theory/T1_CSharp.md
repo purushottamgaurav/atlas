@@ -8,23 +8,49 @@
 
 **Q1. What is C#? What is the CLR?**
 
-C# is a statically typed, object-oriented language by Microsoft that runs on the .NET runtime. The **CLR (Common Language Runtime)** is the engine that runs .NET programs — it handles memory management, garbage collection, exception handling, and security.
+**C#** is a statically typed, object-oriented programming language developed by Microsoft that runs on the **.NET runtime**.
+ 
+**CLR (Common Language Runtime)** is the engine that executes .NET programs. It handles:
+- **Memory management** – allocates memory for objects
+- **Garbage collection** – automatically frees memory no longer in use
+- **JIT compilation** – converts IL (compiled C# code) into native machine code at runtime
+- **Exception handling** – provides structured error handling across .NET languages
+- **Type safety & security** – verifies code before running it
 
 ---
 
 **Q2. What is IL, CLR, and JIT? How do they relate?**
 
-- **IL (Intermediate Language):** When you compile C# code, it doesn't go directly to machine code — it becomes IL (also called MSIL or CIL), a platform-neutral bytecode.
-- **CLR:** Loads and runs this IL.
-- **JIT (Just-In-Time Compiler):** At runtime, CLR's JIT converts IL into native machine code for the current CPU.
-
+- **IL (Intermediate Language)** – When C# code is compiled, it doesn't become machine code directly. It becomes **IL** (also called MSIL/CIL) — a platform-neutral bytecode stored in an assembly (`.dll`/`.exe`).
+- **CLR (Common Language Runtime)** – Loads the assembly and manages its execution (memory, GC, exceptions, security).
+- **JIT (Just-In-Time Compiler)** – A component inside the CLR that converts each method's IL into native machine code **at runtime**, right before it's called, then caches it for reuse.
+**How they relate:**
 ```
-C# Code → [C# Compiler] → IL (.dll/.exe) → [JIT at runtime] → Native Machine Code
+C# code → IL (compiled) → CLR loads it → JIT compiles IL to native code → CPU executes it
 ```
 
 ---
 
-**Q3. How does Garbage Collector work in C#?**
+**Q3. What is CTS, CLS, BCL and Assembly in .NET?**
+  
+-**CTS (Common Type System)**
+The rulebook that defines how types are declared and used across the CLR, so every .NET language agrees on what a type means. E.g., `int` in C# and `Integer` in VB.NET both resolve to `System.Int32`. Classifies types as:
+- **Value types** — stack, copied by value (`int`, `struct`, `bool`)
+- **Reference types** — heap, accessed by reference (`class`, `string`, arrays)
+
+**CLS (Common Language Specification)**
+A stricter **subset of CTS** — the minimum rules a feature must follow to be safely usable from *any* .NET language. E.g., `uint` is valid CTS but not CLS-compliant, since some languages don't support unsigned types.
+> *"CTS is what's possible; CLS is what's portable."*
+ 
+**BCL (Base Class Library)**
+The standard library shipped with .NET (`System.*` namespaces) — collections, I/O, networking, LINQ — used by every .NET language.
+ 
+**Assembly**
+The compiled `.dll`/`.exe` containing IL code, metadata, and a manifest. It's the unit of deployment and versioning the CLR actually loads.
+
+---
+
+**Q4. How does Garbage Collector work in C#?**
 
 - Uses **.NET CLR GC** — automatic, generational
 - **3 Generations:**
@@ -40,22 +66,6 @@ using (var conn = new SqlConnection(connStr))
 {
     // auto-disposed at end of block
 }
-```
-
----
-
-**Q4. What is a C# Assembly? Difference between Assembly and Namespace?**
-
-- **Assembly** is the physical file (`.dll` or `.exe`) — the unit of deployment and versioning.
-- **Namespace** is a logical grouping of types inside code to avoid name conflicts.
-
-One assembly can contain many namespaces. One namespace can span multiple assemblies.
-
-```csharp
-// Namespace is logical grouping
-namespace MyApp.Services { public class OrderService {} }
-
-// Assembly is the compiled output: MyApp.dll
 ```
 
 ---
@@ -937,26 +947,31 @@ finally { /* always runs */ }
 
 ---
 
-**Q50. `finally` vs `Finalize` vs `Dispose`?**
+**Q50. `finally` vs `Destructor` vs `Dispose`?**
 
-| | `finally` | `Finalize` | `Dispose` |
+| | `finally` | Destructor (`~ClassName`) | `Dispose` |
 |--|--|--|--|
-| What | Block in try/catch | Destructor (~ClassName) | `IDisposable` method |
-| When runs | Always after try/catch | When GC collects | When called explicitly |
-| Use for | Cleanup code | Unmanaged cleanup fallback | Releasing resources |
-
+| **What** | A block in `try/catch` | Compiler-generated override of `Object.Finalize()` | Method from `IDisposable` |
+| **When it runs** | Always, right after `try/catch` completes | Non-deterministic — whenever the **GC** decides to collect the object | Deterministic — only when **explicitly called** (or via `using`) |
+| **Used for** | Guaranteed cleanup code (closing a block) | Last-resort cleanup of **unmanaged** resources if `Dispose` wasn't called | Proactively releasing resources (files, handles, connections) |
+| **Performance** | No extra cost | Slower — object needs 2 GC passes, delays collection | Fast — resource freed immediately |
+ 
 ```csharp
-// finally
-try { } finally { Console.WriteLine("always runs"); }
-
-// Finalize (destructor)
-class Resource { ~Resource() { /* called by GC */ } }
-
-// Dispose
-class Resource : IDisposable {
+// finally — always runs after try/catch, regardless of exception
+try { }
+finally { Console.WriteLine("always runs"); }
+ 
+// Destructor — compiler turns this into an override of Object.Finalize()
+class Resource
+{
+    ~Resource() { /* called by GC, non-deterministic timing */ }
+}
+ 
+// Dispose — from IDisposable, called explicitly or via 'using'
+class Resource : IDisposable
+{
     public void Dispose() { /* free resources now */ }
 }
-using (var r = new Resource()) { } // Dispose called automatically
 ```
 
 ---
