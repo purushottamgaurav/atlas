@@ -3,14 +3,42 @@
 
 ## SECTION 1: Angular Fundamentals
 
-### Q1. What is Angular and why use it?
+### Q1. Difference between var, let and const?
+
+| Keyword | Scope | Reassign? | Redeclare? | Use case |
+|---|---|---|---|---|
+| `var` | Function | Yes | Yes | Avoid — legacy, leaks out of blocks |
+| `let` | Block | Yes | No | Value will change (loops, counters) |
+| `const` | Block | No | No | Default choice — value won't be reassigned |
+  
+```typescript
+var a = 1;
+if (true) {
+  var a = 2;      // ✅ redeclare allowed, leaks out of block
+}
+console.log(a);   // 2
+ 
+let b = 1;
+{
+  let b = 2;      // ✅ separate block-scoped variable
+}
+console.log(b);   // 1
+ 
+const c = 1;
+c = 2;             // ❌ Error: Cannot assign to 'c' because it is a constant
+ 
+const habits = [];
+habits.push('run'); // ✅ allowed — mutating, not reassigning
+```
+
+### Q2. What is Angular and why use it?
 - TypeScript-based front-end framework by Google for building SPAs (Single Page Applications)
 - Full framework, not just a library — includes routing, forms, HTTP client, DI, CLI out of the box
 - Component-based architecture — UI is broken into reusable, self-contained pieces
 - Uses Ivy renderer for fast compilation and small bundle sizes
 - Strong typing (via TypeScript) catches errors at compile time
 
-### Q2. What is the difference between AngularJS and Angular?
+### Q3. What is the difference between AngularJS and Angular?
 - They are NOT backward compatible — Angular 2 was a complete rewrite, not an upgrade
 
 | Feature | AngularJS (v1) | Angular (v2+) |
@@ -22,7 +50,7 @@
 | Tooling | None | Angular CLI |
 | Mobile support | Limited | Mobile-first |
 
-### Q3. What is the Angular CLI? Name common commands.
+### Q4. What is the Angular CLI? Name common commands.
 - Command-line tool to scaffold, build, test, and deploy Angular apps
 - `ng new` — create new project
 - `ng serve` — run dev server
@@ -39,7 +67,7 @@ ng build --configuration production
 ng test
 ```
 
-### Q4. Explain angular.json, package.json & package-lock.json?
+### Q5. Explain angular.json, package.json & package-lock.json?
 #### `angular.json`
 - Configuration file for the Angular CLI.
 - Controls how the application is built, served, tested, and deployed.
@@ -57,7 +85,7 @@ ng test
 
 
 
-### Q5. What does `main.ts` do?
+### Q6. What does `main.ts` do?
 - Entry point of the Angular application
 - Bootstraps the root component (standalone) or root module (`AppModule`)
 - Registers global providers (router, HTTP client) when using standalone bootstrap
@@ -73,7 +101,7 @@ bootstrapApplication(AppComponent, {
 platformBrowserDynamic().bootstrapModule(AppModule);
 ```
 
-### Q6. What is an `NgModule`?
+### Q7. What is an `NgModule`?
 - A container/organizer that groups related components, directives, pipes, and services
 - Key metadata properties:
   - `declarations` — components/directives/pipes owned by this module
@@ -93,7 +121,7 @@ platformBrowserDynamic().bootstrapModule(AppModule);
 export class AppModule { }
 ```
 
-### Q7. What are standalone components (Angular 17+)?
+### Q8. What are standalone components (Angular 17+)?
 - Components that declare their own imports directly — no `NgModule` required
 - Reduces boilerplate, simplifies lazy loading and testing
 - Default since Angular 17/Angular CLI generates standalone by default
@@ -111,7 +139,7 @@ export class ProductCardComponent {
 }
 ```
 
-### Q8. What is the difference between `declarations`, `imports`, `exports`, and `providers` in NgModule?
+### Q9. What is the difference between `declarations`, `imports`, `exports`, and `providers` in NgModule?
 - Mixing these up causes "X is not a known element" template errors
 
 | Property | Purpose | Direction |
@@ -131,7 +159,7 @@ export class ProductCardComponent {
 export class ProductModule { }
 ```
 
-### Q9. What is the difference between a Module-based app and a Standalone app?
+### Q10. What is the difference between a Module-based app and a Standalone app?
 - Standalone simplifies lazy loading — use `loadComponent` instead of `loadChildren` + module
 
 | Aspect | Module-based | Standalone |
@@ -142,7 +170,7 @@ export class ProductModule { }
 | Boilerplate | More | Less |
 | Default since | Pre-Angular 17 style | Angular 17+ default |
 
-### Q10. What is Angular Ivy?
+### Q11. What is Angular Ivy?
 - Angular's rendering engine (compiler + runtime) since Angular 9
 - Produces smaller bundles via better tree-shaking
 - Faster compilation, better debugging, improved template type checking
@@ -152,7 +180,7 @@ export class ProductModule { }
 
 ## SECTION 2: Components & Lifecycle
 
-### Q11. What is a Component in Angular?
+### Q12. What is a Component in Angular?
 - Fundamental building block of the UI
 - Combination of: TypeScript class (logic) + HTML template (view) + CSS (style)
 - Decorated with `@Component({ selector, template/templateUrl, styleUrls })`
@@ -173,7 +201,7 @@ export class ProductComponent implements OnInit {
 }
 ```
 
-### Q12. What are the types of component selectors?
+### Q13. What are the types of component selectors?
 - Element selector: `app-product` → used as `<app-product>`
 - Attribute selector: `[appProduct]` → used as `<div appProduct>`
 - Class selector: `.app-product` → used as `<div class="app-product">`
@@ -185,7 +213,7 @@ export class ProductComponent implements OnInit {
 @Component({ selector: '.app-product' })      // <div class="app-product"></div>
 ```
 
-### Q13. What is View Encapsulation?
+### Q14. What is View Encapsulation?
 - Controls how a component's CSS is scoped to avoid style leaks
 - `Emulated` (default) — Angular adds unique attributes; styles scoped to the component
 - `None` — styles become global, affect the whole app
@@ -200,7 +228,7 @@ export class ProductComponent implements OnInit {
 export class WidgetComponent { }
 ```
 
-### Q14. What are Angular lifecycle hooks, in order?
+### Q15. What are Angular lifecycle hooks, in order?
 1. `ngOnChanges` — fires when an `@Input` changes (before first `ngOnInit`)
 2. `ngOnInit` — once, after first `ngOnChanges`; put init logic here
 3. `ngDoCheck` — runs on every change detection cycle
@@ -219,7 +247,7 @@ export class DemoComponent implements OnChanges, OnInit, AfterViewInit, OnDestro
 }
 ```
 
-### Q15. What is the difference between `constructor` and `ngOnInit`?
+### Q16. What is the difference between `constructor` and `ngOnInit`?
 
 ```typescript
 constructor(private userService: UserService) {}   // DI only
@@ -236,7 +264,7 @@ ngOnInit(): void {                                  // init logic
 | Runs | On class instantiation | After first ngOnChanges |
 | Use for | Injecting services | API calls, form setup, subscriptions |
 
-### Q16. When does `ngOnChanges` fire and what does it receive?
+### Q17. When does `ngOnChanges` fire and what does it receive?
 - Fires every time a parent changes an `@Input` property's reference
 - Receives a `SimpleChanges` object with `previousValue`, `currentValue`, `firstChange`
 - Does NOT fire on object mutation — only when the input reference itself changes
@@ -253,7 +281,7 @@ ngOnChanges(changes: SimpleChanges): void {
 }
 ```
 
-### Q17. What is the difference between `ngOnInit` and `ngAfterViewInit`?
+### Q18. What is the difference between `ngOnInit` and `ngAfterViewInit`?
 - Accessing `@ViewChild` in `ngOnInit` will give `undefined`
 
 ```typescript
@@ -275,7 +303,7 @@ ngAfterViewInit(): void {
 | Use for | Init logic, API calls | DOM manipulation, child component access |
 | Frequency | Once | Once (per creation) |
 
-### Q18. What is `ngOnDestroy` used for?
+### Q19. What is `ngOnDestroy` used for?
 - Cleanup hook called just before Angular destroys the component
 - Unsubscribe from manual RxJS subscriptions to prevent memory leaks
 - Clear `setInterval`/`setTimeout` timers
@@ -293,21 +321,6 @@ ngOnInit(): void {
 ngOnDestroy(): void {
   this.sub.unsubscribe();
   clearInterval(this.timerId);
-}
-```
-
-### Q19. Can a component have multiple `@Input` and `@Output` properties?
-- Yes — a component can declare as many `@Input()` and `@Output()` properties as needed
-- Inputs flow data parent → child; Outputs flow events child → parent
-- Angular 16+ allows marking inputs as required: `@Input({ required: true })`
-- Keeps the component's public API explicit and well-typed
-
-```typescript
-export class ProductCardComponent {
-  @Input() title = '';
-  @Input({ required: true }) product!: Product;
-  @Output() selected = new EventEmitter<Product>();
-  @Output() deleted = new EventEmitter<number>();
 }
 ```
 
