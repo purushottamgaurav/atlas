@@ -38,6 +38,7 @@ The rulebook that defines how types are declared and used across the CLR, so eve
 - **Value types** — stack, copied by value (`int`, `struct`, `bool`)
 - **Reference types** — heap, accessed by reference (`class`, `string`, arrays)
 
+
 **CLS (Common Language Specification)**
 A stricter **subset of CTS** — the minimum rules a feature must follow to be safely usable from *any* .NET language. E.g., `uint` is valid CTS but not CLS-compliant, since some languages don't support unsigned types.
 > *"CTS is what's possible; CLS is what's portable."*
