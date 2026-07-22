@@ -2019,16 +2019,141 @@ dotnet ef migrations list
 
 ---
 
-**Q83. What is the Outbox Pattern?**
+**Q83. What is Redis Cache? How to configure in dotnet Api ?**
 
-The Outbox pattern solves the problem of "write to DB and publish event atomically". Without it, if the service writes to DB then crashes before publishing, the event is lost.
 
-Solution: write the domain record AND the outbound event to the same DB in a single transaction. A separate background poller reads from the outbox table and publishes events to the message bus, then marks them as sent.
+#### 1. Install Package
 
+```bash
+dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis
 ```
-[Service] → writes [Order] + [OutboxEvent] in one DB transaction
-[Outbox Publisher] → polls OutboxEvent table → publishes to queue → marks sent
+
+---
+
+#### 2. Configure Redis
+
+**Program.cs**
+
+```csharp
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+});
 ```
+
+---
+
+#### 3. Inject Cache
+
+```csharp
+public class WeatherService
+{
+    private readonly IDistributedCache _cache;
+
+    public WeatherService(IDistributedCache cache)
+    {
+        _cache = cache;
+    }
+}
+```
+
+---
+
+#### 4. Read from Cache
+
+```csharp
+var key = "weather:pune";
+
+var cached = await _cache.GetStringAsync(key);
+
+if (cached != null)
+    return JsonSerializer.Deserialize<WeatherDto>(cached);
+```
+
+---
+
+#### 5. Save to Cache (TTL)
+
+```csharp
+await _cache.SetStringAsync(
+    key,
+    JsonSerializer.Serialize(weather),
+    new DistributedCacheEntryOptions
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+    });
+```
+
+---
+
+#### 6. Remove Cache
+
+```csharp
+await _cache.RemoveAsync(key);
+```
+
+Use after Update/Delete.
+
+---
+
+#### TTL (Time To Live)
+
+Controls how long cache exists before automatic expiry.
+
+#### Absolute Expiration
+
+```csharp
+AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+```
+
+- Fixed expiry time.
+- Best for: Weather, Products, Configuration.
+
+#### Sliding Expiration
+
+```csharp
+SlidingExpiration = TimeSpan.FromMinutes(10)
+```
+
+- Expiry resets after each access.
+- Best for: User Session, Shopping Cart.
+
+#### Both Together
+
+```csharp
+new DistributedCacheEntryOptions
+{
+    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+    SlidingExpiration = TimeSpan.FromMinutes(10)
+}
+```
+
+- Sliding refreshes the cache.
+- Absolute sets the maximum lifetime.
+
+---
+
+#### Redis Data Types
+
+| Type | Use Case |
+|------|----------|
+| String | JSON, DTOs, API responses ⭐ Most Common |
+| Hash | User profile, partial updates |
+| List | Recent searches, queues |
+| Set | Unique values, roles, tags |
+| Sorted Set | Leaderboards, rankings |
+| Stream | Event streaming |
+
+---
+
+#### Interview Points
+
+- Redis is an **in-memory distributed cache**.
+- Access using `IDistributedCache`.
+- Objects are stored as serialized JSON (typically as strings).
+- **Absolute TTL** → Fixed expiry.
+- **Sliding TTL** → Resets on access.
+- **String** is the most commonly used Redis data type in .NET APIs.
 
 ---
 
