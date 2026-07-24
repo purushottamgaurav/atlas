@@ -1752,15 +1752,37 @@ public IActionResult ViewContent() => Ok();
 
 **Q70. How do you implement refresh tokens with JWT?**
 
-Access tokens are short-lived (15 min–1 hour). When they expire, the client uses a refresh token (long-lived, stored securely) to get a new access token without logging in again.
 
-Flow:
-1. Login → server returns access token + refresh token.
-2. Access token expires → client calls `/auth/refresh` with refresh token.
-3. Server validates refresh token from DB, issues new access token.
-4. Refresh token rotation: issue a new refresh token and invalidate the old one.
+| Token | Purpose | Lifespan | Sent to | Validation | Revocable? |
+|---|---|---|---|---|---|
+| **ID Token** | Identify the user (name, email) | Short | Client app only | Signature check | N/A (not used for auth) |
+| **Access Token** | Authorize API calls | Short (15min–1hr) | Every API request | Stateless (sig + exp) | No (relies on short expiry) |
+| **Refresh Token** | Get a new access token | Long (days–weeks) | Only `/refresh` endpoint | Stateful (DB lookup) | **Yes** — this is the point |
 
-Store refresh tokens in a DB, not JWT, so you can revoke them.
+
+- **Access tokens** are validated statelessly (just signature + expiry, no DB hit) — fast, but can't be revoked early, so they're kept short-lived to limit damage if stolen.
+- **Refresh tokens** are checked against a DB, so they **can** be revoked (logout, account suspension, theft detection) — safe to keep long-lived.
+
+#### Refresh Token Rotation
+
+1. Client sends refresh token → server invalidates it, issues a **new** refresh token + access token.
+2. If a stolen/old refresh token is reused after rotation → signals theft → revoke entire token family, force re-login.
+
+#### Full Flow
+
+```
+Login → ID token (who) + Access token (what) + Refresh token (renew)
+   ↓
+API calls use Access token
+   ↓
+Access token expires → POST /auth/refresh with Refresh token
+   ↓
+Server validates refresh token in DB → issues new Access + Refresh token (rotate)
+   ↓
+Repeat until Refresh token expires/revoked → full re-login required
+```
+
+**Key rule:** store refresh tokens in DB (not just JWT), so they can be revoked. Never store refresh tokens in `localStorage` — use HttpOnly Secure cookies or secure device storage.
 
 ---
 
@@ -1770,12 +1792,17 @@ Store refresh tokens in a DB, not JWT, so you can revoke them.
 
 **Q71. What are the caching strategies in Web API?**
 
+#### Caching Strategies in .NET
+
 - **In-memory caching** — cache in the server process memory using `IMemoryCache`. Fast but not shared across multiple servers.
 - **Distributed caching** — cache in Redis or SQL Server using `IDistributedCache`. Works across multiple server instances.
-- **Response caching** — cache the entire HTTP response at the HTTP layer using `[ResponseCache]` attribute or middleware.
+- **Response caching** — cache the entire HTTP response at the HTTP layer using `[ResponseCache]` attribute or middleware. Relies on the client/proxy respecting `Cache-Control` headers.
+- **Output caching** — newer (.NET 7+) server-side alternative to response caching. The server itself stores and serves the cached response (not just headers telling the client to cache), so it works even for clients that ignore cache headers. Supports tag-based invalidation, policies, and varying by query/route.
 - **Cache-aside** — application checks cache first; on miss, loads from DB and populates cache.
 - **Write-through** — write to cache and DB at the same time.
 - **CDN caching** — cache static assets at edge servers closer to users.
+
+### Cache-Aside Example (`IMemoryCache`)
 
 ```csharp
 public class ProductService
@@ -1793,6 +1820,51 @@ public class ProductService
     }
 }
 ```
+
+### Output Caching Setup
+
+```csharp
+// Program.cs
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("ProductPolicy", policy =>
+        policy.Expire(TimeSpan.FromMinutes(10)).Tag("products"));
+});
+
+var app = builder.Build();
+app.UseOutputCache();
+```
+
+#### On a Controller Action
+
+```csharp
+[HttpGet("{id}")]
+[OutputCache(PolicyName = "ProductPolicy")]
+public async Task<IActionResult> GetProduct(int id)
+{
+    var product = await _productService.GetProduct(id);
+    return Ok(product);
+}
+```
+
+#### Invalidate by Tag (e.g., After an Update)
+
+```csharp
+public class ProductService
+{
+    private readonly IOutputCacheStore _outputCache;
+
+    public async Task UpdateProductAsync(Product product)
+    {
+        // ... update DB ...
+        await _outputCache.EvictByTagAsync("products", default);
+    }
+}
+```
+
+#### Key Difference: `[ResponseCache]` vs `[OutputCache]`
+
+`[ResponseCache]` just sets `Cache-Control` headers — actual caching depends on the client or an intermediary proxy honoring them. `[OutputCache]` stores the response **on the server** (in-memory by default, Redis-backed if configured), so it's guaranteed to work regardless of client behavior, and supports fine-grained invalidation via tags — which `[ResponseCache]` doesn't.
 
 ---
 
@@ -1911,8 +1983,6 @@ Client → Internet → [Reverse Proxy] → Server
          (client sees proxy URL, not server)
 ```
  
-- **Proxy** — you ask a friend to buy something for you — the shop doesn't know who you are
-- **Reverse Proxy** — you call a company's main number — you don't know which department picks up
 > API Gateway is a reverse proxy with extra features — auth, rate limiting, analytics.
 
 ---
@@ -2021,139 +2091,41 @@ dotnet ef migrations list
 
 **Q83. What is Redis Cache? How to configure in dotnet Api ?**
 
-
-#### 1. Install Package
-
+**Setup:**
 ```bash
 dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis
 ```
-
----
-
-#### 2. Configure Redis
-
-**Program.cs**
-
 ```csharp
 builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
-});
+    options.Configuration = builder.Configuration["Redis:ConnectionString"]);
 ```
 
----
-
-#### 3. Inject Cache
-
+**Use:**
 ```csharp
 public class WeatherService
 {
     private readonly IDistributedCache _cache;
+    public WeatherService(IDistributedCache cache) => _cache = cache;
 
-    public WeatherService(IDistributedCache cache)
+    public async Task<WeatherDto> GetAsync(string key)
     {
-        _cache = cache;
+        var cached = await _cache.GetStringAsync(key);
+        if (cached != null) return JsonSerializer.Deserialize<WeatherDto>(cached);
+
+        var weather = await FetchFromApi();
+        await _cache.SetStringAsync(key, JsonSerializer.Serialize(weather),
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) });
+        return weather;
     }
+
+    public Task InvalidateAsync(string key) => _cache.RemoveAsync(key); // call after update/delete
 }
 ```
 
----
-
-#### 4. Read from Cache
-
-```csharp
-var key = "weather:pune";
-
-var cached = await _cache.GetStringAsync(key);
-
-if (cached != null)
-    return JsonSerializer.Deserialize<WeatherDto>(cached);
-```
-
----
-
-#### 5. Save to Cache (TTL)
-
-```csharp
-await _cache.SetStringAsync(
-    key,
-    JsonSerializer.Serialize(weather),
-    new DistributedCacheEntryOptions
-    {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-    });
-```
-
----
-
-#### 6. Remove Cache
-
-```csharp
-await _cache.RemoveAsync(key);
-```
-
-Use after Update/Delete.
-
----
-
-#### TTL (Time To Live)
-
-Controls how long cache exists before automatic expiry.
-
-#### Absolute Expiration
-
-```csharp
-AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-```
-
-- Fixed expiry time.
-- Best for: Weather, Products, Configuration.
-
-#### Sliding Expiration
-
-```csharp
-SlidingExpiration = TimeSpan.FromMinutes(10)
-```
-
-- Expiry resets after each access.
-- Best for: User Session, Shopping Cart.
-
-#### Both Together
-
-```csharp
-new DistributedCacheEntryOptions
-{
-    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
-    SlidingExpiration = TimeSpan.FromMinutes(10)
-}
-```
-
-- Sliding refreshes the cache.
-- Absolute sets the maximum lifetime.
-
----
-
-#### Redis Data Types
-
-| Type | Use Case |
-|------|----------|
-| String | JSON, DTOs, API responses ⭐ Most Common |
-| Hash | User profile, partial updates |
-| List | Recent searches, queues |
-| Set | Unique values, roles, tags |
-| Sorted Set | Leaderboards, rankings |
-| Stream | Event streaming |
-
----
-
-#### Interview Points
-
-- Redis is an **in-memory distributed cache**.
-- Access using `IDistributedCache`.
-- Objects are stored as serialized JSON (typically as strings).
-- **Absolute TTL** → Fixed expiry.
-- **Sliding TTL** → Resets on access.
-- **String** is the most commonly used Redis data type in .NET APIs.
+**TTL types:**
+- **Absolute** — fixed expiry, resets never → weather, products, config
+- **Sliding** — resets on each access → sessions, carts
+- **Both** — absolute = hard cap, sliding = refresh window within it
 
 ---
 
@@ -2374,28 +2346,25 @@ public class OrderProcessor
 
 #### Azure Blob Trigger - Producer & Consumer
 
-#### Producer (Upload Blob)
-
+**Producer:**
 ```csharp
 var client = new BlobContainerClient(connectionString, "files");
+await client.CreateIfNotExistsAsync();
 var blob = client.GetBlobClient("sample.txt");
-
 await blob.UploadAsync(BinaryData.FromString("Hello Blob"), overwrite: true);
 ```
 
-#### Consumer (Azure Function)
-
+**Consumer (correct — use `Stream`, not `string`):**
 ```csharp
-public class BlobProcessor
+[Function("BlobProcessor")]
+public async Task Run(
+    [BlobTrigger("files/{name}", Connection = "StorageConnection")] Stream content,
+    string name,
+    ILogger<BlobProcessor> logger)
 {
-    [Function("BlobProcessor")]
-    public void Run(
-        [BlobTrigger("files/{name}", Connection = "StorageConnection")]
-        string content,
-        string name)
-    {
-        Console.WriteLine($"{name}: {content}");
-    }
+    using var reader = new StreamReader(content);
+    var text = await reader.ReadToEndAsync();
+    logger.LogInformation("{Name}: {Bytes} bytes", name, content.Length);
 }
 ```
 

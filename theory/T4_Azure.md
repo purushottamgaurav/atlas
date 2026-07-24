@@ -336,7 +336,7 @@ A **multi-tenant application** allows users from **multiple Microsoft Entra ID (
 
 ---
 
-**Q24. What is Conditional Accessin Microsoft Entra ID?**
+**Q24. What is Conditional Access in Microsoft Entra ID?**
 
 **Conditional Access** is a security feature in **Microsoft Entra ID** that applies **access policies based on conditions** such as the user's location, device, application, sign-in risk, or user/group membership.
 
