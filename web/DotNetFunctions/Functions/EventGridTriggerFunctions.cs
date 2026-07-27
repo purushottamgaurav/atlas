@@ -17,16 +17,16 @@ namespace DotNetFunctions.Functions;
 //     (e.g., this function alerts purchasing; another notifies the warehouse).
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class LowStockEventGridFunction
+public class EventGridTriggerFunctions
 {
-    private readonly ILogger<LowStockEventGridFunction> _logger;
+    private readonly ILogger<EventGridTriggerFunctions> _logger;
 
-    public LowStockEventGridFunction(ILogger<LowStockEventGridFunction> logger)
+    public EventGridTriggerFunctions(ILogger<EventGridTriggerFunctions> logger)
     {
         _logger = logger;
     }
 
-    [Function("HandleLowStockAlert")]
+    //[Function("HandleLowStockAlert")]
     public void Run(
         [EventGridTrigger] string eventData,
         FunctionContext context)

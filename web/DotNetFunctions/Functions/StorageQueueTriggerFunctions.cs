@@ -15,18 +15,18 @@ namespace DotNetFunctions.Functions;
 // then moves the message to "orders-queue-poison" for manual inspection.
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class OrderQueueFunction
+public class StorageQueueTriggerFunctions
 {
     private readonly IOrderService _orders;
-    private readonly ILogger<OrderQueueFunction> _logger;
+    private readonly ILogger<StorageQueueTriggerFunctions> _logger;
 
-    public OrderQueueFunction(IOrderService orders, ILogger<OrderQueueFunction> logger)
+    public StorageQueueTriggerFunctions(IOrderService orders, ILogger<StorageQueueTriggerFunctions> logger)
     {
         _orders = orders;
         _logger = logger;
     }
 
-    [Function("ProcessOrder")]
+  //  [Function("ProcessOrder")]
     public async Task Run(
         [QueueTrigger("orders-queue", Connection = "AzureWebJobsStorage")] string message,
         FunctionContext context)
