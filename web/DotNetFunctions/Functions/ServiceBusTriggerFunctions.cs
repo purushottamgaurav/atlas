@@ -20,12 +20,12 @@ namespace DotNetFunctions.Functions;
 //   - Storage Queue is simpler and cheaper but lacks these guarantees.
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class ShipmentServiceBusFunction
+public class ServiceBusTriggerFunctions
 {
     private readonly IOrderService _orders;
-    private readonly ILogger<ShipmentServiceBusFunction> _logger;
+    private readonly ILogger<ServiceBusTriggerFunctions> _logger;
 
-    public ShipmentServiceBusFunction(IOrderService orders, ILogger<ShipmentServiceBusFunction> logger)
+    public ServiceBusTriggerFunctions(IOrderService orders, ILogger<ServiceBusTriggerFunctions> logger)
     {
         _orders = orders;
         _logger = logger;

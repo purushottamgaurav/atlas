@@ -17,11 +17,11 @@ namespace DotNetFunctions.Functions;
 // In production you would upsert into Cosmos DB / SQL Database.
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class ProductCatalogBlobFunction
+public class BlobTriggerFunctions
 {
-    private readonly ILogger<ProductCatalogBlobFunction> _logger;
+    private readonly ILogger<BlobTriggerFunctions> _logger;
 
-    public ProductCatalogBlobFunction(ILogger<ProductCatalogBlobFunction> logger)
+    public BlobTriggerFunctions(ILogger<BlobTriggerFunctions> logger)
     {
         _logger = logger;
     }

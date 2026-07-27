@@ -24,12 +24,12 @@ namespace DotNetFunctions.Functions;
 // The HTTP starter returns check-status URLs so the caller can poll for progress.
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class OrderFulfillmentDurable
+public class DurableFunctions
 {
     private readonly IOrderService _orders;
-    private readonly ILogger<OrderFulfillmentDurable> _logger;
+    private readonly ILogger<DurableFunctions> _logger;
 
-    public OrderFulfillmentDurable(IOrderService orders, ILogger<OrderFulfillmentDurable> logger)
+    public DurableFunctions(IOrderService orders, ILogger<DurableFunctions> logger)
     {
         _orders = orders;
         _logger = logger;
@@ -38,7 +38,7 @@ public class OrderFulfillmentDurable
     // ── HTTP Starter ──────────────────────────────────────────────────────────
     // POST /api/fulfill/{orderId}
     // Kicks off a new orchestration instance and returns status-check URLs.
-    [Function("StartOrderFulfillment")]
+   // [Function("StartOrderFulfillment")]
     public async Task<HttpResponseData> StartFulfillment(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "fulfill/{orderId}")] HttpRequestData req,
         [DurableClient] DurableTaskClient client,
@@ -59,7 +59,7 @@ public class OrderFulfillmentDurable
     // ── Orchestrator ──────────────────────────────────────────────────────────
     // Orchestrators must be deterministic — no random values, no DateTime.Now,
     // no direct async I/O. Use context.CurrentUtcDateTime for timestamps.
-    [Function(nameof(FulfillOrderOrchestrator))]
+  //  [Function(nameof(FulfillOrderOrchestrator))]
     public static async Task<FulfillmentResult> FulfillOrderOrchestrator(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
@@ -91,7 +91,7 @@ public class OrderFulfillmentDurable
     // Activities are the actual units of work. They can call external services,
     // write to databases, send emails, etc. They run exactly-once per orchestration step.
 
-    [Function(nameof(ValidateOrderActivity))]
+  //  [Function(nameof(ValidateOrderActivity))]
     public bool ValidateOrderActivity(
         [ActivityTrigger] string orderId,
         FunctionContext context)
@@ -114,7 +114,7 @@ public class OrderFulfillmentDurable
         return true;
     }
 
-    [Function(nameof(ProcessPaymentActivity))]
+   // [Function(nameof(ProcessPaymentActivity))]
     public bool ProcessPaymentActivity(
         [ActivityTrigger] string orderId,
         FunctionContext context)
@@ -131,7 +131,7 @@ public class OrderFulfillmentDurable
         return charged;
     }
 
-    [Function(nameof(UpdateInventoryActivity))]
+  //  [Function(nameof(UpdateInventoryActivity))]
     public void UpdateInventoryActivity(
         [ActivityTrigger] string orderId,
         FunctionContext context)
@@ -145,7 +145,7 @@ public class OrderFulfillmentDurable
             _logger.LogInformation("  Deducted {Qty}x '{Product}' from stock", item.Quantity, item.ProductName);
     }
 
-    [Function(nameof(NotifyCustomerActivity))]
+   // [Function(nameof(NotifyCustomerActivity))]
     public void NotifyCustomerActivity(
         [ActivityTrigger] string orderId,
         FunctionContext context)

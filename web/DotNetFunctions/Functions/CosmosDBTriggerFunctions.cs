@@ -17,16 +17,16 @@ namespace DotNetFunctions.Functions;
 // call an audit API. The audit is infrastructure-level and cannot be bypassed.
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class OrderAuditCosmosFunction
+public class CosmosDBTriggerFunctions
 {
-    private readonly ILogger<OrderAuditCosmosFunction> _logger;
+    private readonly ILogger<CosmosDBTriggerFunctions> _logger;
 
-    public OrderAuditCosmosFunction(ILogger<OrderAuditCosmosFunction> logger)
+    public CosmosDBTriggerFunctions(ILogger<CosmosDBTriggerFunctions> logger)
     {
         _logger = logger;
     }
 
-    [Function("AuditOrderChanges")]
+   // [Function("AuditOrderChanges")]
     public void Run(
         [CosmosDBTrigger(
             databaseName: "ecommerce",

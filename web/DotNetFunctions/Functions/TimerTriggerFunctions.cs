@@ -16,12 +16,12 @@ namespace DotNetFunctions.Functions;
 // CRON expression: "0 0 0 * * *"  →  second minute hour day month weekday
 // ─────────────────────────────────────────────────────────────────────────────
 
-public class DailyReportTimerFunction
+public class TimerTriggerFunctions
 {
     private readonly IOrderService _orders;
-    private readonly ILogger<DailyReportTimerFunction> _logger;
+    private readonly ILogger<TimerTriggerFunctions> _logger;
 
-    public DailyReportTimerFunction(IOrderService orders, ILogger<DailyReportTimerFunction> logger)
+    public TimerTriggerFunctions(IOrderService orders, ILogger<TimerTriggerFunctions> logger)
     {
         _orders = orders;
         _logger = logger;
